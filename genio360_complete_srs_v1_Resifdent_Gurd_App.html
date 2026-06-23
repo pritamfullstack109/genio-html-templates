@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genio 360 — Complete SRS | All Modules | Flutter & Azure</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --blue:#1B4FD8;--blue-lt:#EEF2FF;--green:#0F9C60;--green-lt:#ECFDF5;
+    --red:#DC2626;--red-lt:#FEF2F2;--amber:#D97706;--amber-lt:#FFFBEB;
+    --indigo:#4F46E5;--indigo-lt:#EEF2FF;--gray:#64748B;--gray-lt:#F8FAFC;
+    --border:#E2E8F0;--text:#1E293B;--heading:#0F172A;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text);background:#F1F5F9;line-height:1.6;}
+  .page-header{background:linear-gradient(135deg,#0F172A 0%,#4338CA 55%,#7C3AED 100%);color:#fff;padding:48px 60px 40px;}
+  .page-header .badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1.2px;padding:4px 14px;margin-bottom:18px;text-transform:uppercase;}
+  .page-header h1{font-size:36px;font-weight:800;line-height:1.15;margin-bottom:12px;}
+  .page-header p{font-size:16px;opacity:.85;max-width:760px;}
+  .meta-row{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;}
+  .meta-row .chip2{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;font-size:12px;padding:5px 12px;color:#fff;}
+  .container{max-width:1100px;margin:0 auto;padding:48px 24px;}
+  .toc{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:36px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .toc h3{font-size:15px;color:var(--heading);margin-bottom:14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 18px;}
+  @media(max-width:780px){.toc-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:520px){.toc-grid{grid-template-columns:1fr;}}
+  .toc-grid a{font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;display:flex;gap:8px;}
+  .toc-grid a .n{color:var(--gray);font-variant-numeric:tabular-nums;min-width:24px;}
+  .section-label{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--indigo);margin-bottom:8px;}
+  .section-label::before{content:'';display:block;width:28px;height:2px;background:var(--indigo);}
+  h2{font-size:24px;font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .sub{font-size:14px;color:var(--gray);margin-bottom:22px;}
+  h3{font-size:16px;font-weight:700;color:var(--heading);margin-bottom:10px;}
+  h4{font-size:14px;font-weight:700;color:var(--heading);margin-bottom:5px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  code{background:#E8EDF5;border-radius:4px;padding:2px 6px;font-size:12px;font-family:"Fira Code","Courier New",monospace;color:var(--indigo);}
+  .meta-strip{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .meta-strip .m{background:var(--gray-lt);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;}
+  .meta-strip .m b{color:var(--heading);}
+  .callout{border-radius:12px;padding:16px 20px;margin-top:16px;border:1px solid;}
+  .callout.amber{background:var(--amber-lt);border-color:#FCD68A;}
+  .callout.green{background:var(--green-lt);border-color:#A7F3D0;}
+  .callout.blue{background:var(--blue-lt);border-color:#C7D7F9;}
+  .callout.indigo{background:var(--indigo-lt);border-color:#C7D2FE;}
+  .callout h4{font-size:13px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .callout.green h4{color:var(--green);}.callout.blue h4{color:var(--blue);}.callout.indigo h4{color:var(--indigo);}
+  .callout p{font-size:14px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .chip{background:var(--indigo-lt);color:var(--indigo);border-radius:20px;font-size:12.5px;font-weight:600;padding:5px 13px;}
+  .flow{display:flex;flex-direction:column;}
+  .flow-step{display:flex;position:relative;}
+  .flow-left{display:flex;flex-direction:column;align-items:center;width:56px;flex-shrink:0;}
+  .step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;z-index:1;}
+  .step-line{width:2px;flex:1;min-height:20px;background:var(--border);margin:0 auto;}
+  .flow-step:last-child .step-line{display:none;}
+  .flow-body{flex:1;padding:0 0 26px 16px;}
+  .flow-body .title{font-weight:700;font-size:15px;color:var(--heading);margin:8px 0 6px;}
+  .flow-body .desc{font-size:14px;color:var(--gray);margin-bottom:10px;}
+  .detail-box{background:var(--gray-lt);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;}
+  .detail-box code{background:#E2E8F0;}
+  .detail-box.legacy{border-left:4px solid var(--red);}
+  .detail-box.proposed{border-left:4px solid var(--green);}
+  .detail-box .mh{display:block;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+  .detail-box.legacy .mh{color:var(--red);}
+  .detail-box.proposed .mh{color:var(--green);}
+  .mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+  @media(max-width:680px){.mg2{grid-template-columns:1fr;}}
+  .tag{display:inline-block;border-radius:5px;font-size:11px;font-weight:600;padding:2px 8px;margin:2px 2px 2px 0;}
+  .tag-blue{background:var(--blue-lt);color:var(--blue);}.tag-green{background:var(--green-lt);color:var(--green);}
+  .tag-red{background:var(--red-lt);color:var(--red);}.tag-amber{background:var(--amber-lt);color:var(--amber);}
+  .tag-indigo{background:var(--indigo-lt);color:var(--indigo);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{background:var(--indigo);color:#fff;padding:10px 14px;text-align:left;font-weight:600;}
+  tbody tr:nth-child(even){background:var(--gray-lt);}
+  tbody td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tbody td code{background:#E2E8F0;}
+  .pill{display:inline-block;border-radius:20px;font-size:11px;font-weight:600;padding:2px 9px;}
+  .pill-new{background:var(--green-lt);color:var(--green);}
+  .pill-fut{background:var(--amber-lt);color:var(--amber);}
+  .arch-tree{font-family:"Fira Code","Courier New",monospace;font-size:12.5px;background:var(--gray-lt);border:1px solid var(--border);border-radius:10px;padding:20px 24px;white-space:pre;overflow-x:auto;color:var(--text);line-height:1.7;}
+  .arch-tree .h{color:var(--indigo);font-weight:700;}
+  .section-divider{height:40px;}
+  .page-footer{background:var(--heading);color:rgba(255,255,255,.5);text-align:center;padding:24px;font-size:12px;}
+  .mod-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .mod-num{font-size:13px;font-weight:700;color:var(--indigo);background:var(--indigo-lt);border-radius:8px;padding:3px 10px;}
+  .stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
+  @media(max-width:880px){.stack-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.stack-grid{grid-template-columns:1fr;}}
+  .stack-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.04);border-top:3px solid var(--indigo);}
+  .stack-card .ic{font-size:24px;margin-bottom:8px;}
+  .stack-card h4{font-size:14px;color:var(--heading);margin-bottom:4px;}
+  .stack-card p{font-size:12.5px;color:var(--gray);}
+  .gloss-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+  @media(max-width:680px){.gloss-grid{grid-template-columns:1fr;}}
+  .gloss-grid .g{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .gloss-grid .g b{color:var(--indigo);min-width:130px;flex-shrink:0;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+  @media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+  .wi{display:flex;gap:12px;align-items:flex-start;background:var(--gray-lt);border:1px solid var(--border);border-radius:9px;padding:14px 16px;}
+  .wi .ico{width:34px;height:34px;border-radius:8px;background:var(--indigo-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
+  .wi p{font-size:12px;color:var(--gray);margin-top:2px;}
+  .wi h4{font-size:13px;font-weight:700;margin-bottom:2px;}
+  .frl{list-style:none;}
+  .frl li{padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+  .frl li:last-child{border-bottom:none;}
+  .frid{flex-shrink:0;background:var(--indigo-lt);color:var(--indigo);font-size:9.5px;font-weight:700;border-radius:4px;padding:2px 7px;margin-top:2px;letter-spacing:.5px;white-space:nowrap;}
+  .brl{list-style:none;}
+  .brl li{padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+  .brl li:last-child{border-bottom:none;}
+  .brid{flex-shrink:0;background:var(--amber-lt);color:var(--amber);font-size:9.5px;font-weight:700;border-radius:4px;padding:2px 7px;margin-top:2px;white-space:nowrap;}
+  .acl{list-style:none;}
+  .acl li{padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+  .acl li:last-child{border-bottom:none;}
+  .ck{width:16px;height:16px;border:2px solid var(--green);border-radius:3px;flex-shrink:0;margin-top:2px;}
+  .smg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media(max-width:680px){.smg{grid-template-columns:1fr;}}
+  .smi{background:var(--gray-lt);border:1px solid var(--border);border-radius:7px;padding:8px 12px;display:flex;gap:8px;align-items:center;font-size:12px;}
+  .smi .arr{color:var(--green);font-weight:700;font-size:14px;}
+  .smi .os2{font-size:11px;color:var(--gray);font-family:monospace;}
+  .smi .ns2{font-size:11px;color:var(--indigo);font-weight:600;font-family:monospace;}
+  .os-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;}
+  @media(max-width:800px){.os-grid{grid-template-columns:1fr 1fr;}}
+  .oc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-align:center;}
+  .oc .on{font-size:28px;font-weight:800;color:var(--indigo);}
+  .oc .ol{font-size:11px;color:var(--gray);margin-top:3px;}
+  .oc .oi{font-size:22px;margin-bottom:6px;}
+  .sticker{display:inline-block;background:var(--green-lt);color:var(--green);border:1px solid #A7F3D0;border-radius:16px;font-size:10px;font-weight:700;padding:2px 10px;margin-right:6px;margin-bottom:6px;}
+  .sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:680px){.sec-grid{grid-template-columns:1fr;}}
+  .si{border-left:4px solid;padding:11px 13px;border-radius:0 7px 7px 0;background:var(--gray-lt);}
+  .si h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+  .si p{font-size:12px;color:var(--gray);}
+  .si-b{border-color:var(--blue);}
+  .si-g{border-color:var(--green);}
+  .si-i{border-color:var(--indigo);}
+  .si-a{border-color:var(--amber);}
+  .si-r{border-color:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="page-header">
+  <div class="badge">Genio 360 — Complete Software Requirements Specification</div>
+  <h1>Resident App &amp; Security Guard App — All Modules</h1>
+  <p>Flutter (Android + iOS) Resident App &amp; Flutter Android Security Guard App. NestJS backend migrating from legacy Yii2 PHP with Microsoft Azure infrastructure. Every module covered: Authentication, Dashboard, Smart Home, Community, Services, Unit Management, and Security Guard operations.</p>
+  <div class="meta-row">
+    <span class="chip2">Version 1.0 (Complete SRS)</span>
+    <span class="chip2">Flutter · NestJS · SQL · Azure Blob · Azure Service Bus · Key Vault</span>
+    <span class="chip2">Roles: Resident / Security Guard</span>
+    <span class="chip2">June 2026</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ DOC CONTROL ══ -->
+  <div class="section-label">Document Control</div>
+  <h2>Document Control &amp; Revision History</h2>
+  <p class="sub">Ownership, status, and change log for this specification</p>
+  <div class="card">
+    <div class="meta-strip">
+      <div class="m"><b>Document:</b> Genio 360 — Complete SRS (All Modules)</div>
+      <div class="m"><b>Version:</b> 1.0</div>
+      <div class="m"><b>Platform:</b> Flutter Android + iOS</div>
+      <div class="m"><b>Audience:</b> Engineering, Architecture, QA</div>
+      <div class="m"><b>Roles:</b> Resident / Security Guard</div>
+    </div>
+    <table><thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Summary of Changes</th></tr></thead><tbody>
+      <tr><td>1.0</td><td>June 2026</td><td>Architecture</td><td>Initial complete SRS covering all 40+ modules for Resident App and Security Guard App. Flutter + NestJS + Azure migration from legacy Android (Java/Kotlin) + Yii2 PHP stack.</td></tr>
+    </tbody></table>
+    <div class="callout amber"><h4>Status of this Document</h4><p>This is a <strong>To-Be engineering specification</strong>. Content has been cross-checked against the current native Android (Yii2 PHP backend) system. See <em>AS-IS → TO-BE</em> sections per module for what exists today versus what is net-new in the Flutter + NestJS + Azure migration.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ TECH STACK ══ -->
+  <div class="section-label">Technology Stack at a Glance</div>
+  <div class="stack-grid">
+    <div class="stack-card"><div class="ic">📱</div><h4>Flutter</h4><p>Resident App (Android + iOS). Guard App (Android only standalone APK). Shared <code>auth_package</code> between apps.</p></div>
+    <div class="stack-card"><div class="ic">⚡</div><h4>NestJS on Azure</h4><p>Typed REST controllers, JWT guards, DTO validation (class-validator), RBAC, per-tenant <code>companyId</code> scoping.</p></div>
+    <div class="stack-card"><div class="ic">🗃️</div><h4>SQL</h4><p>Primary relational store. Users, sessions, units, bookings, packages, service requests, audit tables.</p></div>
+    <div class="stack-card"><div class="ic">☁️</div><h4>Azure Services</h4><p>Blob Storage (media/SAS), Service Bus (async jobs), Key Vault (secrets/JWT keys), Communication Services (email/SMS).</p></div>
+  </div>
+
+  <!-- ══ TOC ══ -->
+  <div class="toc">
+    <h3>All Modules in this Specification</h3>
+    <div class="toc-grid">
+      <a href="#m01"><span class="n">01</span>Authentication Overview</a>
+      <a href="#m02"><span class="n">02</span>Login</a>
+      <a href="#m03"><span class="n">03</span>Sign Up</a>
+      <a href="#m04"><span class="n">04</span>Forgot Password</a>
+      <a href="#m05"><span class="n">05</span>Logout</a>
+      <a href="#m06"><span class="n">06</span>Dashboard Overview</a>
+      <a href="#m07"><span class="n">07</span>Home Tab</a>
+      <a href="#m08"><span class="n">08</span>Search Tab</a>
+      <a href="#m09"><span class="n">09</span>Favourites Tab</a>
+      <a href="#m10"><span class="n">10</span>Payment Tab</a>
+      <a href="#m11"><span class="n">11</span>Setting Tab</a>
+      <a href="#m12"><span class="n">12</span>My Profile</a>
+      <a href="#m13"><span class="n">13</span>My Account</a>
+      <a href="#m14"><span class="n">14</span>Switch Condo</a>
+      <a href="#m15"><span class="n">15</span>Change Language</a>
+      <a href="#m16"><span class="n">16</span>About</a>
+      <a href="#m17"><span class="n">17</span>App Suggestion</a>
+      <a href="#m18"><span class="n">18</span>Help &amp; Support</a>
+      <a href="#m19"><span class="n">19</span>Emergency Contacts</a>
+      <a href="#m20"><span class="n">20</span>Virtual Button</a>
+      <a href="#m21"><span class="n">21</span>Smart Home</a>
+      <a href="#m22"><span class="n">22</span>My Smart Home Journal</a>
+      <a href="#m23"><span class="n">23</span>Door Bell</a>
+      <a href="#m24"><span class="n">24</span>Intercom Call</a>
+      <a href="#m25"><span class="n">25</span>Camera Viewer</a>
+      <a href="#m26"><span class="n">26</span>Vida Cool</a>
+      <a href="#m27"><span class="n">27</span>Vida Quantum</a>
+      <a href="#m28"><span class="n">28</span>Wall (Posts/Events/Poll…)</a>
+      <a href="#m29"><span class="n">29</span>Inbox</a>
+      <a href="#m30"><span class="n">30</span>Notifications</a>
+      <a href="#m31"><span class="n">31</span>Neighbourhood Chat</a>
+      <a href="#m32"><span class="n">32</span>Survey</a>
+      <a href="#m33"><span class="n">33</span>Directory</a>
+      <a href="#m34"><span class="n">34</span>Facilities</a>
+      <a href="#m35"><span class="n">35</span>Packages</a>
+      <a href="#m36"><span class="n">36</span>Service Requests</a>
+      <a href="#m37"><span class="n">37</span>DLP — Defect Management</a>
+      <a href="#m38"><span class="n">38</span>MCST Payment</a>
+      <a href="#m39"><span class="n">39</span>Next Bus Arrival</a>
+      <a href="#m40"><span class="n">40</span>Gallery</a>
+      <a href="#m41"><span class="n">41</span>General Feedback</a>
+      <a href="#m42"><span class="n">42</span>EAGM</a>
+      <a href="#m43"><span class="n">43</span>Car Washing</a>
+      <a href="#m44"><span class="n">44</span>Bicycle Booking</a>
+      <a href="#m45"><span class="n">45</span>Online Forms</a>
+      <a href="#m46"><span class="n">46</span>Inspections</a>
+      <a href="#m47"><span class="n">47</span>Unit Overview</a>
+      <a href="#m48"><span class="n">48</span>Unit Occupants</a>
+      <a href="#m49"><span class="n">49</span>Unit Vehicles</a>
+      <a href="#m50"><span class="n">50</span>Unit Assets</a>
+      <a href="#m51"><span class="n">51</span>Unit Documents</a>
+      <a href="#m52"><span class="n">52</span>Unit Visitors</a>
+      <a href="#m53"><span class="n">53</span>Unit Packages</a>
+      <a href="#m54"><span class="n">54</span>Unit Requests</a>
+      <a href="#m55"><span class="n">55</span>Approvals</a>
+      <a href="#m56"><span class="n">56</span>Data Setup</a>
+      <a href="#m57"><span class="n">57</span>SG App Overview</a>
+      <a href="#m58"><span class="n">58</span>SG — Vehicles Tab</a>
+      <a href="#m59"><span class="n">59</span>SG — Visitors Tab</a>
+      <a href="#m60"><span class="n">60</span>SG — Facilities Tab</a>
+      <a href="#m61"><span class="n">61</span>SG — Notifications Tab</a>
+    </div>
+  </div>
+
+  <!-- ══ ARCH OVERVIEW ══ -->
+  <div class="section-label">Architecture &amp; Cross-Cutting Standards</div>
+  <h2>Technical Architecture Overview</h2>
+  <p class="sub">The contracts every module inherits — Flutter, NestJS, Azure</p>
+  <div class="card">
+    <p style="font-size:14px;">All requests from Flutter apps traverse <strong>Azure API Management → NestJS (AKS) → Azure data stores</strong>. The backend is the single point of authorization: it derives the caller's role and condo scope from the JWT on <strong>every</strong> request and enforces both RBAC and module-visibility flags server-side.</p>
+    <div class="arch-tree" style="margin-top:16px;"><span class="h">REQUEST PATH</span>
+Flutter App (Resident / Guard)  ──HTTPS + Bearer JWT──▶  NestJS API Gateway
+        │
+        ▼
+Guard chain:
+  JwtAuthGuard → SessionGuard → RolesGuard → ModuleEnabledGuard → CompanyGuard
+        │                                (AuditInterceptor logs every write)
+        ▼
+Domain services (Auth / Booking / Package / Guard / …)  ──WHERE companyId = scope──▶  Data stores
+
+<span class="h">DATA STORES</span>
+SQL   transactional / relational entities (users, units, bookings, requests)
+Azure Blob         media / photos / documents (SAS URLs)
+Azure Service Bus  async jobs (email, notifications, exports)
+Azure Key Vault    all secrets — JWT signing keys, AES encryption keys, OTP secrets
+Redis              sessions · JWT denylist · FCM token cache · module flags</div>
+    <div class="callout blue"><h4>Cross-Cutting Standards (every module inherits)</h4>
+      <p><b>CC-01 JWT Auth</b> → <code>JwtAuthGuard</code> on every route &nbsp;·&nbsp; <b>CC-02 Scope</b> → <code>companyId</code>/<code>condoId</code> filter on all queries &nbsp;·&nbsp; <b>CC-03 Soft delete</b> → <code>is_deleted</code> / <code>status</code> flags &nbsp;·&nbsp; <b>CC-04 Encryption</b> → PII columns + Key Vault &nbsp;·&nbsp; <b>CC-05 Validation</b> → <code>ValidationPipe</code> + DTOs &nbsp;·&nbsp; <b>CC-06 Audit</b> → <code>AuditInterceptor</code> → audit log &nbsp;·&nbsp; <b>CC-07 Notifications</b> → FCM push via Azure Service Bus worker</p>
+    </div>
+    <div class="callout green"><h4>Standard Error Codes</h4>
+      <p><code>400</code> validation · <code>401</code> auth/OTP · <code>403</code> out-of-scope / RBAC · <code>404</code> not found · <code>409</code> conflict · <code>422</code> semantically invalid · <code>429</code> rate-limit · <code>500</code> internal. Every response envelope contains a <code>correlationId</code>.</p>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ MIGRATION STACK ══ -->
+  <div class="section-label">Migration Context</div>
+  <h2>Current vs Target Stack</h2>
+  <p class="sub">What exists today in the legacy native Android / Yii2 PHP system versus the target Flutter + NestJS + Azure stack</p>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Concern</th><th>Current (AS-IS)</th><th>Target (TO-BE)</th><th>Status</th></tr></thead><tbody>
+      <tr><td><strong>Mobile Frontend</strong></td><td>Native Android (Java/Kotlin) + Native iOS</td><td>Flutter (Dart) — single codebase for Android &amp; iOS</td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Guard App</strong></td><td>Native Android (Java/Kotlin) APK</td><td>Flutter Android standalone APK</td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>API Runtime</strong></td><td>PHP / Yii2 (<code>apiver6</code>)</td><td>NestJS on Azure AKS (BFF + guards)</td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Auth</strong></td><td>HTTP Basic Auth + <code>headertoken</code> / AES-encrypted params</td><td>JWT access + refresh; <code>flutter_secure_storage</code></td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Database</strong></td><td>MySQL</td><td>SQL (retained schema, migrated)</td><td><span class="pill pill-fut">Migrated</span></td></tr>
+      <tr><td><strong>Object Storage</strong></td><td>AWS S3</td><td>Azure Blob Storage (private + SAS URLs)</td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Async / Queue</strong></td><td><code>Mail::addMailToQueue</code> (DB) + cron</td><td>Azure Service Bus + workers</td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Push Notifications</strong></td><td>FCM via <code>NotificationController</code> (Yii2)</td><td>FCM via NestJS service + Azure Service Bus</td><td><span class="pill pill-fut">Retained</span></td></tr>
+      <tr><td><strong>Secrets</strong></td><td><code>common/config/params.php</code></td><td>Azure Key Vault (by alias)</td><td><span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Soft Delete</strong></td><td><code>is_deleted</code> + <code>status</code></td><td><code>is_deleted</code> + <code>status</code> (unchanged)</td><td><span class="pill pill-fut">Retained</span></td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ GLOSSARY ══ -->
+  <div class="section-label">Reference</div>
+  <h2>Glossary &amp; Abbreviations</h2>
+  <p class="sub">Shared terminology used across every module</p>
+  <div class="card"><div class="gloss-grid">
+    <div class="g"><b>Resident App</b><span>Flutter app for residents (Android + iOS)</span></div>
+    <div class="g"><b>Guard App</b><span>Flutter Android standalone APK for security guards</span></div>
+    <div class="g"><b>JWT</b><span>JSON Web Token (carries identity + role + companyId scope claims)</span></div>
+    <div class="g"><b>RBAC</b><span>Role-Based Access Control enforced by NestJS guards</span></div>
+    <div class="g"><b>flutter_secure_storage</b><span>Encrypted local storage for tokens on Flutter devices</span></div>
+    <div class="g"><b>mobile_scanner</b><span>Flutter QR/barcode scanning package used in Guard App</span></div>
+    <div class="g"><b>flutter_bloc</b><span>State management library (BLoC pattern) for Flutter apps</span></div>
+    <div class="g"><b>go_router</b><span>Declarative navigation package for Flutter</span></div>
+    <div class="g"><b>companyId / condoId</b><span>Per-tenant scope applied to all API queries</span></div>
+    <div class="g"><b>SAS URL</b><span>Shared Access Signature URL for Azure Blob Storage media</span></div>
+    <div class="g"><b>FCM</b><span>Firebase Cloud Messaging — push notifications</span></div>
+    <div class="g"><b>MQTT</b><span>IoT messaging protocol for door/gate remote control</span></div>
+    <div class="g"><b>SAML SSO</b><span>Single Sign-On via IdP WebView (condo-configurable)</span></div>
+    <div class="g"><b>OTP</b><span>One-Time Password for 2FA / forgot password flows</span></div>
+    <div class="g"><b>DLP</b><span>Defect Liability Period — warranty period for new units</span></div>
+    <div class="g"><b>MCST</b><span>Management Corporation Strata Title — building management body</span></div>
+    <div class="g"><b>EAGM</b><span>Electronic Annual General Meeting</span></div>
+    <div class="g"><b>LTA DataMall</b><span>Singapore LTA open-data API (bus stop real-time arrivals)</span></div>
+    <div class="g"><b>MeetMe / SIP</b><span>Intercom VoIP system; Session Initiation Protocol</span></div>
+    <div class="g"><b>IU Number</b><span>In-Vehicle Unit number (Singapore ERP/parking tag)</span></div>
+  </div></div>
+  <div class="section-divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       AUTHENTICATION
+  ══════════════════════════════════════════ -->
+  <div class="section-label">Module 01</div><a id="m01"></a>
+  <h2>Authentication Overview</h2>
+  <p class="sub">Login · Sign Up · Forgot Password · Logout — shared auth stack for Resident &amp; Guard apps</p>
+  <div class="card">
+    <div class="meta-strip">
+      <div class="m"><b>Roles:</b> Resident · Security Guard</div>
+      <div class="m"><b>NestJS module:</b> <code>AuthModule</code></div>
+      <div class="m"><b>Services:</b> AuthService · OtpService · SessionService · TokenService</div>
+    </div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Secures platform access for all user types. Validates identities, issues JWT session tokens, enforces condo-level policies (2FA, SAML, T&amp;C, password complexity), and routes authenticated users to the correct experience — Resident Home or Security Guard Shell.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Both Flutter apps share the <code>auth_shared</code> package. The Flutter app holds JWT in memory (access) and <code>flutter_secure_storage</code> (refresh). A Dio interceptor auto-calls <code>POST /v1/auth/token/refresh</code> on 401. RBAC claim in JWT routes to <code>ResidentHome</code> or <code>GuardShell</code>.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3>
+    <div class="chips"><span class="chip">Credential validation</span><span class="chip">MFA / OTP (2FA)</span><span class="chip">SAML SSO</span><span class="chip">JWT issuance</span><span class="chip">Condo / unit selection</span><span class="chip">Password lifecycle</span><span class="chip">Force logout (FCM)</span><span class="chip">T&amp;C gate</span></div>
+  </div>
+  <div class="card">
+    <h3>API Crosswalk</h3>
+    <table><thead><tr><th>Legacy (Yii2)</th><th>NestJS v1</th><th>Notes</th></tr></thead><tbody>
+      <tr><td><code>POST user/login</code></td><td><code>POST /v1/auth/login</code></td><td>Primary auth; preserve LoginResponse shape</td></tr>
+      <tr><td><code>POST user/logindetail</code></td><td><code>POST /v1/auth/login-detail</code></td><td>Session + config bootstrap; Redis cache</td></tr>
+      <tr><td><code>POST user/logout</code></td><td><code>POST /v1/auth/logout</code></td><td>Revoke JWT + refresh; clear Redis</td></tr>
+      <tr><td><code>POST user/forgotpassword</code></td><td><code>POST /v1/auth/password/forgot</code></td><td>Azure CS email worker</td></tr>
+      <tr><td><code>POST user/changepassword</code></td><td><code>POST /v1/auth/password/change</code></td><td>Status 201/303 preserved</td></tr>
+      <tr><td><code>POST auth/generate-otp</code></td><td><code>POST /v1/auth/otp/send</code></td><td>SMS OTP via Azure Communication Services</td></tr>
+      <tr><td><code>POST auth/verify-otp</code></td><td><code>POST /v1/auth/otp/verify</code></td><td>Validates 6-digit code</td></tr>
+      <tr><td><code>POST user/adduser</code></td><td><code>POST /v1/users/register-inquiry</code></td><td>New resident signup inquiry</td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 02</div><a id="m02"></a>
+  <h2>Login</h2>
+  <p class="sub">Email/password login with SAML SSO, 2FA OTP, condo/unit selection, and JWT session issuance</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident / Security Guard</div><div class="m"><b>Screen:</b> <code>LoginPage</code></div><div class="m"><b>Endpoint:</b> <code>POST /v1/auth/login</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Authenticates residents and security guards using email + password (or SAML SSO), validates 2FA OTP when required, guides users through condo/unit selection, and issues session tokens for subsequent API access.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Flutter Dio client posts <code>LoginDto</code>. On success, JWT stored in memory + refresh in <code>flutter_secure_storage</code>. SSL pinning via <code>dio_certificate_pinning</code>. RBAC <code>role</code> claim in JWT determines routing: Resident → <code>ResidentHome</code>, Guard → <code>GuardShell</code>.</p></div>
+  </div>
+  <div class="card">
+    <h3>Login &amp; MFA Flow</h3>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">App Launch &amp; Version Gate</div><div class="desc">Splash validates app version, registers FCM, restores JWT session if valid.</div><div class="detail-box"><code>GET /v1/common/version</code> → register FCM token, pin SSL certs. If valid JWT exists → skip login and route to home.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Enter Credentials</div><div class="desc">Email + password with show/hide toggle. SAML path opens IdP WebView.</div><div class="mg2"><div class="detail-box legacy"><span class="mh">Legacy (AS-IS)</span><code>POST user/login</code> with AES-encrypted <code>params</code> blob</div><div class="detail-box proposed"><span class="mh">Flutter + NestJS (TO-BE)</span><code>POST /v1/auth/login</code> with <code>LoginDto</code> JSON; class-validator <span class="tag tag-indigo">JWT</span></div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--blue);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Two-Factor Authentication (if enabled)</div><div class="desc">6-digit OTP SMS with resend countdown and autofill.</div><div class="mg2"><div class="detail-box legacy"><span class="mh">Legacy</span><code>POST auth/generate-otp</code> → OTPActivity</div><div class="detail-box proposed"><span class="mh">Flutter + NestJS</span><code>POST /v1/auth/otp/send</code> → OtpVerificationPage; Android SmsUserConsent + iOS one-time code autofill</div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Condo &amp; Unit Selection</div><div class="desc">Multi-condo/unit users pick context before login-detail call.</div><div class="mg2"><div class="detail-box legacy"><span class="mh">Legacy</span>CondoListActivity → UnitListActivity → singleCondoLogin()</div><div class="detail-box proposed"><span class="mh">Flutter + NestJS</span>CondoPickerPage → UnitPickerPage → <code>POST /v1/auth/login-detail</code></div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">5</div></div><div class="flow-body"><div class="title">Session Issuance &amp; Home Routing</div><div class="desc">JWT + refresh issued; config blob cached; user routed by RBAC role.</div><div class="detail-box proposed"><span class="mh">Flutter + NestJS</span><code>flutter_secure_storage</code> + Hive cache → <code>ResidentHome</code> | <code>GuardShell</code> per RBAC claim</div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>App calls version API on cold start. Registers FCM token. Redirects to home if valid JWT exists.</li>
+      <li><span class="frid">FR-02</span>Email + password fields with show/hide toggle. Email format validation. Non-empty password required.</li>
+      <li><span class="frid">FR-03</span>SAML SSO: when <code>isSAMLEnable==1</code>, open IdP WebView → callback completes session.</li>
+      <li><span class="frid">FR-04</span>2FA OTP: 6-digit input, resend countdown, SMS autofill (Android SmsUserConsent, iOS one-time code).</li>
+      <li><span class="frid">FR-05</span>T&amp;C gate: <code>tncAgree==0</code> forces acceptance dialog before proceeding.</li>
+      <li><span class="frid">FR-06</span>Multi-condo picker → multi-unit picker → login-detail API call.</li>
+      <li><span class="frid">FR-07</span>Force password reset: <code>isForcePasswordReset==1</code> → ChangePasswordPage with cleared back stack.</li>
+      <li><span class="frid">FR-08</span>First-time credentials: <code>is_password_update_by_user==0</code> → FirstTimeCredentialsPage.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Screen Mapping (AS-IS → TO-BE)</h3>
+    <div class="smg">
+      <div class="smi"><span class="os2">SplashActivity</span><span class="arr">→</span><span class="ns2">SplashPage</span></div>
+      <div class="smi"><span class="os2">LoginActivity</span><span class="arr">→</span><span class="ns2">LoginPage</span></div>
+      <div class="smi"><span class="os2">OTPActivity</span><span class="arr">→</span><span class="ns2">OtpVerificationPage</span></div>
+      <div class="smi"><span class="os2">CondoListActivity</span><span class="arr">→</span><span class="ns2">CondoPickerPage</span></div>
+      <div class="smi"><span class="os2">UnitListActivity</span><span class="arr">→</span><span class="ns2">UnitPickerPage</span></div>
+      <div class="smi"><span class="os2">ChangePasswordActivity</span><span class="arr">→</span><span class="ns2">ChangePasswordPage</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Current State vs Future State</h3>
+    <table><thead><tr><th>Feature</th><th>Current (AS-IS)</th><th>Future (TO-BE)</th></tr></thead><tbody>
+      <tr><td><strong>Mobile Platform</strong></td><td>Native Android Java/Kotlin + Native iOS</td><td>Flutter Dart single codebase <span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Auth Token</strong></td><td>AES-encrypted params + headertoken</td><td>JWT access + refresh in <code>flutter_secure_storage</code> <span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>SSL Pinning</strong></td><td>Native Android certificate pinning</td><td>Dio SSL pinning via <code>dio_certificate_pinning</code> <span class="pill pill-fut">Enhanced</span></td></tr>
+      <tr><td><strong>OTP Autofill</strong></td><td>Manual entry</td><td>Android SmsUserConsent + iOS one-time code <span class="pill pill-new">NEW</span></td></tr>
+    </tbody></table>
+    <div class="callout green"><h4>Persistence</h4><p>Redis: session / denylist / lockout. <code>flutter_secure_storage</code>: JWT + refresh. DTOs: <code>LoginDto</code>, <code>VerifyOtpDto</code>, <code>LoginDetailDto</code>.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 03</div><a id="m03"></a>
+  <h2>Sign Up / New Resident Registration</h2>
+  <p class="sub">Self-registration inquiry for new residents; property management approval workflow</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Prospective Resident</div><div class="m"><b>Endpoint:</b> <code>POST /v1/users/register-inquiry</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Allows prospective residents to submit a registration inquiry by selecting their condo, block, unit, and role. Property management reviews and approves/rejects before app access is granted.</p>
+  </div>
+  <div class="card">
+    <h3>Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Login screen displays "New Resident?" link that opens the registration inquiry form.</li>
+      <li><span class="frid">FR-02</span>User selects Condo (dropdown), Block, Unit, and Role (Owner/Tenant/Occupant).</li>
+      <li><span class="frid">FR-03</span>User enters Full Name, Email, Mobile Number, and optionally uploads ID document.</li>
+      <li><span class="frid">FR-04</span>Form validates all mandatory fields before submission; shows inline error messages.</li>
+      <li><span class="frid">FR-05</span>On submission, system sends inquiry to property management for approval.</li>
+      <li><span class="frid">FR-06</span>User receives email confirmation of inquiry submission and later a notification of approval/rejection.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Input Fields</h3>
+    <table><thead><tr><th>Field</th><th>Type</th><th>Mandatory</th></tr></thead><tbody>
+      <tr><td>Condo Selection</td><td>Dropdown</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>Block / Building</td><td>Dropdown</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>Unit Number</td><td>Dropdown / Text</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>Role (Owner / Tenant / Occupant)</td><td>Dropdown</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>Full Name</td><td>Text</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>Email Address</td><td>Email</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>Mobile Number</td><td>Phone</td><td><span class="tag tag-green">Yes</span></td></tr>
+      <tr><td>ID Document (Photo)</td><td>Image</td><td><span class="tag tag-amber">Optional</span></td></tr>
+    </tbody></table>
+    <div class="callout amber"><h4>Business Rules</h4><p>Email must be unique — duplicate shows error. Account is not active until property management approves. Some condo flavors may hide sign-up button via config flag.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 04</div><a id="m04"></a>
+  <h2>Forgot Password</h2>
+  <p class="sub">Email-based password reset via Azure Communication Services</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident / Guard (unauthenticated)</div><div class="m"><b>Endpoint:</b> <code>POST /v1/auth/password/forgot</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Allows users to reset their password by submitting their registered email. The system sends a secure reset link via Azure Communication Services email. No active session required.</p>
+  </div>
+  <div class="card">
+    <h3>Forgot Password Flow</h3>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">User enters registered email</div><div class="desc">ForgotPasswordPage accessible from LoginPage. No session required.</div><div class="detail-box"><code>POST /v1/auth/password/forgot {email}</code></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Service Bus event published</div><div class="desc">NestJS publishes <code>email.requested</code> to Azure Service Bus.</div><div class="mg2"><div class="detail-box legacy"><span class="mh">Legacy</span>DB mail queue + SMTP cron delivery</div><div class="detail-box proposed"><span class="mh">Flutter + NestJS</span>Azure Service Bus → Email Worker → Azure Communication Services</div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">3</div></div><div class="flow-body"><div class="title">Success or error feedback</div><div class="desc">Success dialog shown on valid email. "Email not registered" on unknown email.</div></div></div>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 05</div><a id="m05"></a>
+  <h2>Logout</h2>
+  <p class="sub">User-initiated and force logout; session revocation; token cleanup</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident / Guard</div><div class="m"><b>Endpoint:</b> <code>POST /v1/auth/logout</code></div></div>
+    <h3>Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>User-initiated logout: confirmation dialog → <code>POST /v1/auth/logout</code>.</li>
+      <li><span class="frid">FR-02</span>System revokes JWT + refresh token on server. Clears Redis session entry.</li>
+      <li><span class="frid">FR-03</span>Flutter clears all tokens from <code>flutter_secure_storage</code> and Hive cache.</li>
+      <li><span class="frid">FR-04</span>Navigation clears back stack → LoginPage. User cannot press Back to re-enter app.</li>
+      <li><span class="frid">FR-05</span>Force logout: FCM push with <code>force_logout</code> payload or session status returns revoked → same cleanup flow.</li>
+      <li><span class="frid">FR-06</span>Idle timeout: if <code>forceLogoutInactivePeriod</code> minutes elapsed without interaction → auto-logout.</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>All auth tokens removed locally on logout. Logout from one device does not affect sessions on other devices (per-device session model). Admin-sensitive screens poll session status on resume to detect force logout.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       DASHBOARD
+  ══════════════════════════════════════════ -->
+  <div class="section-label">Module 06</div><a id="m06"></a>
+  <h2>Dashboard Overview</h2>
+  <p class="sub">Main navigation shell — Home · Search · Favourites · Payment · Settings bottom tabs</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Component:</b> <code>ResidentShell</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">The Dashboard is the primary navigation shell post-login. It hosts a Flutter BottomNavigationBar with five main sections providing quick access to all resident modules. Module tile visibility is dynamically controlled by the condo's <code>CondoModule</code> flags from the login-detail API response.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Shell uses <code>go_router</code> for nested navigation. Bottom tabs: Home, Search, Favourites, Payment, Settings. Tab visibility respects <code>CondoModule</code> flags. Notification badge count maintained via FCM push + WebSocket counter.</p></div>
+  </div>
+  <div class="card">
+    <h3>Current State vs Future State</h3>
+    <table><thead><tr><th>Feature</th><th>AS-IS</th><th>TO-BE (Flutter)</th></tr></thead><tbody>
+      <tr><td><strong>Navigation Pattern</strong></td><td>Side drawer + HomeMenuWithILivingActivity</td><td>Flutter BottomNavigationBar with 5 tabs <span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Home Content</strong></td><td>Tile grid from dynamic menu API</td><td>Flutter GridView with lazy loading; personalised widgets <span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Notifications Badge</strong></td><td>Header badge count from API poll</td><td>FCM push badge + WebSocket real-time count <span class="pill pill-fut">Enhanced</span></td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 07</div><a id="m07"></a>
+  <h2>Home Tab</h2>
+  <p class="sub">Main landing screen — module tile grid, announcements banner, quick action widgets</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display condo branding (logo, name) at the top with resident greeting.</li>
+      <li><span class="frid">FR-02</span>Scrollable announcement/banner carousel from Wall Happenings/Events.</li>
+      <li><span class="frid">FR-03</span>Module tile grid (2–3 columns) showing all enabled modules with icons and labels.</li>
+      <li><span class="frid">FR-04</span>Quick action widgets: pending packages count, upcoming facility booking, unread notifications.</li>
+      <li><span class="frid">FR-05</span>Tapping a tile navigates to the corresponding module screen.</li>
+      <li><span class="frid">FR-06</span>Tiles respect <code>CondoModule</code> flags — hidden modules not shown in grid.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 08</div><a id="m08"></a>
+  <h2>Search Tab</h2>
+  <p class="sub">Full-text search across all modules — facilities, wall posts, residents, notices</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Search input bar auto-focused when tab selected. Real-time results as user types.</li>
+      <li><span class="frid">FR-02</span>Results grouped by category: Modules, Facilities, Wall Posts, Residents, Notices.</li>
+      <li><span class="frid">FR-03</span>Recent search history stored locally (last 10 searches). Clear history option.</li>
+      <li><span class="frid">FR-04</span>Tapping a result navigates directly to the relevant module/detail screen.</li>
+      <li><span class="frid">FR-05</span>"No results found" empty state with suggested searches.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 09</div><a id="m09"></a>
+  <h2>Favourites Tab</h2>
+  <p class="sub">Resident-customised shortcuts to frequently used modules</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Favourites tab displays pinned module tiles in user-defined order.</li>
+      <li><span class="frid">FR-02</span>Edit mode (pencil icon) allows drag-to-reorder and remove favourites.</li>
+      <li><span class="frid">FR-03</span>"Add to Favourites" via long-press on any module tile.</li>
+      <li><span class="frid">FR-04</span>Favourite preferences saved to server and synced across device reinstalls.</li>
+      <li><span class="frid">FR-05</span>Empty state: "No favourites yet. Long-press any module to add it here."</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 10</div><a id="m10"></a>
+  <h2>Payment Tab</h2>
+  <p class="sub">Centralised payment hub — MCST fees, service charges, facility deposits</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display outstanding payment items: MCST Fees, Service Charges, Facility Deposits.</li>
+      <li><span class="frid">FR-02</span>Payment history with date, amount, reference number, and status.</li>
+      <li><span class="frid">FR-03</span>Tap to pay outstanding items via in-app payment gateway.</li>
+      <li><span class="frid">FR-04</span>Receipt download / share as PDF after successful payment.</li>
+      <li><span class="frid">FR-05</span>Payment summary widget on Home Tab showing total outstanding amount.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 11</div><a id="m11"></a>
+  <h2>Setting Tab</h2>
+  <p class="sub">App preferences, account settings, notification controls, and about</p>
+  <div class="card">
+    <table><thead><tr><th>Setting</th><th>Action</th></tr></thead><tbody>
+      <tr><td>My Profile</td><td>View / edit personal information</td></tr>
+      <tr><td>My Account</td><td>Account security, linked condos</td></tr>
+      <tr><td>Switch Condo</td><td>Change active condo / unit</td></tr>
+      <tr><td>Change Language</td><td>Select display language</td></tr>
+      <tr><td>Notifications</td><td>Configure push notification preferences</td></tr>
+      <tr><td>App Suggestion</td><td>Submit feature ideas</td></tr>
+      <tr><td>Help &amp; Support</td><td>FAQ, contact support</td></tr>
+      <tr><td>About</td><td>App version, company info</td></tr>
+      <tr><td>Logout</td><td>End session</td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ PROFILE & ACCOUNT ══ -->
+  <div class="section-label">Module 12</div><a id="m12"></a>
+  <h2>My Profile</h2>
+  <p class="sub">View and edit personal information, profile photo, contact details</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Endpoint:</b> <code>PATCH /v1/users/profile</code></div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display profile photo, full name, email, mobile number, unit number, and role.</li>
+      <li><span class="frid">FR-02</span>Tap profile photo to update from Camera or Gallery. Uploaded to Azure Blob; SAS URL returned.</li>
+      <li><span class="frid">FR-03</span>Edit mode for name, mobile number, date of birth. Email is read-only (requires admin change).</li>
+      <li><span class="frid">FR-04</span>Save button submits changes via <code>PATCH /v1/users/profile</code>. Validation on all fields.</li>
+      <li><span class="frid">FR-05</span>Change Password shortcut navigates to ChangePasswordPage.</li>
+      <li><span class="frid">FR-06</span>Change PIN shortcut for door access ActivPass PIN via <code>POST /v1/auth/pin/change</code>.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 13</div><a id="m13"></a>
+  <h2>My Account</h2>
+  <p class="sub">Account security — password change, linked devices, session management</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display active device sessions with device name, last active timestamp, and revoke option.</li>
+      <li><span class="frid">FR-02</span>Change password flow with old password verification and complex password enforcement.</li>
+      <li><span class="frid">FR-03</span>Change ActivPass door PIN.</li>
+      <li><span class="frid">FR-04</span>Linked condos / units list with option to request removal.</li>
+      <li><span class="frid">FR-05</span>Account deletion request form (soft-delete; admin approval required).</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 14</div><a id="m14"></a>
+  <h2>Switch Condo</h2>
+  <p class="sub">Change active condo/unit context without full re-login</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display list of all condos/units linked to the user account.</li>
+      <li><span class="frid">FR-02</span>Tapping a different condo calls <code>POST /v1/auth/login-detail</code> with new condoId/unitId.</li>
+      <li><span class="frid">FR-03</span>App refreshes module menu, permissions, and content for the newly selected condo.</li>
+      <li><span class="frid">FR-04</span>Currently active condo/unit highlighted with a green checkmark.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 15</div><a id="m15"></a>
+  <h2>Change Language</h2>
+  <p class="sub">Multi-language support — English, Chinese, Malay, Tamil</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Language picker displays supported languages (English, 中文, Bahasa, தமிழ்).</li>
+      <li><span class="frid">FR-02</span>Selected language stored in <code>flutter_secure_storage</code> and applied globally.</li>
+      <li><span class="frid">FR-03</span>All API calls include <code>language</code> header for server-side content localisation.</li>
+      <li><span class="frid">FR-04</span>App restarts locale context on change; no full re-login required.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 16</div><a id="m16"></a>
+  <h2>About</h2>
+  <p class="sub">App version, build info, company details, terms, privacy policy</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display app name, version number, build number, and environment (Production/Staging).</li>
+      <li><span class="frid">FR-02</span>Company name, address, and support email displayed.</li>
+      <li><span class="frid">FR-03</span>Terms &amp; Conditions link opens WebView or external URL.</li>
+      <li><span class="frid">FR-04</span>Privacy Policy link opens WebView or external URL.</li>
+      <li><span class="frid">FR-05</span>Open-source licenses list accessible from About screen.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 17</div><a id="m17"></a>
+  <h2>App Suggestion</h2>
+  <p class="sub">Residents submit feature requests and improvement ideas</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Suggestion form with Category dropdown (Feature Request, Bug Report, UI Improvement, Other).</li>
+      <li><span class="frid">FR-02</span>Multi-line description field. Optional screenshot attachment.</li>
+      <li><span class="frid">FR-03</span>Submit sends via <code>POST /v1/feedback/suggestion</code>. Confirmation shown on success.</li>
+      <li><span class="frid">FR-04</span>Past suggestions list with status (Received, Under Review, Implemented, Declined).</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 18</div><a id="m18"></a>
+  <h2>Help &amp; Support</h2>
+  <p class="sub">FAQ, in-app support tickets, contact details</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>FAQ section with searchable categories: Login, Payments, Facilities, Visitors, Technical.</li>
+      <li><span class="frid">FR-02</span>Submit support ticket form with Subject, Description, and optional attachments.</li>
+      <li><span class="frid">FR-03</span>Support ticket history with status (Open, In Progress, Resolved).</li>
+      <li><span class="frid">FR-04</span>Contact info: support email, phone, operating hours.</li>
+      <li><span class="frid">FR-05</span>Live chat integration (if configured) opens chat widget with support agent.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 19</div><a id="m19"></a>
+  <h2>Emergency Contacts</h2>
+  <p class="sub">Quick-dial emergency numbers — police, fire, ambulance, building management</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Display list of emergency contacts with name, organisation, and phone number.</li>
+      <li><span class="frid">FR-02</span>One-tap call button initiates phone call via device dialer.</li>
+      <li><span class="frid">FR-03</span>Contacts loaded from server (condo-configurable) with offline cache fallback.</li>
+      <li><span class="frid">FR-04</span>Categories: National Emergency, Building Management, Medical, Security.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ SMART HOME ══ -->
+  <div class="section-label">Module 20</div><a id="m20"></a>
+  <h2>Virtual Button</h2>
+  <p class="sub">Remote door/gate open via MQTT — residents unlock building access from mobile</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Endpoint:</b> <code>POST /v1/doors/:id/remote-open</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Allows authenticated residents to remotely open doors and gates via a virtual button that triggers MQTT commands to access control hardware.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Flutter button → <code>POST /v1/doors/:id/remote-open</code> → NestJS driver-mqtt → MQTT broker → hardware controller. WebSocket event <code>door_opened</code> confirms execution.</p></div>
+  </div>
+  <div class="card">
+    <h3>Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>List of accessible doors/gates based on resident unit and permissions.</li>
+      <li><span class="frid">FR-02</span>Large tappable virtual button per door. Confirmation dialog before sending open command.</li>
+      <li><span class="frid">FR-03</span>WebSocket event <code>door_opened</code> confirms hardware execution with timestamp.</li>
+      <li><span class="frid">FR-04</span>Cooldown timer prevents rapid repeated presses (configurable, e.g. 5-second lock).</li>
+      <li><span class="frid">FR-05</span>Audit log entry created for every remote open event (resident ID, door ID, timestamp).</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>Virtual button available only within configured operating hours if time-restriction is enabled. Hardware command failures (MQTT timeout) shown as error with retry option.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 21</div><a id="m21"></a>
+  <h2>Smart Home</h2>
+  <p class="sub">Control IoT devices — lights, AC, locks, sensors via smart home platform</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Device list categorised by room (Living Room, Bedroom, Kitchen, etc.).</li>
+      <li><span class="frid">FR-02</span>Toggle switches for lights and fans; slider for AC temperature and fan speed.</li>
+      <li><span class="frid">FR-03</span>Door lock status and remote lock/unlock for smart locks.</li>
+      <li><span class="frid">FR-04</span>Sensor readings: temperature, humidity, motion, smoke detectors.</li>
+      <li><span class="frid">FR-05</span>Scene/mode presets (e.g. "Good Morning", "Away Mode", "Movie Mode").</li>
+      <li><span class="frid">FR-06</span>Real-time device state updates via WebSocket; no manual refresh needed.</li>
+      <li><span class="frid">FR-07</span>Energy usage dashboard showing daily/weekly consumption per device.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 22</div><a id="m22"></a>
+  <h2>My Smart Home Journal</h2>
+  <p class="sub">Activity log — smart home events, automation triggers, energy usage history</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Scrollable timeline of device events with timestamp, device name, action, and trigger source.</li>
+      <li><span class="frid">FR-02</span>Filter by date range, device category, or event type.</li>
+      <li><span class="frid">FR-03</span>Energy usage chart (bar/line) by day/week/month for each device.</li>
+      <li><span class="frid">FR-04</span>Alerts section showing security events (motion detected, smoke alarm triggered).</li>
+      <li><span class="frid">FR-05</span>Export journal as CSV/PDF for the selected date range.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 23</div><a id="m23"></a>
+  <h2>Door Bell</h2>
+  <p class="sub">Video doorbell — answer calls, live feed, two-way audio, remote unlock</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>FCM push notification when doorbell pressed. Notification includes live thumbnail of visitor.</li>
+      <li><span class="frid">FR-02</span>Tapping notification opens video call screen with live RTSP/WebRTC feed.</li>
+      <li><span class="frid">FR-03</span>Two-way audio communication between resident and visitor.</li>
+      <li><span class="frid">FR-04</span>Remote unlock button on call screen triggers door open command.</li>
+      <li><span class="frid">FR-05</span>Missed call log with timestamp and visitor snapshot.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 24</div><a id="m24"></a>
+  <h2>Intercom Call</h2>
+  <p class="sub">In-app VoIP intercom to building units, guardhouse, and management office</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Integration:</b> MeetMe / SIP</div></div>
+    <h3>Current State vs Future State</h3>
+    <div class="mg2">
+      <div class="detail-box legacy"><span class="mh">Legacy (AS-IS)</span>AutoLoginService + Linphone SIP via MeetMe credentials post-push notification</div>
+      <div class="detail-box proposed"><span class="mh">Flutter + NestJS (TO-BE)</span>MeetMe module uses headertoken for SIP credential fetch; Flutter VoIP plugin for WebRTC/SIP calls</div>
+    </div>
+    <h3 style="margin-top:24px;">Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Directory of callable extensions (units, guardhouse, management office).</li>
+      <li><span class="frid">FR-02</span>Tap to call initiates VoIP call with audio/video options.</li>
+      <li><span class="frid">FR-03</span>Incoming call screen with Accept/Reject buttons (FCM push when app in background).</li>
+      <li><span class="frid">FR-04</span>Call timer, mute, speaker, and end-call controls during active call.</li>
+      <li><span class="frid">FR-05</span>Call history log with duration, timestamp, and caller ID.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 25</div><a id="m25"></a>
+  <h2>Camera Viewer</h2>
+  <p class="sub">Live CCTV feed viewer for common areas — lobby, car park, pool, gym</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Endpoint:</b> <code>GET /v1/cameras/:id/stream</code></div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>List of accessible cameras grouped by location (Lobby, Car Park, Pool, Gym).</li>
+      <li><span class="frid">FR-02</span>Tap camera card to open full-screen live stream viewer (HLS/RTSP).</li>
+      <li><span class="frid">FR-03</span>Pinch-to-zoom on live feed. Landscape rotation support.</li>
+      <li><span class="frid">FR-04</span>Snapshot capture from live feed; saved to device gallery.</li>
+      <li><span class="frid">FR-05</span>Access control: only cameras permitted for the resident's unit/role are shown.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 26</div><a id="m26"></a>
+  <h2>Vida Cool</h2>
+  <p class="sub">District cooling system control and monitoring for compatible units</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Current AC status: on/off, set temperature, current room temperature, mode (Cool/Fan/Auto).</li>
+      <li><span class="frid">FR-02</span>Temperature slider (16°C – 30°C) with +/- buttons.</li>
+      <li><span class="frid">FR-03</span>Fan speed selector (Low/Medium/High/Auto).</li>
+      <li><span class="frid">FR-04</span>Schedule programming: set on/off times for weekdays/weekends.</li>
+      <li><span class="frid">FR-05</span>Usage history: daily cooling consumption in BTU/kWh with monthly billing estimate.</li>
+      <li><span class="frid">FR-06</span>Real-time state sync via WebSocket; changes reflect immediately.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 27</div><a id="m27"></a>
+  <h2>Vida Quantum</h2>
+  <p class="sub">Advanced smart home controller — centralised device hub for Vida Quantum-enabled units</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Device dashboard with rooms/zones; all Vida Quantum-paired devices listed.</li>
+      <li><span class="frid">FR-02</span>Scene control: activate pre-configured scenes (Morning, Away, Sleep, Party).</li>
+      <li><span class="frid">FR-03</span>Individual device control: brightness dimmer, curtain position, AC settings.</li>
+      <li><span class="frid">FR-04</span>Real-time device status updates via WebSocket.</li>
+      <li><span class="frid">FR-05</span>Pairing wizard: add new devices to the Quantum hub via QR scan or manual code.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ COMMUNITY ══ -->
+  <div class="section-label">Module 28</div><a id="m28"></a>
+  <h2>Wall</h2>
+  <p class="sub">Posts · Happenings · Events · Poll · Classifieds · Lost &amp; Found · Meeting</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Sub-modules:</b> 7</div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">The Wall is the community notice board hosting general posts, happenings/news, events calendar, polls, classifieds marketplace, lost &amp; found board, and meeting minutes — fostering community engagement.</p>
+    <h3 style="margin-top:20px;">Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span><strong>Posts:</strong> Management/residents create posts with rich text and media attachments. Residents can Like and Comment.</li>
+      <li><span class="frid">FR-02</span><strong>Happenings:</strong> Property management publishes news articles with cover image, content, and category tags.</li>
+      <li><span class="frid">FR-03</span><strong>Events:</strong> Create events with title, description, date/time, location (map link), RSVP button. FCM reminders.</li>
+      <li><span class="frid">FR-04</span><strong>Poll:</strong> Question with multiple-choice options. One vote per user. Expiry date. Real-time results percentages.</li>
+      <li><span class="frid">FR-05</span><strong>Classifieds:</strong> Post items for Sale/Rent/Wanted with photos, price, and contact. Browse by category.</li>
+      <li><span class="frid">FR-06</span><strong>Lost &amp; Found:</strong> Report lost or found item with description, date, location, and photo. Status: Open / Resolved.</li>
+      <li><span class="frid">FR-07</span><strong>Meeting:</strong> Upload AGM/meeting documents. Residents view agenda, download minutes, track resolutions.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>API Reference</h3>
+    <table><thead><tr><th>Sub-Module</th><th>Endpoint</th></tr></thead><tbody>
+      <tr><td>Get wall posts</td><td><code>GET /v1/wall/posts?type=&amp;page=</code></td></tr>
+      <tr><td>Create post</td><td><code>POST /v1/wall/posts</code></td></tr>
+      <tr><td>Like post</td><td><code>POST /v1/wall/posts/:id/like</code></td></tr>
+      <tr><td>Vote on poll</td><td><code>POST /v1/wall/polls/:id/vote</code></td></tr>
+      <tr><td>RSVP event</td><td><code>POST /v1/wall/events/:id/rsvp</code></td></tr>
+      <tr><td>Classifieds</td><td><code>GET /v1/wall/classifieds</code></td></tr>
+      <tr><td>Lost &amp; Found</td><td><code>GET /v1/wall/lost-found</code></td></tr>
+      <tr><td>Meeting documents</td><td><code>GET /v1/wall/meetings</code></td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 29</div><a id="m29"></a>
+  <h2>Inbox</h2>
+  <p class="sub">Direct messaging — text, media attachments, multi-recipient, chronological chat threads</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident / Property Staff</div><div class="m"><b>Endpoint:</b> <code>GET /v1/inbox</code></div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Inbox list: all active threads with partner name, timestamp, preview snippet, delete icon. Pull-to-refresh.</li>
+      <li><span class="frid">FR-02</span>Compose new message via (+) button. Mandatory: recipient selection and message content.</li>
+      <li><span class="frid">FR-03</span>Recipients selector: search by name/unit. Select All checkbox. Multi-select. Clear &amp; Apply.</li>
+      <li><span class="frid">FR-04</span>Attachment picker: Camera (live photo), Gallery (saved images), Upload (PDF/documents).</li>
+      <li><span class="frid">FR-05</span>Chat thread: chronological message cards with sender name, role, content, individual delete, timestamp.</li>
+      <li><span class="frid">FR-06</span>Reply bar: text input, Camera/Gallery/Upload shortcuts, Send button.</li>
+      <li><span class="frid">FR-07</span>FCM push notification on new message received.</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>Cannot submit without at least one recipient and a message. Resident can only message others within their registered condo. Sender's role shown on every message card. Media attachments max size configurable (e.g. 10 MB/file).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 30</div><a id="m30"></a>
+  <h2>Notifications</h2>
+  <p class="sub">In-app notification centre — all system alerts, action-linked, filter by category</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Paginated notification feed sorted by timestamp (newest first). Unread in bold.</li>
+      <li><span class="frid">FR-02</span>Each card: title, subtitle, timestamp, unread dot, action link. Tapping marks read and navigates.</li>
+      <li><span class="frid">FR-03</span>Category filter: All, Visitors, Packages, Facilities, Service Requests, Wall, Announcements.</li>
+      <li><span class="frid">FR-04</span>Delete individual notification with confirmation dialog.</li>
+      <li><span class="frid">FR-05</span>"Notifications removed after 60 days" warning banner with dismissible X button.</li>
+      <li><span class="frid">FR-06</span>Pull-to-refresh and infinite scroll pagination.</li>
+      <li><span class="frid">FR-07</span>FCM push opens specific screen via deep link when tapped from device tray.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 31</div><a id="m31"></a>
+  <h2>Neighbourhood Chat</h2>
+  <p class="sub">Group chat for residents — estate-wide and block-level chat rooms</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Channel list: Estate-wide chat, Block-specific channels, Management broadcasts.</li>
+      <li><span class="frid">FR-02</span>Real-time messaging via WebSocket. Message delivery confirmation.</li>
+      <li><span class="frid">FR-03</span>Messages: text, emoji, images, videos, documents. Max file size enforced.</li>
+      <li><span class="frid">FR-04</span>Read receipts and unread message count badge.</li>
+      <li><span class="frid">FR-05</span>Message moderation: report inappropriate content. Admins can delete messages.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 32</div><a id="m32"></a>
+  <h2>Survey</h2>
+  <p class="sub">Resident satisfaction surveys from property management</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Survey list: Active surveys with title, deadline, completion status, estimated duration.</li>
+      <li><span class="frid">FR-02</span>Questions: Multiple choice, checkbox, rating scale (1–5), free text.</li>
+      <li><span class="frid">FR-03</span>Progress indicator showing current question / total.</li>
+      <li><span class="frid">FR-04</span>Save draft and resume. Submit on final question.</li>
+      <li><span class="frid">FR-05</span>Completed surveys show "Completed" status. FCM push on new survey published.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 33</div><a id="m33"></a>
+  <h2>Directory</h2>
+  <p class="sub">Condominium directory — management contacts, vendors, service providers</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Categories: Management Office, Security, Vendors, Emergency, Government Services.</li>
+      <li><span class="frid">FR-02</span>Each entry: name, organisation, designation, phone, email, operating hours.</li>
+      <li><span class="frid">FR-03</span>One-tap call/email action buttons on each entry.</li>
+      <li><span class="frid">FR-04</span>Search by name or category. Alphabetical sort. Offline cache available.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ RESIDENT SERVICES ══ -->
+  <div class="section-label">Module 34</div><a id="m34"></a>
+  <h2>Facilities</h2>
+  <p class="sub">Book and manage amenity reservations — BBQ pits, gym, function rooms, tennis courts</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident / Property Staff</div><div class="m"><b>Endpoint:</b> <code>POST /v1/facilities/bookings</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Allows residents to view, book, and manage condominium shared amenities via a calendar-based booking system with 15-minute time slot selection, refund tracking, and filter-based search.</p>
+  </div>
+  <div class="card">
+    <h3>Current State vs Future State</h3>
+    <table><thead><tr><th>Feature</th><th>AS-IS</th><th>TO-BE</th></tr></thead><tbody>
+      <tr><td><strong>Facility Selection</strong></td><td>List with images and "Book Now" button</td><td>Interactive map view + real-time occupancy <span class="pill pill-fut">Future</span></td></tr>
+      <tr><td><strong>Booking Calendar</strong></td><td>Monthly calendar with colour-coded availability</td><td>Visual timeline + slot recommendations <span class="pill pill-fut">Future</span></td></tr>
+      <tr><td><strong>Payment</strong></td><td>External gateway on checkout</td><td>In-app wallets, Apple/Google Pay <span class="pill pill-fut">Future</span></td></tr>
+    </tbody></table>
+    <h3 style="margin-top:24px;">Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Dashboard with 4 tabs: Facilities, Booked, Pending Refunds, History.</li>
+      <li><span class="frid">FR-02</span>Facilities tab: facility cards with cover image, title, "Book Now" button.</li>
+      <li><span class="frid">FR-03</span>Availability calendar: Green (Available), Red (Fully Booked), Grey (Not Available), Blue (Selected).</li>
+      <li><span class="frid">FR-04</span>Time slot picker: 15-minute increments in scrollable grid. "Next" advances to booking dialog.</li>
+      <li><span class="frid">FR-05</span>Booking dialog: Start/End time (read-only), Booking Notes input, Submit button.</li>
+      <li><span class="frid">FR-06</span>Filter: Status, Facility, Created Date, Booking Number, Resident, Start/End Dates. Clear &amp; Apply.</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>Bookings only on available dates. Slots first-come, first-served; locked immediately on confirmation. Cancellation policies applied per property rules.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 35</div><a id="m35"></a>
+  <h2>Packages</h2>
+  <p class="sub">Parcel management — staff logs deliveries, residents view and confirm collection</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Property Staff / Resident</div><div class="m"><b>Endpoint:</b> <code>POST /v1/packages</code></div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Dashboard tabs: "For Collection" (Pending, orange) and "Collected" (green). Package cards: title, status, received by, date/time.</li>
+      <li><span class="frid">FR-02</span>Staff adds package: Title (mandatory), Unit (dropdown), Photo attachments (Camera/Gallery), Received By (picker), Date Received (date-time picker).</li>
+      <li><span class="frid">FR-03</span>Filter: Title keyword, Date/Time picker, Unit dropdown. Clear &amp; Apply.</li>
+      <li><span class="frid">FR-04</span>Package details: title, status, horizontal scrollable photo gallery, recipient info, received date.</li>
+      <li><span class="frid">FR-05</span>"Collect" button on Pending packages: updates status to Collected, moves to Collected tab, button hidden thereafter.</li>
+      <li><span class="frid">FR-06</span>FCM notification sent to resident when package logged for their unit.</li>
+      <li><span class="frid">FR-07</span>Staff can delete package log with confirmation dialog.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 36</div><a id="m36"></a>
+  <h2>Service Requests</h2>
+  <p class="sub">Raise and track maintenance/repair requests; charge sheet, payment, contractor workflow</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Roles:</b> Resident · Contractor · Property Manager</div><div class="m"><b>Endpoint:</b> <code>POST /v1/service-requests</code></div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span><strong>Raise Request:</strong> Category dropdown, issue chips (multi-select), description, media uploads (up to 100 files), service offer checkbox, T&amp;C acceptance.</li>
+      <li><span class="frid">FR-02</span><strong>Request List:</strong> Ticket number, date, category, status (colour-coded), assigned staff, comment count.</li>
+      <li><span class="frid">FR-03</span><strong>Filters:</strong> Category, Status, Date Range, Unit/Occupant, Assigned Staff.</li>
+      <li><span class="frid">FR-04</span><strong>Detail View:</strong> Full ticket info, attached media (zoomable), status history timeline, comments chat, charge sheet.</li>
+      <li><span class="frid">FR-05</span><strong>Staff Actions:</strong> Update status (New/Pending/In Progress/Closed/Rejected/Rescheduled), add remarks.</li>
+      <li><span class="frid">FR-06</span><strong>Charge Sheet:</strong> Staff adds line items (description, qty, price, discount). Resident views total and pays via in-app gateway.</li>
+      <li><span class="frid">FR-07</span><strong>Chat:</strong> Resident and staff exchange comments on the request. Read-only when closed.</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>At least one Category and Issue required. Unique ticket number (e.g. S00000238) auto-generated. Status history is immutable. Payment visible only when charge sheet has outstanding fees. Chat disabled once request is Closed or Rejected.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 37</div><a id="m37"></a>
+  <h2>DLP — Defect Management</h2>
+  <p class="sub">Defect Liability Period management — log, track, and resolve unit defects</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Defect list: all logged defects with ticket number, category, location, status, date.</li>
+      <li><span class="frid">FR-02</span>Log defect: Location (room/area), Category (Structural/Finishing/M&amp;E/Plumbing), Description, Photo attachments.</li>
+      <li><span class="frid">FR-03</span>Photo markup tool: annotate defect photos with arrows, circles, text before submission.</li>
+      <li><span class="frid">FR-04</span>Status tracking: New → Acknowledged → Inspection Scheduled → Rectified → Closed. Timeline history.</li>
+      <li><span class="frid">FR-05</span>Management schedules rectification appointment; resident confirms or requests rescheduling.</li>
+      <li><span class="frid">FR-06</span>DLP expiry indicator shown; defects locked when DLP period expires.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 38</div><a id="m38"></a>
+  <h2>MCST Payment</h2>
+  <p class="sub">Maintenance fee billing and in-app payment</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Outstanding bills: billing period, amount, due date, status (Unpaid/Paid/Overdue).</li>
+      <li><span class="frid">FR-02</span>Bill detail: itemised breakdown (maintenance fund, sinking fund, utilities).</li>
+      <li><span class="frid">FR-03</span>"Pay Now" button: in-app payment (credit card, PayNow, bank transfer).</li>
+      <li><span class="frid">FR-04</span>Payment history with receipt number, date, amount, and payment method.</li>
+      <li><span class="frid">FR-05</span>Download/share receipt as PDF. FCM push on new bill or payment confirmation.</li>
+    </ul>
+    <div class="callout green"><h4>API Reference</h4><p><code>GET /v1/mcst/bills</code> · <code>POST /v1/mcst/bills/:id/pay</code> · <code>GET /v1/mcst/payments</code> · <code>GET /v1/mcst/payments/:id/receipt</code></p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 39</div><a id="m39"></a>
+  <h2>Next Bus Arrival</h2>
+  <p class="sub">Real-time bus arrival timings via LTA DataMall API</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Resident</div><div class="m"><b>Integration:</b> LTA DataMall API</div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>List of pre-configured nearby bus stops (configured by management).</li>
+      <li><span class="frid">FR-02</span>Each bus service shows: Bus number, Next arrival (minutes), 2nd arrival, Load (Seated/Standing/Full).</li>
+      <li><span class="frid">FR-03</span>Auto-refresh every 30 seconds. Manual pull-to-refresh.</li>
+      <li><span class="frid">FR-04</span>Favourite bus stops: pin specific stops for quick access.</li>
+    </ul>
+    <div class="callout green"><h4>API Reference</h4><p><code>GET /v1/transport/busstops</code> — list condo bus stops · <code>GET /v1/transport/arrivals/:stopCode</code> — real-time arrivals</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 40</div><a id="m40"></a>
+  <h2>Gallery</h2>
+  <p class="sub">Condominium photo album — events, happenings, estate photos served from Azure Blob</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Albums list: cover photo, title, photo count, and date.</li>
+      <li><span class="frid">FR-02</span>Album detail: grid view. Tap to open full-screen viewer.</li>
+      <li><span class="frid">FR-03</span>Full-screen viewer: pinch-to-zoom, swipe left/right, share/download option.</li>
+      <li><span class="frid">FR-04</span>Media served via Azure Blob SAS URLs.</li>
+      <li><span class="frid">FR-05</span>Search albums by title or year. Filter by category (Events, Facilities, Community).</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 41</div><a id="m41"></a>
+  <h2>General Feedback</h2>
+  <p class="sub">Rate and provide feedback on estate services, management, and facilities</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Feedback categories: Management, Security, Cleanliness, Facilities, Maintenance, General.</li>
+      <li><span class="frid">FR-02</span>Star rating (1–5) for selected category.</li>
+      <li><span class="frid">FR-03</span>Optional text comment (multi-line). Optional photo attachment.</li>
+      <li><span class="frid">FR-04</span>Anonymous submission option (name hidden from management view).</li>
+      <li><span class="frid">FR-05</span>Feedback history: resident views past submissions and any management responses.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 42</div><a id="m42"></a>
+  <h2>EAGM</h2>
+  <p class="sub">Electronic Annual General Meeting — online voting, proxy submission, resolutions</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>AGM schedule: date, time, location/virtual link, agenda items list.</li>
+      <li><span class="frid">FR-02</span>Pre-registration for e-voting. Identity verification (OTP or ID upload).</li>
+      <li><span class="frid">FR-03</span>Resolution list: each resolution with For/Against/Abstain vote buttons.</li>
+      <li><span class="frid">FR-04</span>Proxy form submission with digital signature.</li>
+      <li><span class="frid">FR-05</span>Real-time vote count display (percentages) after voting window closes.</li>
+      <li><span class="frid">FR-06</span>Meeting minutes upload post-AGM; residents notified via FCM push.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 43</div><a id="m43"></a>
+  <h2>Car Washing</h2>
+  <p class="sub">Book car washing slots — schedule, vehicle selection, payment</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Available washing packages with price, duration, and included services.</li>
+      <li><span class="frid">FR-02</span>Vehicle selection from resident's registered Unit Vehicles.</li>
+      <li><span class="frid">FR-03</span>Date/time slot calendar with available slots. Select slot → confirm booking.</li>
+      <li><span class="frid">FR-04</span>In-app payment for booking. Booking confirmation with reference number.</li>
+      <li><span class="frid">FR-05</span>Booking history with status (Scheduled, Completed, Cancelled).</li>
+      <li><span class="frid">FR-06</span>FCM reminder 30 minutes before scheduled wash.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 44</div><a id="m44"></a>
+  <h2>Bicycle Booking</h2>
+  <p class="sub">Reserve shared community bicycles — availability, booking slot, return confirmation</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Bicycle fleet list: bicycle ID, type (mountain/city/foldable), availability status.</li>
+      <li><span class="frid">FR-02</span>Select bicycle → choose date/time slot → confirm booking.</li>
+      <li><span class="frid">FR-03</span>QR code generated for bike lock unlocking (if smart lock equipped).</li>
+      <li><span class="frid">FR-04</span>Return confirmation button updates status; management notified.</li>
+      <li><span class="frid">FR-05</span>Booking history with duration, bicycle ID, and return status.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 45</div><a id="m45"></a>
+  <h2>Online Forms</h2>
+  <p class="sub">Digital forms for renovations, move-in/out, pet registration, access card requests</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Form library: list with title, description, and estimated processing time.</li>
+      <li><span class="frid">FR-02</span>Dynamic form builder: text fields, dropdowns, date pickers, file uploads, digital signature.</li>
+      <li><span class="frid">FR-03</span>Submitted forms list with status (Submitted, Under Review, Approved, Rejected).</li>
+      <li><span class="frid">FR-04</span>FCM notification on status change. Rejection includes reason and resubmit option.</li>
+      <li><span class="frid">FR-05</span>Approved forms downloadable as PDF with management signature/stamp.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 46</div><a id="m46"></a>
+  <h2>Inspections</h2>
+  <p class="sub">Schedule and track unit inspection appointments</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Inspection request: type (Unit Handover, Renovation Completion, Move-Out), preferred dates, notes.</li>
+      <li><span class="frid">FR-02</span>Management confirms appointment with date/time. FCM notification to resident.</li>
+      <li><span class="frid">FR-03</span>Inspection checklist: inspector completes digital checklist on-site with pass/fail per item.</li>
+      <li><span class="frid">FR-04</span>Photo evidence attached to checklist items. Resident signs off digitally.</li>
+      <li><span class="frid">FR-05</span>Inspection report generated as PDF; stored in Unit Documents.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ UNIT MANAGEMENT ══ -->
+  <div class="section-label">Module 47</div><a id="m47"></a>
+  <h2>Unit Management Overview</h2>
+  <p class="sub">Manage all unit-level data — occupants, vehicles, assets, documents, visitors, packages, requests</p>
+  <div class="card">
+    <h3>Objective</h3>
+    <p style="font-size:14px;">The Unit Management module provides property managers and authorised residents with a complete view of all data associated with their unit — from registered occupants and vehicles to documents, assets, visitor history, and service requests.</p>
+    <div class="g2" style="margin-top:20px;">
+      <div class="wi"><div class="ico">👥</div><div><h4>Unit Occupants</h4><p>All registered residents/tenants for the unit.</p></div></div>
+      <div class="wi"><div class="ico">🚗</div><div><h4>Unit Vehicles</h4><p>Registered vehicles with IU number and season pass.</p></div></div>
+      <div class="wi"><div class="ico">📦</div><div><h4>Unit Assets</h4><p>Inventory of unit assets provided by management.</p></div></div>
+      <div class="wi"><div class="ico">📄</div><div><h4>Unit Documents</h4><p>Lease, S&amp;P, inspection reports, admin documents.</p></div></div>
+      <div class="wi"><div class="ico">👤</div><div><h4>Unit Visitors</h4><p>Visitor pass history for the unit.</p></div></div>
+      <div class="wi"><div class="ico">📫</div><div><h4>Unit Packages</h4><p>Package delivery history for the unit.</p></div></div>
+      <div class="wi"><div class="ico">🔧</div><div><h4>Unit Requests</h4><p>All service requests raised for the unit.</p></div></div>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 48</div><a id="m48"></a>
+  <h2>Unit Occupants</h2>
+  <p class="sub">Manage registered occupants — owners, tenants, occupants, access permissions</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Occupant list: name, role (Owner/Tenant/Occupant), contact, email, tenancy period.</li>
+      <li><span class="frid">FR-02</span>Add occupant: name, role, contact, email, move-in date, move-out date, IC/Passport upload.</li>
+      <li><span class="frid">FR-03</span>Edit occupant details. Remove occupant (requires manager approval).</li>
+      <li><span class="frid">FR-04</span>App access status: active/inactive per occupant. Toggle app invitation.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 49</div><a id="m49"></a>
+  <h2>Unit Vehicles</h2>
+  <p class="sub">Register and manage vehicles — IU number, season pass, car park lot</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Vehicle list: car plate, vehicle type, IU number, season pass status, assigned lot.</li>
+      <li><span class="frid">FR-02</span>Add vehicle: car plate, vehicle type (Car/Motorcycle/Van), IU number, owner occupant selection.</li>
+      <li><span class="frid">FR-03</span>Season pass management: validity period, renewal request.</li>
+      <li><span class="frid">FR-04</span>Edit vehicle details. Deregister vehicle (soft-delete).</li>
+      <li><span class="frid">FR-05</span>Vehicle used in Guard Vehicles Tab for pre-registered visitor vehicles.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 50</div><a id="m50"></a>
+  <h2>Unit Assets</h2>
+  <p class="sub">Inventory of fixtures, fittings, and appliances provided by management</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Asset list: name, category, model, serial number, warranty expiry, condition.</li>
+      <li><span class="frid">FR-02</span>Asset detail with photos and maintenance history.</li>
+      <li><span class="frid">FR-03</span>Report defect against an asset (links to Service Request module).</li>
+      <li><span class="frid">FR-04</span>Export asset list as PDF for handover documentation.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 51</div><a id="m51"></a>
+  <h2>Unit Documents</h2>
+  <p class="sub">Digital document repository — lease, S&amp;P, handover reports, admin correspondence</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Document list: name, category, upload date, file size, document type icon.</li>
+      <li><span class="frid">FR-02</span>Tap to preview PDF or image inline. Download to device. Share via share sheet.</li>
+      <li><span class="frid">FR-03</span>Resident can upload documents (camera scan or file picker). Admin approval for certain categories.</li>
+      <li><span class="frid">FR-04</span>Documents stored in Azure Blob Storage; served via SAS URLs.</li>
+      <li><span class="frid">FR-05</span>Filter by category. Search by document name.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 52</div><a id="m52"></a>
+  <h2>Unit Visitors</h2>
+  <p class="sub">Full visitor pass history — active, past, and cancelled passes</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Visitor pass list: visitor name, pass type (QR/PIN), validity period, status, check-in count.</li>
+      <li><span class="frid">FR-02</span>Filter by date range, pass type, and status (Active/Expired/Cancelled).</li>
+      <li><span class="frid">FR-03</span>Tap pass to view details: QR code/PIN, visitor contact, check-in log with timestamps.</li>
+      <li><span class="frid">FR-04</span>Cancel active pass from this screen.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 53</div><a id="m53"></a>
+  <h2>Unit Packages</h2>
+  <p class="sub">Package delivery history for the unit — pending and collected parcels</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Package list: title, received date, status, received by, collector.</li>
+      <li><span class="frid">FR-02</span>Filter by status (Pending/Collected) and date range.</li>
+      <li><span class="frid">FR-03</span>Package detail with photo attachment and collection timestamp.</li>
+      <li><span class="frid">FR-04</span>Management can update collection status from this view.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 54</div><a id="m54"></a>
+  <h2>Unit Requests</h2>
+  <p class="sub">All service requests for the unit — management view with full ticket history</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Request list: ticket number, category, title, date, status, assigned contractor.</li>
+      <li><span class="frid">FR-02</span>Filter by request type (Service Request, Defect, Online Form), status, and date range.</li>
+      <li><span class="frid">FR-03</span>Tap to view full request detail, status history, charge sheet, and chat.</li>
+      <li><span class="frid">FR-04</span>Quick assign contractor from this view.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ ADMIN ══ -->
+  <div class="section-label">Module 55</div><a id="m55"></a>
+  <h2>Approvals</h2>
+  <p class="sub">Staff approval workflow — visitor passes, renovation permits, resident registrations</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Property Manager / Staff</div><div class="m"><b>RBAC:</b> ApprovalGuard</div></div>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Approval queue: pending items grouped by type with timestamp and submitter info.</li>
+      <li><span class="frid">FR-02</span>Types: New Resident Registration, Renovation Permit, Access Card Request, Move-In/Out, Pet Registration, Online Forms.</li>
+      <li><span class="frid">FR-03</span>Item detail: full submission info, attachments, and submitter contact.</li>
+      <li><span class="frid">FR-04</span>Approve or Reject with optional remarks. FCM notification to submitter on decision.</li>
+      <li><span class="frid">FR-05</span>Request more information: prompt submitter for additional documents.</li>
+      <li><span class="frid">FR-06</span>Approval history log with approver name, timestamp, and decision (immutable).</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>Only users with approvals RBAC permission can access. Approval history immutable once decision is made. Items pending beyond SLA threshold show overdue badge (e.g. 3 business days).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 56</div><a id="m56"></a>
+  <h2>Data Setup</h2>
+  <p class="sub">Master data configuration — units, residents, vehicles, facilities, categories</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Property Manager / Admin</div><div class="m"><b>Access:</b> Admin Portal + Mobile</div></div>
+    <div class="g2" style="margin-top:4px;">
+      <div class="wi"><div class="ico">🏢</div><div><h4>Unit Management</h4><p>Add/edit/deactivate units, blocks, floors, unit types.</p></div></div>
+      <div class="wi"><div class="ico">👥</div><div><h4>Resident Records</h4><p>Manage resident profiles, tenancy, and app access.</p></div></div>
+      <div class="wi"><div class="ico">🚗</div><div><h4>Vehicle Registry</h4><p>Vehicles, IU numbers, season passes, car park lots.</p></div></div>
+      <div class="wi"><div class="ico">🏊</div><div><h4>Facilities Setup</h4><p>Configure facilities, operating hours, booking rules.</p></div></div>
+      <div class="wi"><div class="ico">🔧</div><div><h4>Service Categories</h4><p>Define service request categories and issue types.</p></div></div>
+      <div class="wi"><div class="ico">🚌</div><div><h4>Bus Stop Config</h4><p>Configure nearby bus stop codes for Next Bus Arrival.</p></div></div>
+    </div>
+    <h3 style="margin-top:20px;">Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>CRUD operations for all master data entities with validation and duplicate detection.</li>
+      <li><span class="frid">FR-02</span>Bulk import via Excel/CSV template for units, residents, and vehicles.</li>
+      <li><span class="frid">FR-03</span>Condo settings: QR/PIN mode, 2FA, complex password, module visibility flags.</li>
+      <li><span class="frid">FR-04</span>Access control: manage door/gate settings, MQTT topics, Hikvision integration.</li>
+      <li><span class="frid">FR-05</span>Audit log of all data changes with editor name and timestamp.</li>
+    </ul>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ══ SECURITY GUARD APP ══ -->
+  <div class="section-label">Module 57</div><a id="m57"></a>
+  <h2>Security Guard App Overview</h2>
+  <p class="sub">Standalone Flutter Android APK — Vehicles · Visitors · Facilities · Notifications</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Security Guard</div><div class="m"><b>Platform:</b> Flutter Android only (standalone APK)</div><div class="m"><b>Auth:</b> Shared <code>auth_package</code></div></div>
+    <h3>Objective</h3>
+    <p style="font-size:14px;">Dedicated Flutter Android APK for on-duty security guards. Provides a centralised operations dashboard to manage vehicle entry/exit, visitor check-ins, facility audits, and receive real-time notifications at condominium checkpoints.</p>
+  </div>
+  <div class="card">
+    <h3>Guard App Architecture</h3>
+    <div class="arch-tree"><span class="h">GUARD APP SHELL</span>
+GuardShellPage (Flutter Android APK — standalone)
+├── Auth: reuses shared auth_package
+│   └── Same /v1/auth/* APIs; RBAC routes to GuardShell
+│
+├── Bottom Navigation (4 tabs — hidden per RBAC permissions)
+│   ├── 🚗 Vehicles Tab   (AllowVehicles == 1)
+│   ├── 🚶 Visitors Tab   (AllowVisitors == 1)
+│   ├── 🏛️ Facilities Tab (AllowFacilities == 1)
+│   └── 🔔 Notifications  (AllowNotifications == 1)
+│
+├── Top Bar (all tabs)
+│   ├── Duty Banner: condo name | date | time
+│   └── Checkpoint Spinner: lane/gate selector
+│
+└── Quick Actions (Vehicles + Visitors tabs)
+    ├── Scan QR Code → mobile_scanner (HMAC offline verification)
+    └── Log History → date-filtered scrollable timeline</div>
+    <div class="callout amber"><h4>Business Rules</h4><p>Guard app access requires SecurityGuard RBAC role. Tabs hidden dynamically based on permission flags. Checkpoint spinner assignment determines which gate events the device receives. Guard app does not expose any resident home modules.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 58</div><a id="m58"></a>
+  <h2>SG — Vehicles Tab</h2>
+  <p class="sub">Vehicle access management — QR scan, vehicle log, pre-registered and walk-in vehicle registration</p>
+  <div class="card">
+    <div class="meta-strip"><div class="m"><b>Role:</b> Security Guard</div><div class="m"><b>Scanner:</b> <code>mobile_scanner</code></div></div>
+    <h3>Current State vs Future State</h3>
+    <table><thead><tr><th>Feature</th><th>AS-IS</th><th>TO-BE</th></tr></thead><tbody>
+      <tr><td><strong>QR Scanning</strong></td><td>Manual camera scanner in native app</td><td>Flutter <code>mobile_scanner</code> with HMAC offline verification <span class="pill pill-new">NEW</span></td></tr>
+      <tr><td><strong>Vehicle Log</strong></td><td>Daily checklist with date/text filters</td><td>Real-time map indicator for active vehicles (future) <span class="pill pill-fut">Future</span></td></tr>
+      <tr><td><strong>Walk-in Registration</strong></td><td>Manual category tap + typed forms</td><td>Driver's License OCR scanning, digital signature (future) <span class="pill pill-fut">Future</span></td></tr>
+    </tbody></table>
+    <h3 style="margin-top:24px;">Functional Requirements</h3>
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Dashboard: duty banner, Scan QR + Vehicles Log shortcuts, Pre-Registered and New Vehicles cards.</li>
+      <li><span class="frid">FR-02</span>QR Scanner: camera overlay with viewfinder (green corners, red guide). Back arrow and X to close.</li>
+      <li><span class="frid">FR-03</span>All Vehicle Log: date picker, text search, scrollable timeline.</li>
+      <li><span class="frid">FR-04</span>New Vehicles 2×2 grid: Pick-up/Drop Off · Delivery · Visiting · Services.</li>
+      <li><span class="frid">FR-05</span>Pick-up/Drop Off form: Chips (Standard Taxi / Private Hire / Personal), Vehicle Reg, Block, Remarks.</li>
+      <li><span class="frid">FR-06</span>Delivery form: Type chips (Vehicle/Bicycle/By Foot), Category chips (Food/Bulky/Delicate). Dynamic fields per type.</li>
+      <li><span class="frid">FR-07</span>Visiting form: Vehicle Reg, Phone, Guest Name, Block, Unit, Remarks.</li>
+      <li><span class="frid">FR-08</span>Services form: Category chips (Renovation/Internet/Cleaning/Moving). Renovation Application Number shown only for Renovation chip.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>API Reference</h3>
+    <table><thead><tr><th>Action</th><th>Endpoint</th></tr></thead><tbody>
+      <tr><td>Validate vehicle QR</td><td><code>POST /v1/vehicles/validate</code></td></tr>
+      <tr><td>Vehicle log list</td><td><code>GET /v1/guard/vehicle-logs?date=&amp;search=</code></td></tr>
+      <tr><td>Pre-registered list</td><td><code>GET /v1/guard/vehicles/pre-registered?date=</code></td></tr>
+      <tr><td>Register walk-in vehicle</td><td><code>POST /v1/guard/vehicles/walkin</code></td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 59</div><a id="m59"></a>
+  <h2>SG — Visitors Tab</h2>
+  <p class="sub">Visitor check-in — QR scanning, visitor logs, pre-registered lookup, new walk-in registration</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Dashboard: duty banner, Scan QR + Visitors Log shortcuts, Pre-Registered and New Visitors cards.</li>
+      <li><span class="frid">FR-02</span>QR Scanner: camera overlay, viewfinder, "SCAN THE QR CODE OF THE DEVICE" header. Back + X buttons.</li>
+      <li><span class="frid">FR-03</span>Visitors Log: date picker, text search, timeline list.</li>
+      <li><span class="frid">FR-04</span>Pre-Registered Visitors: date-filtered list with search. Top banner anchored.</li>
+      <li><span class="frid">FR-05</span>New Visitors form: Phone (mandatory), Guest Name (mandatory), Block (dropdown), Unit (picker), Purpose (dropdown), Remarks. "Register Visitor" button.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>API Reference</h3>
+    <table><thead><tr><th>Action</th><th>Endpoint</th></tr></thead><tbody>
+      <tr><td>Validate visitor QR/PIN</td><td><code>POST /v1/visitor/passes/validate</code></td></tr>
+      <tr><td>Log visitor check-in</td><td><code>POST /v1/visitor/logs</code></td></tr>
+      <tr><td>Log visitor checkout</td><td><code>POST /v1/visitor/logs/checkout</code></td></tr>
+      <tr><td>Visitor log list</td><td><code>GET /v1/visitor/logs?date=&amp;search=</code></td></tr>
+      <tr><td>Pre-registered list</td><td><code>GET /v1/visitor/passes?date=&amp;search=</code></td></tr>
+      <tr><td>Register walk-in visitor</td><td><code>POST /v1/visitor/walkins</code></td></tr>
+    </tbody></table>
+    <div class="callout green"><h4>Acceptance Criteria</h4><p>QR scan validates pass and logs check-in; resident receives FCM push. Visitors Log shows date-filtered and searchable results. New Visitors form validates mandatory fields and registers walk-in on submit.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 60</div><a id="m60"></a>
+  <h2>SG — Facilities Tab</h2>
+  <p class="sub">Monitor and audit amenity bookings — today's reservations, log filtering, date navigation</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Dashboard: duty banner, "Search Facilities" input, "Filter" button. 2-column grid of today's active reservations by facility. Empty state: "No Facility Booking Today."</li>
+      <li><span class="frid">FR-02</span>All Facilities Log: back arrow, date picker, text search, scrollable booking list.</li>
+      <li><span class="frid">FR-03</span>Date selector calendar dialog: any past/present/future date. Refreshes list on selection.</li>
+      <li><span class="frid">FR-04</span>Tapping a facility card opens log filtered by that specific facility.</li>
+    </ul>
+    <div class="callout amber"><h4>Business Rules</h4><p>Dashboard defaults to current system date's bookings. Back arrow on log list returns to main Facilities tab. Selecting a facility card filters log by that facility's ID.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Module 61</div><a id="m61"></a>
+  <h2>SG — Notifications Tab</h2>
+  <p class="sub">Centralised alert feed — system broadcasts, check-in prompts, parcel updates, category filters</p>
+  <div class="card">
+    <ul class="frl">
+      <li><span class="frid">FR-01</span>Scrollable notification feed: duty banner, notification cards (title, subtitle, timestamp, delete icon). Pull-to-refresh, infinite scroll.</li>
+      <li><span class="frid">FR-02</span>Category filter dropdown: "Filter By" (default), "Facilities", "Vehicles", "Visitors". Dynamic feed update on selection.</li>
+      <li><span class="frid">FR-03</span>Purge notice banner: "Notifications will be automatically removed after 60 days." Dismissible X — hides for session.</li>
+      <li><span class="frid">FR-04</span>Delete notification: trash icon → confirmation dialog "Are you sure?" → Yes deletes (flag type 3), No dismisses.</li>
+      <li><span class="frid">FR-05</span>Tap notification card: marks as read (flag type 2) → redirects to Wall, Visitor Log, Vehicle Update, Amenity, Package, Service Request, or Poll detail screen.</li>
+    </ul>
+    <div class="callout green"><h4>Acceptance Criteria</h4><p>Guard views notification feed with category filter dropdown. Selecting category updates feed; "No data to display" if empty. Tapping card marks read and opens correct detail screen. Trash icon triggers confirmation dialog; Yes deletes and removes from list. Pull-to-refresh fetches latest; infinite scroll loads older notifications.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+</div><!-- .container -->
+
+<div class="page-footer">
+  Genio 360 — Complete Software Requirements Specification | All Modules | Flutter + NestJS + Microsoft Azure &nbsp;|&nbsp; June 2026
+</div>
+
+</body>
+</html>
