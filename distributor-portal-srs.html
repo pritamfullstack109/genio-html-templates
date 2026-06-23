@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genio360 - Distributor Portal - Technical SRS</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --blue:#1B4FD8;--blue-lt:#EEF2FF;--green:#0F9C60;--green-lt:#ECFDF5;
+    --red:#DC2626;--red-lt:#FEF2F2;--amber:#D97706;--amber-lt:#FFFBEB;
+    --indigo:#4F46E5;--indigo-lt:#EEF2FF;--gray:#64748B;--gray-lt:#F8FAFC;
+    --border:#E2E8F0;--text:#1E293B;--heading:#0F172A;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text);background:#F1F5F9;line-height:1.6;}
+  .page-header{background:linear-gradient(135deg,#0F172A 0%,#4F46E5 100%);color:#fff;padding:48px 60px 40px;}
+  .page-header .badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+       border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1.2px;padding:4px 14px;margin-bottom:18px;text-transform:uppercase;}
+  .page-header h1{font-size:36px;font-weight:800;line-height:1.15;margin-bottom:12px;}
+  .page-header p{font-size:16px;opacity:.85;max-width:760px;}
+  .meta-row{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;}
+  .meta-row .chip2{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;font-size:12px;padding:5px 12px;color:#fff;}
+  .container{max-width:1100px;margin:0 auto;padding:48px 24px;}
+  .toc{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:36px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .toc h3{font-size:15px;color:var(--heading);margin-bottom:14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 18px;}
+  @media(max-width:780px){.toc-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:520px){.toc-grid{grid-template-columns:1fr;}}
+  .toc-grid a{font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;display:flex;gap:8px;}
+  .toc-grid a .n{color:var(--gray);font-variant-numeric:tabular-nums;min-width:24px;}
+  .section-label{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--indigo);margin-bottom:8px;}
+  .section-label::before{content:'';display:block;width:28px;height:2px;background:var(--indigo);}
+  h2{font-size:24px;font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .sub{font-size:14px;color:var(--gray);margin-bottom:22px;}
+  h3{font-size:16px;font-weight:700;color:var(--heading);margin-bottom:10px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  code{background:#E8EDF5;border-radius:4px;padding:2px 6px;font-size:12px;font-family:"Fira Code","Courier New",monospace;color:var(--indigo);}
+  .meta-strip{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .meta-strip .m{background:var(--gray-lt);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;}
+  .meta-strip .m b{color:var(--heading);}
+  .callout{border-radius:12px;padding:16px 20px;margin-top:16px;border:1px solid;}
+  .callout.amber{background:var(--amber-lt);border-color:#FCD68A;}
+  .callout.green{background:var(--green-lt);border-color:#A7F3D0;}
+  .callout.blue{background:var(--blue-lt);border-color:#C7D7F9;}
+  .callout h4{font-size:13px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .callout.green h4{color:var(--green);}.callout.blue h4{color:var(--blue);}
+  .callout p{font-size:14px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .chip{background:var(--indigo-lt);color:var(--indigo);border-radius:20px;font-size:12.5px;font-weight:600;padding:5px 13px;}
+  .flow{display:flex;flex-direction:column;}
+  .flow-step{display:flex;position:relative;}
+  .flow-left{display:flex;flex-direction:column;align-items:center;width:56px;flex-shrink:0;}
+  .step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;z-index:1;}
+  .step-line{width:2px;flex:1;min-height:20px;background:var(--border);margin:0 auto;}
+  .flow-step:last-child .step-line{display:none;}
+  .flow-body{flex:1;padding:0 0 26px 16px;}
+  .flow-body .title{font-weight:700;font-size:15px;color:var(--heading);margin:8px 0 6px;}
+  .flow-body .desc{font-size:14px;color:var(--gray);margin-bottom:10px;}
+  .detail-box{background:var(--gray-lt);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;}
+  .detail-box code{background:#E2E8F0;}
+  .tag{display:inline-block;border-radius:5px;font-size:11px;font-weight:600;padding:2px 8px;margin:2px 2px 2px 0;}
+  .tag-blue{background:var(--blue-lt);color:var(--blue);}.tag-green{background:var(--green-lt);color:var(--green);}
+  .tag-red{background:var(--red-lt);color:var(--red);}.tag-amber{background:var(--amber-lt);color:var(--amber);}
+  .tag-indigo{background:var(--indigo-lt);color:var(--indigo);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{background:var(--indigo);color:#fff;padding:10px 14px;text-align:left;font-weight:600;}
+  tbody tr:nth-child(even){background:var(--gray-lt);}
+  tbody td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tbody td code{background:#E2E8F0;}
+  .pill{display:inline-block;border-radius:20px;font-size:11px;font-weight:600;padding:2px 9px;}
+  .pill-new{background:var(--green-lt);color:var(--green);}
+  .pill-fut{background:var(--amber-lt);color:var(--amber);}
+  .arch-tree{font-family:"Fira Code","Courier New",monospace;font-size:12.5px;background:var(--gray-lt);
+       border:1px solid var(--border);border-radius:10px;padding:20px 24px;white-space:pre;overflow-x:auto;color:var(--text);line-height:1.7;}
+  .arch-tree .h{color:var(--indigo);font-weight:700;}
+  .section-divider{height:40px;}
+  .page-footer{background:var(--heading);color:rgba(255,255,255,.5);text-align:center;padding:24px;font-size:12px;}
+  .stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
+  @media(max-width:880px){.stack-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.stack-grid{grid-template-columns:1fr;}}
+  .stack-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.04);border-top:3px solid var(--indigo);}
+  .stack-card .ic{font-size:13px;font-weight:700;color:var(--indigo);margin-bottom:8px;letter-spacing:.5px;}
+  .stack-card h4{font-size:14px;color:var(--heading);margin-bottom:4px;}
+  .stack-card p{font-size:12.5px;color:var(--gray);}
+  .gloss-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+  @media(max-width:680px){.gloss-grid{grid-template-columns:1fr;}}
+  .gloss-grid .g{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .gloss-grid .g b{color:var(--indigo);min-width:120px;flex-shrink:0;}
+</style></head><body>
+<div class="page-header">
+  <div class="badge">Genio 360 - Engineering Reference</div>
+  <h1>Distributor Portal - Technical Software Requirements Specification</h1>
+  <p>The engineering "how" for the Distributor (Channel Management, tier L2) Web Portal - architecture, cross-cutting contracts, and a per-module technical specification across installer management, the module funnel, staff &amp; roles, oversight, reporting, licensing and escalations. Scoped strictly to the Genio360 Global Requirements r5.0.</p>
+  <div class="meta-row">
+    <span class="chip2">Version 1.0 (Technical Draft)</span>
+    <span class="chip2">Client: Fermax Asia Pacific</span>
+    <span class="chip2">React &middot; NestJS/AKS &middot; MySQL &middot; Cosmos &middot; Redis &middot; Azure</span>
+    <span class="chip2">Source of Truth: Global Requirements r5.0 ONLY</span>
+  </div>
+</div>
+<div class="container">
+  <div class="section-label">Document Control</div>
+  <h2>Document Control &amp; Revision History</h2>
+  <p class="sub">Ownership, status, and change log for this specification</p>
+  <div class="card">
+    <div class="meta-strip">
+      <div class="m"><b>Document:</b> Distributor Portal - Technical SRS</div>
+      <div class="m"><b>Version:</b> 1.0 (Technical Draft)</div>
+      <div class="m"><b>Status:</b> Draft - scoped strictly to Global Requirements r5.0</div>
+      <div class="m"><b>Client:</b> Fermax Asia Pacific</div>
+      <div class="m"><b>Audience:</b> Engineering, Architecture, QA</div>
+    </div>
+    <table><thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Summary of changes</th></tr></thead><tbody>
+      <tr><td>1.0</td><td>2026-06-23</td><td>Architecture</td><td>Initial module catalogue and architecture overview for the Distributor (L2) tier, grounded strictly on Global Requirements r5.0 (System Hierarchy - Distributors; Funnel; RBAC matrix; Process Flow; Escalation).</td></tr>
+    </tbody></table>
+    <div class="callout amber"><h4>Status of this Draft</h4><p>This is a <strong>To-Be engineering specification</strong> for the channel tier (L2). Its single authoritative source is the <strong>Genio360 Global Requirements r5.0</strong>. Capabilities NOT present in that document have been intentionally excluded - see the <em>Scope Note</em> below (MFA, Localization, Forgot-password, and Licence <em>allocation</em> to installers).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Technology Stack at a Glance</div>
+  <div class="stack-grid">
+    <div class="stack-card"><div class="ic">FRONTEND</div><h4>React SPA</h4><p>Azure Static Web Apps; one global Admin Portal, role-rendered for the Distributor (L2) via JWT-based RBAC.</p></div>
+    <div class="stack-card"><div class="ic">BACKEND</div><h4>NestJS on AKS</h4><p>Single point of authorization; guards enforce RBAC + the funnel server-side, scoped to <code>distributor_id</code>.</p></div>
+    <div class="stack-card"><div class="ic">DATA</div><h4>MySQL + Cosmos DB</h4><p>Installers, staff, roles, module-enablement, licence views + high-write System Config audit - all in the distributor's region cluster.</p></div>
+    <div class="stack-card"><div class="ic">PLATFORM</div><h4>Redis &middot; Blob &middot; Key Vault</h4><p>Sessions/funnel flags, report exports, and secrets by alias.</p></div>
+  </div>
+  <div class="toc">
+    <h3>Modules in this specification</h3>
+    <div class="toc-grid">
+      <a href="#m01"><span class="n">01</span>Authentication</a>
+      <a href="#m02"><span class="n">02</span>Distributor Dashboard</a>
+      <a href="#m03"><span class="n">03</span>My Profile</a>
+      <a href="#m04"><span class="n">04</span>Distributor Staff &amp; Internal Roles</a>
+      <a href="#m05"><span class="n">05</span>Installer Management</a>
+      <a href="#m06"><span class="n">06</span>Module Enablement (Funnel)</a>
+      <a href="#m07"><span class="n">07</span>Unit Visibility (Oversight)</a>
+      <a href="#m08"><span class="n">08</span>Reports &amp; Analytics</a>
+      <a href="#m09"><span class="n">09</span>MeetMe Licences (View own)</a>
+      <a href="#m10"><span class="n">10</span>Audit Trail &amp; Compliance</a>
+      <a href="#m11"><span class="n">11</span>Escalations &amp; Temporary Access</a>
+      <a href="#m12"><span class="n">12</span>Notifications</a>
+      <a href="#m13"><span class="n">13</span>Logout</a>
+    </div>
+  </div>
+
+  <div class="section-label">Architecture &amp; Cross-Cutting Standards</div>
+  <h2>Technical Architecture Overview</h2>
+  <p class="sub">The contracts every module inherits</p>
+  <div class="card">
+    <p style="font-size:14px;">The Distributor Portal is one role-rendering of the global React Admin SPA. All requests traverse <strong>Azure API Management -&gt; the regional AKS cluster (NestJS) -&gt; data stores</strong>. The backend is the single point of authorization: it derives the caller's tier and scope from the JWT on <strong>every</strong> request and enforces RBAC and the funnel server-side. The Distributor's scope is its <strong>own entity</strong> only (<code>distributor_id</code> = <code>entity_id</code>); it can see its own installers/properties but has <strong>no upward or lateral</strong> visibility, and operational data inside modules is not exposed.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">REQUEST PATH</span>
+Distributor (React SPA)  --HTTPS + Bearer JWT-->  Azure API Management  (routes by cluster_id)
+        |
+        v
+NestJS API Gateway / BFF  --->  Guard chain:
+        JwtAuthGuard -> SessionGuard -> RolesGuard (role=DISTRIBUTOR, tier=L2) -> ScopeGuard (WHERE distributor_id = own) -> ModuleEnabledGuard
+        |                                          (AuditInterceptor logs every config write)
+        v
+Domain services (Installer / Module / Staff / Licence-view / Audit / ...)  --->  Data stores
+
+<span class="h">SCOPE &amp; FUNNEL</span>
+HQ defines     the module set the Distributor MAY use (top of funnel)
+Distributor    enables a SUBSET of that set for each Installer (cannot exceed HQ's ceiling)
+Enforcement    API-level (ModuleEnabledGuard + Redis flags), not just the UI
+
+<span class="h">DATA STORES (within the distributor's region cluster)</span>
+MySQL (Azure)     installers (installer_id), staff, roles, module-enablement, licence-allocation view
+Cosmos DB         System Configuration Audit Trail (own scope; append-only, immutable)
+Redis             sessions &middot; module-flag (funnel) cache &middot; perms cache
+Azure Blob        report exports
+Data residency    all data resident in the distributor's cluster_id region; mutually isolated by entity_id</div>
+    <div class="callout blue"><h4>Cross-Cutting Standards (every module inherits)</h4>
+      <p><b>CC-01 Funnel</b> - Distributor can only enable HQ-permitted modules for installers, enforced API-level &nbsp;&middot;&nbsp; <b>CC-02 Scope</b> - ScopeGuard <code>distributor_id</code> (own data only; cross-scope -&gt; 403) &nbsp;&middot;&nbsp; <b>CC-03 Soft delete</b> - <code>status</code> (reactivatable; hard purge only via HQ retention job) &nbsp;&middot;&nbsp; <b>CC-04 Encryption</b> - PII columns + Key Vault &nbsp;&middot;&nbsp; <b>CC-05 Validation</b> - ValidationPipe + DTOs &nbsp;&middot;&nbsp; <b>CC-06 Audit</b> - AuditInterceptor -&gt; System Config Audit Trail (own scope) &nbsp;&middot;&nbsp; <b>CC-07 Onboarding email</b> - async queue &nbsp;&middot;&nbsp; <b>CC-08 Data residency</b> - resident in the distributor's cluster_id.</p>
+    </div>
+    <div class="callout green"><h4>Standard Error Codes</h4>
+      <p><code>400</code> validation &middot; <code>401</code> unauthenticated &middot; <code>403</code> out-of-scope / forbidden / funnel &middot; <code>404</code> not found &middot; <code>409</code> conflict (e.g. duplicate email) &middot; <code>422</code> semantically invalid &middot; <code>429</code> rate-limit &middot; <code>500</code> internal. Every response uses one envelope with a <code>correlation_id</code>.</p>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Platform Context</div>
+  <h2>Where the Distributor Sits</h2>
+  <p class="sub">The channel tier between HQ governance and Installer execution</p>
+  <div class="card">
+    <p style="font-size:14px;">The Distributor (L2) is the <strong>bridge between HQ governance and operational execution</strong>. HQ (L1) creates and activates the Distributor; the Distributor then manages Installation Companies (L3) within its assigned <strong>country/countries</strong>, enables a subset of HQ-permitted modules for them, and supports their escalations. Multiple distributors may operate in the same country - each is a separate <strong>Distributor Entity</strong> (<code>entity_id</code>) and fully data-isolated.</p>
+    <div class="callout blue"><h4>The Four Tiers (Ownership-Based Access)</h4>
+      <p><b>L1 HQ / FAP</b> - governance, creates Distributors. &nbsp;<b>L2 Distributor</b> - channel layer, manages installers within a country (this document; own <code>entity_id</code>). &nbsp;<b>L3 Installer</b> - execution layer, onboards properties (own <code>installer_id</code>). &nbsp;<b>L4 Property Manager</b> - site operations. Each layer acts only on what it owns; upstream may <strong>observe</strong> downstream but not <strong>operate</strong> it; downstream has no upward/lateral visibility.</p>
+    </div>
+    <div class="callout green"><h4>Scope Note - Excluded from this revision (not in Global Requirements r5.0)</h4><p>The following were present in earlier reference material but are <strong>not stated in Global Requirements r5.0</strong>, so they are excluded here pending a separate SOW/NFR sign-off: <strong>MFA / OTP</strong> + NFR-only login detail (single-session, lockout, forgot-password); <strong>Localization (en/zh-SG/vi)</strong>; and <strong>Licence ALLOCATION to installers</strong>. The Global Requirements RBAC matrix grants the Distributor only "Licenses (MeetMe) - View own + modify password &amp; validity" - allocation-to-installers is an SOW 4.4 extension beyond the matrix (see Open Items / Module 09).</p></div>
+    <div class="callout amber"><h4>Open Items (to confirm with FAP)</h4>
+      <p><b>OI-1 Entity vs Region:</b> <code>cluster_id</code> = region, <code>entity_id</code> = distributor (L2). &nbsp;<b>OI-2 Licence allocation:</b> SOW 4.4 "allocate to installers" extends the Global Req RBAC matrix ("View own + modify password/validity") - confirm whether the authoritative matrix is updated; if so, add an allocation capability to Module 09. &nbsp;<b>OI-3 Escalated/temporary access</b> mechanics to be confirmed in discovery. &nbsp;<b>OI-4</b> final role taxonomy / 66-module catalogue / funnel mapping.</p>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Reference</div>
+  <h2>Glossary &amp; Abbreviations</h2>
+  <p class="sub">Shared terminology used across every module</p>
+  <div class="card"><div class="gloss-grid">
+    <div class="g"><b>Distributor</b><span>Channel tier (L2), this document - a Distributor Entity (<code>entity_id</code>) managing installers within a country</span></div>
+    <div class="g"><b>HQ / FAP</b><span>Global Admin (L1); creates and governs the Distributor; top of the funnel</span></div>
+    <div class="g"><b>Installer</b><span>Installation Company (L3); created by the Distributor; onboards properties (<code>installer_id</code>)</span></div>
+    <div class="g"><b>PM</b><span>Property Manager (L4); operates a property after handover</span></div>
+    <div class="g"><b>Funnel</b><span>Progressive module enablement - the Distributor enables only a subset of HQ-permitted modules</span></div>
+    <div class="g"><b>cluster_id</b><span>Region identifier the Distributor is assigned to (data residency)</span></div>
+    <div class="g"><b>entity_id</b><span>Distributor identifier (= distributor_id); entities are mutually isolated</span></div>
+    <div class="g"><b>RBAC</b><span>Role-Based Access Control</span></div>
+    <div class="g"><b>JWT</b><span>JSON Web Token (carries role, tier, cluster_id, distributor_id)</span></div>
+    <div class="g"><b>Shared Auth DB</b><span>Global centralized auth store - credentials, JWT issuance, user registry</span></div>
+    <div class="g"><b>APIM / AKS</b><span>Azure API Management / Azure Kubernetes Service</span></div>
+    <div class="g"><b>Cosmos DB</b><span>Azure Cosmos DB (NoSQL store for the System Config Audit Trail)</span></div>
+    <div class="g"><b>Redis</b><span>Azure Cache for Redis (sessions, funnel flags, perms)</span></div>
+    <div class="g"><b>Key Vault</b><span>Azure Key Vault (secrets/credentials/keys store, by alias)</span></div>
+    <div class="g"><b>MeetMe / SIP</b><span>Intercom licence / Session Initiation Protocol (voice)</span></div>
+    <div class="g"><b>System Config Audit</b><span>Configuration-change audit trail (own-scope for the Distributor)</span></div>
+    <div class="g"><b>Escalation path</b><span>User -&gt; Property -&gt; Installer -&gt; Distributor -&gt; HQ (no direct User -&gt; HQ)</span></div>
+    <div class="g"><b>DTO</b><span>Data Transfer Object (validated by class-validator)</span></div>
+  </div></div>
+  <div class="section-divider"></div>
+
+  <div class="section-label">Integrations</div>
+  <h2>Integration Layer</h2>
+  <p class="sub">All external calls use a resilient client (TLS, timeout + retry + circuit breaker; credentials from Key Vault; idempotent)</p>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Integration</th><th>Protocol</th><th>Used by</th></tr></thead><tbody>
+      <tr><td><strong>Shared Auth DB</strong></td><td>internal API, JWT</td><td>Authentication, all guards</td></tr>
+      <tr><td><strong>Azure API Management</strong></td><td>gateway routing</td><td>Every request (routes by cluster_id)</td></tr>
+      <tr><td><strong>Email service</strong></td><td>async queue + retry</td><td>Installer onboarding / activation / notifications</td></tr>
+      <tr><td><strong>MeetMe licence service</strong></td><td>SIP API</td><td>Own licence view + password/validity update</td></tr>
+      <tr><td><strong>App Insights (per cluster)</strong></td><td>telemetry</td><td>Escalation audit / error logs</td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 01 ===================== -->
+  <div class="section-label">Module 01</div><a id="m01"></a><h2>Authentication</h2><p class="sub">Shared Auth DB credential validation + JWT issuance</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>AuthModule</code></div><div class="m"><b>Services:</b> AuthService &middot; TokenService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Authenticate the Distributor user against the global Shared Auth DB and issue the role-and-scope JWT. (Per Global Req: the Shared Auth DB manages login credentials and JWT token generation; regional assignment - <code>cluster_id</code>, <code>distributor_id</code>, role - is resolved at login and embedded in the token.)</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Credential validation is delegated to the <strong>Shared Auth DB</strong>; on success a signed <strong>JWT</strong> is issued carrying role + scope. Azure API Management routes the request to the distributor's cluster by <code>cluster_id</code>; the NestJS backend re-reads role/ids from the JWT on every request and scopes all queries to <code>distributor_id</code>.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Credential validation (Shared Auth DB)</span><span class="chip">JWT issuance</span><span class="chip">Scope resolution (distributor_id)</span><span class="chip">Server-side RBAC render</span></div>
+  </div>
+  <div class="card"><h3>Login Flow</h3><div class="flow">
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Submit credentials</div><div class="desc">React posts Email/Password over HTTPS.</div><div class="detail-box"><code>POST /api/v1/auth/login</code> -&gt; validated against the <strong>Shared Auth DB</strong>. Invalid -&gt; <span class="tag tag-red">401</span>.</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">JWT issued</div><div class="desc">Signed token carries role + scope.</div><div class="detail-box">JWT: <code>sub, role=DISTRIBUTOR, tier=L2, cluster_id, distributor_id</code>. APIM routes by <code>cluster_id</code>.</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Scoped RBAC render</div><div class="desc"><code>ProtectedRoute</code> renders only Distributor routes; the backend re-validates the JWT on every request and scopes data to <code>distributor_id</code>.</div></div></div>
+  </div></div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>POST /api/v1/auth/login</code> -&gt; Shared Auth DB validation, JWT issuance. Backend re-reads role/ids from the JWT on every request (single point of authorization). All authentication events written to the audit trail (Login History).</div>
+    <div class="callout green"><h4>Persistence</h4><p>Credentials/registry in the Shared Auth DB; session context in Redis. <em>(MFA/OTP, single-session, lockout, forgot-password excluded - not in Global Req.)</em></p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 02 ===================== -->
+  <div class="section-label">Module 02</div><a id="m02"></a><h2>Distributor Dashboard <span class="pill pill-new">NEW MODULE</span></h2><p class="sub">Own-scope KPIs, read-only</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>DashboardModule</code></div><div class="m"><b>Services:</b> DashboardService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">A role-scoped landing screen summarizing the Distributor's <strong>own</strong> scope: number of installation companies, properties, and aggregate user count (Global Req "Distributors - Visibility: Number of Installation Companies + Installers; Properties; Aggregate user count within the distributor's assigned scope").</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>React renders KPI cards from a single <code>GET /dashboard/kpis</code>, computed from aggregate read models scoped to <code>distributor_id</code>. Personal user data is never exposed upward (aggregate counts only). Note: the HQ "Global Dashboard" is <strong>No Access</strong> for L2; this is the distributor's own scoped view.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Own installers count</span><span class="chip">Own properties count</span><span class="chip">Aggregate user count</span><span class="chip">Active modules / onboarding status</span><span class="chip">Drill-through (scoped, read-only)</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET /api/v1/dashboard/kpis</code> behind Jwt + Roles(L2) + Scope(distributor_id). Aggregate counts only; no personal data; each KPI links to its scoped list.</div>
+    <div class="callout green"><h4>Persistence</h4><p>Read-only over MySQL aggregates + Redis counters (scoped to distributor_id). No writes.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 03 ===================== -->
+  <div class="section-label">Module 03</div><a id="m03"></a><h2>My Profile</h2><p class="sub">View/update own profile, change password</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>ProfileModule</code></div><div class="m"><b>Services:</b> ProfileService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Lets the logged-in Distributor user view/update their own profile and change password. (Distributor Management RBAC for L2 = "View own profile only".)</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>React profile forms call scoped <code>/me</code> endpoints; the backend resolves the target from the JWT <code>sub</code>. PII columns encrypted; old password verified server-side before any change.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">View own profile</span><span class="chip">Update name/phone/photo</span><span class="chip">Change password</span><span class="chip">Email/Username immutable</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET /api/v1/me</code> &middot; <code>PUT /api/v1/me</code> &middot; <code>PUT /api/v1/me/password</code> (verifies Old Password first). Distributor company profile is view-only (created by HQ).</div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL <code>admin_user</code> (PII encrypted).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 04 ===================== -->
+  <div class="section-label">Module 04</div><a id="m04"></a><h2>Distributor Staff &amp; Internal Roles</h2><p class="sub">Create internal staff accounts and define/assign roles within scope</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>StaffModule</code></div><div class="m"><b>Services:</b> StaffService &middot; RoleService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Create and manage the Distributor's own internal staff accounts and the internal roles assigned to them, within the distributor's scope (Global Req Process Flow: "Distributor creates internal staff roles").</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Scoped CRUD over distributor staff and roles. Roles are defined within the distributor's scope; staff are assigned a role; new staff receive an activation email (async queue). All access stays bounded to <code>distributor_id</code>.</p></div>
+    <div class="callout green"><h4>Access Model - full vs limited (role-driven)</h4><p>A staff member's access is <strong>exactly what their assigned role permits</strong> - full or limited (least-privilege). <b>Example:</b> a staff with an installer-onboarding role <strong>can create installers</strong>; a "Viewer" role <strong>cannot</strong> - only reads. Every action is attributable in the audit trail.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">CRUD staff (internal)</span><span class="chip">Define / assign internal roles</span><span class="chip">Full or limited access (role-driven)</span><span class="chip">Activation email</span><span class="chip">Soft delete</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET/POST/PUT/DELETE /api/v1/staff</code> (paginated/search; email unique) &middot; <code>GET/POST/PUT /api/v1/roles</code> (within scope) &middot; <code>PUT /api/v1/roles/{id}/permissions</code> (evicts perms cache). Delete soft; all staff/role actions audited.</div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL <code>staff_user</code> (PII encrypted), <code>role</code> (distributor scope), <code>role_permission</code>.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 05 ===================== -->
+  <div class="section-label">Module 05</div><a id="m05"></a><h2>Installer Management</h2><p class="sub">Create / Activate / Suspend / Soft-delete / List - the core entity</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>InstallerModule</code></div><div class="m"><b>Services:</b> InstallerService &middot; InstallerOnboardingService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Create an Installation Company (Installer) with its primary admin and module selection, within the distributor's assigned country/countries; then list, view, edit, activate, suspend, and soft-delete it (Global Req: "Manage installation companies within assigned country or countries"; RBAC "Installer Management - Full Access (own data only)").</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Creation runs in a single MySQL transaction (installer + primary-admin account + module rows), generates a unique <code>installer_id</code> under the distributor, then enqueues an activation email and writes an audit entry. The selectable module set is constrained server-side to the <strong>distributor's HQ-allowed set</strong> (the funnel). An installer cannot be suspended/deleted while it has active properties.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Create installer + primary admin</span><span class="chip">Country within distributor scope</span><span class="chip">Module selection (HQ-allowed subset)</span><span class="chip">Activate / Suspend / Soft-delete</span><span class="chip">List / search / export</span><span class="chip">Resend activation</span></div>
+  </div>
+  <div class="card"><h3>Create &amp; Activation Flow</h3><div class="flow">
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Fill installer form</div><div class="desc">Company + country + primary admin + module selection.</div><div class="detail-box"><code>POST /api/v1/installers</code> behind Jwt + Roles(L2) + Scope. Country outside distributor scope -&gt; <span class="tag tag-red">403</span>; module outside HQ-allowed set -&gt; <span class="tag tag-red">403</span>.</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Transaction + installer_id</div><div class="desc">Installer + admin + module rows written atomically.</div><div class="detail-box">Generates unique <code>installer_id</code> under <code>distributor_id</code>; status = <code>Pending Activation</code>. <span class="tag tag-green">Atomic</span></div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Activation email + audit</div><div class="desc">System Automation emails the installer primary admin; audit written.</div><div class="detail-box">Email (welcome + activation link + expiry ~72h + assigned modules) -&gt; <span class="tag tag-amber">async queue</span>; audit -&gt; System Config trail.</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Installer activates</div><div class="desc">Link -&gt; sets password -&gt; accepts T&amp;Cs -&gt; Active; then creates its own staff.</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--red);">5</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Suspend / delete (guarded)</div><div class="desc">Blocked while active properties exist.</div><div class="detail-box"><code>DELETE /installers/{id}</code> -&gt; <span class="tag tag-red">409</span> if active properties; else soft-delete (reactivatable).</div></div></div>
+  </div></div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>POST/GET/PUT/DELETE /api/v1/installers</code> (filters: country, status, date; ?q= search; CSV export) &middot; <code>POST /installers/{id}/activate|suspend</code> &middot; <code>POST /installers/{id}/resend-activation</code>. Detail view shows properties count, staff, aggregate user count (no personal data upward).</div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL <code>installer</code> (<code>installer_id</code> PK, <code>distributor_id</code> FK, country, modules[], status) + primary-admin account.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 06 ===================== -->
+  <div class="section-label">Module 06</div><a id="m06"></a><h2>Module Enablement (Funnel)</h2><p class="sub">Enable a subset of HQ-permitted modules per installer</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>ModuleEnablementModule</code></div><div class="m"><b>Services:</b> FunnelService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Enable/disable modules for each installer, restricted to the HQ-allowed subset (Global Req: "Select and enable modules for installation companies (within HQ-defined scope)"; RBAC "Modules Configuration - Enable subset for Installers").</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>The distributor's allowed set (the funnel ceiling defined by HQ) bounds what can be enabled per installer. On change, the backend refreshes the Redis <strong>module-flag cache</strong> so the funnel is enforced API-level (ModuleEnabledGuard) on the next request - <strong>technically enforced at the API level, not just the UI</strong> (Global Req). An installer can never receive more than the distributor was permitted.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Per-installer module enablement</span><span class="chip">Subset of HQ-allowed set</span><span class="chip">API-enforced funnel</span><span class="chip">Redis flag propagation</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET/PUT /api/v1/installers/{id}/modules</code> (subset of distributor's HQ-allowed set; else <span class="tag tag-red">403</span>). Save refreshes module flags in Redis; change audited.</div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL <code>installer_module</code> (enablement rows); flags cached in Redis.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 07 ===================== -->
+  <div class="section-label">Module 07</div><a id="m07"></a><h2>Unit Visibility (Oversight)</h2><p class="sub">View-only units of own installers' properties</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>UnitOversightModule</code></div><div class="m"><b>Services:</b> UnitQueryService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Provide <strong>view-only</strong> visibility of units within the properties of the distributor's own installers (RBAC "Unit Management - View Access (own data only)" for L2).</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Read-only endpoints scoped to <code>distributor_id</code> (via its installers). No create/update/delete on this surface - the Distributor observes but does not operate unit data. Personal/operational data inside modules is not exposed.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">View units of own installers</span><span class="chip">Read-only</span><span class="chip">No operational drill-in</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET /api/v1/units</code> &middot; <code>GET /api/v1/units/{id}</code> (scoped to own installers' properties; read-only). Cross-scope access -&gt; <span class="tag tag-red">403</span>.</div>
+    <div class="callout green"><h4>Persistence</h4><p>Read-only over MySQL (scoped); no writes.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 08 ===================== -->
+  <div class="section-label">Module 08</div><a id="m08"></a><h2>Reports &amp; Analytics <span class="pill pill-new">NEW MODULE</span></h2><p class="sub">Own data only, exportable, read-only</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>ReportsModule</code></div><div class="m"><b>Services:</b> ReportsService &middot; ReportExportService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Provide read-only reports and analytics scoped to the distributor's own data (RBAC "Reports &amp; Analytics - View Access (own data only)").</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Reports read from MySQL aggregates scoped to <code>distributor_id</code>; exports run <strong>async</strong> (<code>202 + jobId</code>, CSV/Excel to Blob). Read-only - no operational actions.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Installer summary</span><span class="chip">Property summary</span><span class="chip">User summary</span><span class="chip">Module usage</span><span class="chip">Licence usage (own)</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET /api/v1/reports/{type}?from=&amp;to=</code> where type in {installer-summary, property-summary, user-summary, module-usage, licence-usage}. <code>GET /reports/{type}/export</code> -&gt; <span class="tag tag-amber">202 {jobId}</span>. Scoped to own data; read-only.</div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL aggregates (read, scoped) + Blob (export artifacts).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 09 ===================== -->
+  <div class="section-label">Module 09</div><a id="m09"></a><h2>MeetMe Licences (View own)</h2><p class="sub">View own licences + modify password / validity</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>LicenceModule</code></div><div class="m"><b>Services:</b> LicenceViewService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">View the MeetMe (SIP) licences assigned to the distributor and modify their password / validity (RBAC "Licenses Management (Meetme) - View own + modify password &amp; validity" for L2).</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Read view over the licences HQ has assigned to the distributor (available/assigned/used), plus a guarded update of password/validity. SIP credentials are stored in <strong>Key Vault</strong> (never exposed in plaintext to UI or logs). Changes are audited.</p></div>
+    <div class="callout amber"><h4>Scope Note - Licence allocation to installers (EXCLUDED)</h4><p>"Allocate licences to installers" (the distributor's SOW 4.4 capability) is <strong>not in the Global Requirements RBAC matrix</strong>, which grants L2 only "View own + modify password &amp; validity". It is therefore excluded from this revision. If FAP confirms the matrix is extended (OI-2), add an allocation flow + <code>POST /installers/{id}/licences</code> here.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">View own licences (available/assigned/used)</span><span class="chip">Modify password / validity</span><span class="chip">Expiry tracking</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET /api/v1/licences</code> (own, scoped) &middot; <code>PUT /api/v1/licences/{id}</code> (password / validity only). Credentials in Key Vault; changes audited. <em>No allocate/purchase endpoints (HQ-only / excluded).</em></div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL <code>licence</code> view (scoped to distributor); SIP creds -&gt; Azure Key Vault.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 10 ===================== -->
+  <div class="section-label">Module 10</div><a id="m10"></a><h2>Audit Trail &amp; Compliance</h2><p class="sub">System Configuration Audit Trail - own scope, read-only</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>AuditModule</code></div><div class="m"><b>Services:</b> AuditQueryService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Let the Distributor view the System Configuration Audit Trail for the changes it owns (Global Req: System Configuration Audit Trail spans Global/Regional (Distributor)/Installer tiers) - immutable and read-only.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Config-change entries are written by the global <code>AuditInterceptor</code> to <strong>Cosmos DB</strong> (append-only), partitioned and scoped to <code>distributor_id</code>. The Distributor reads only its own-scope changes; records carry actor/action/timestamp/before-after. The property-level Access Control Log is PM-visible only and not exposed here.</p></div>
+    <h3 style="margin-top:24px;">Scope (Audit &amp; Compliance Requirements, per Global Req FigJam)</h3><div class="chips"><span class="chip">Login History</span><span class="chip">Permission Changes</span><span class="chip">Role Changes</span><span class="chip">Data Export Tracking</span><span class="chip">Filter / search / export</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET /api/v1/audit/system-config</code> (read-only, scoped to distributor_id, paginated, filter by actor / action type / date). Immutable; retained per the region's retention policy (defined by HQ).</div>
+    <div class="callout green"><h4>Persistence</h4><p>Cosmos <code>system_config_audit</code> (own scope; immutable; per-region TTL).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 11 ===================== -->
+  <div class="section-label">Module 11</div><a id="m11"></a><h2>Escalations &amp; Temporary Access</h2><p class="sub">Handle installer escalations; forward to HQ; time-limited access</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>EscalationModule</code></div><div class="m"><b>Services:</b> EscalationService &middot; TemporaryAccessService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Receive and resolve escalations raised by installers, or forward them to HQ when out of scope (Global Req escalation path: <strong>User -&gt; Property -&gt; Installer -&gt; Distributor -&gt; HQ</strong>; direct User -&gt; HQ not permitted). Also governs <strong>temporary, time-limited access</strong> grants between tiers for issue resolution.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Escalations follow the fixed path; the Distributor resolves within scope or forwards to HQ with status tracking. Per Global Req, when issue resolution requires it, <strong>temporary access may be explicitly granted by the lower tier on a time-limited basis</strong>, and HQ may be granted temporary read-only access to distributor-scope configuration - such access is requested, time-limited, fully audited, and auto-revoked on expiry.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Receive installer escalations</span><span class="chip">Resolve within scope</span><span class="chip">Forward to HQ (out of scope)</span><span class="chip">Time-limited temporary access (audited)</span></div>
+  </div>
+  <div class="card"><h3>Escalation Flow</h3><div class="flow">
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Installer raises escalation</div><div class="desc">Per path: User -&gt; Property -&gt; Installer -&gt; Distributor.</div><div class="detail-box"><code>GET /api/v1/escalations</code> (scoped queue).</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Resolve within scope</div><div class="desc">Distributor handles and updates status; installer notified.</div><div class="detail-box"><code>PUT /api/v1/escalations/{id}</code> (resolve / update).</div></div></div>
+    <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Forward to HQ (if out of scope)</div><div class="desc">Escalated up the path; status tracked.</div><div class="detail-box"><code>POST /api/v1/escalations/{id}/forward</code> -&gt; HQ. May involve time-limited, audited temporary access.</div></div></div>
+  </div></div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>GET/PUT /api/v1/escalations</code> &middot; <code>POST /api/v1/escalations/{id}/forward</code>. Temporary access grants are read-only, time-limited, fully audited, auto-revoked on expiry.</div>
+    <div class="callout green"><h4>Persistence</h4><p>MySQL <code>escalation</code> (scoped); temporary-access grants audited -&gt; Cosmos System Config trail.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 12 ===================== -->
+  <div class="section-label">Module 12</div><a id="m12"></a><h2>Notifications</h2><p class="sub">Installer onboarding &amp; system notifications (email / in-app)</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>NotificationModule</code></div><div class="m"><b>Services:</b> NotificationService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">Deliver automated onboarding and system notifications (Global Req Process Flow: "System Automation fires an email" at each handoff), via email and in-app.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Notifications are enqueued to an async queue with retry; installer activation emails dispatch at each handoff. In-app notifications are read from a scoped inbox.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Installer created / activated</span><span class="chip">Installer suspended</span><span class="chip">Activation link re-sent</span><span class="chip">Escalation raised / updated</span></div>
+  </div>
+  <div class="card"><h3>Notification Matrix</h3>
+    <table><thead><tr><th>Action</th><th>Trigger</th><th>Recipient</th><th>Channel</th></tr></thead><tbody>
+      <tr><td>Installer created</td><td>Distributor</td><td>Installer primary</td><td>Email (activation)</td></tr>
+      <tr><td>Account activated</td><td>user activates</td><td>creator (optional)</td><td>Email / in-app</td></tr>
+      <tr><td>Activation link re-sent</td><td>Distributor / user</td><td>target user</td><td>Email (new activation)</td></tr>
+      <tr><td>Installer suspended</td><td>Distributor</td><td>suspended entity admin</td><td>Email / in-app</td></tr>
+      <tr><td>Escalation raised / updated</td><td>installer / system</td><td>Distributor admin</td><td>Email / in-app</td></tr>
+    </tbody></table>
+    <div class="callout green"><h4>Persistence</h4><p>Email via async queue; in-app notifications in MySQL/Cosmos.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== MODULE 13 ===================== -->
+  <div class="section-label">Module 13</div><a id="m13"></a><h2>Logout</h2><p class="sub">End session, return to login</p>
+  <div class="card"><div class="meta-strip"><div class="m"><b>Role:</b> Distributor (Web Portal)</div><div class="m"><b>NestJS module:</b> <code>AuthModule</code></div><div class="m"><b>Services:</b> SessionService</div></div>
+    <h3>Objective</h3><p style="font-size:14px;">End the session and return to the login screen.</p>
+    <div class="callout blue"><h4>Architectural Approach</h4><p>Clears the server-side session context and returns the user to the login screen; idempotent.</p></div>
+    <h3 style="margin-top:24px;">Scope</h3><div class="chips"><span class="chip">Log out of current session</span></div>
+  </div>
+  <div class="card"><h3>Endpoints &amp; Rules</h3><div class="detail-box"><code>POST /api/v1/auth/logout</code> clears the session context; idempotent.</div>
+    <div class="callout green"><h4>Persistence</h4><p>Redis session context.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECURITY ===================== -->
+  <div class="section-label">Security &amp; Compliance</div>
+  <h2>Security, Privacy &amp; Compliance</h2>
+  <p class="sub">Cross-cutting controls every module inherits (scoped to Global Requirements)</p>
+  <div class="card">
+    <table><thead><tr><th>Control</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td><strong>Authentication</strong></td><td>Credential validation via the global Shared Auth DB; signed JWT carrying role + scope (cluster_id, distributor_id, role) resolved at login.</td></tr>
+      <tr><td><strong>Authorization</strong></td><td>Server-side RBAC + funnel: <code>JwtAuthGuard -&gt; SessionGuard -&gt; RolesGuard -&gt; ScopeGuard -&gt; ModuleEnabledGuard</code>. All queries scoped to <code>distributor_id</code>; cross-scope access -&gt; 403. The backend re-reads role/ids from the JWT on every request.</td></tr>
+      <tr><td><strong>Tenant isolation</strong></td><td>Distributor entities are mutually isolated by <code>entity_id</code> within a cluster; the Distributor sees only its own installers/properties; no upward/lateral visibility.</td></tr>
+      <tr><td><strong>Funnel</strong></td><td>The Distributor can enable only HQ-permitted modules for installers; enforced at the API level (not just UI).</td></tr>
+      <tr><td><strong>PII &amp; encryption</strong></td><td>PII columns encrypted at rest (keys in Key Vault); TLS on all transport.</td></tr>
+      <tr><td><strong>Secrets management</strong></td><td>All credentials/keys (MeetMe SIP) in Azure Key Vault by alias; never in config, logs, or client responses.</td></tr>
+      <tr><td><strong>Input validation</strong></td><td><code>ValidationPipe</code> + DTOs on every endpoint; reject with <code>400</code>/<code>422</code>; no SQL/stack leakage.</td></tr>
+      <tr><td><strong>Audit trail</strong></td><td><code>AuditInterceptor</code> logs every distributor config write to the System Configuration Audit Trail (Cosmos, own scope); immutable.</td></tr>
+      <tr><td><strong>Escalation &amp; temporary access</strong></td><td>Escalation path User -&gt; Property -&gt; Installer -&gt; Distributor -&gt; HQ; temporary access is read-only, time-limited, audited, auto-revoked on expiry.</td></tr>
+      <tr><td><strong>Data residency &amp; retention</strong></td><td>Data resident in the distributor's <code>cluster_id</code>; retention/purge defined centrally by HQ, executed per cluster.</td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== NFR ===================== -->
+  <div class="section-label">Non-Functional</div>
+  <h2>Performance &amp; Caching</h2>
+  <p class="sub">Indicative engineering targets - to be confirmed against the authoritative NFR v1.0 (out of Global Requirements scope)</p>
+  <div class="card">
+    <table><thead><tr><th>Path class</th><th>Target (p95)</th><th>Notes</th></tr></thead><tbody>
+      <tr><td><strong>Auth (login)</strong></td><td>&le; 800 ms</td><td>excludes external Shared-Auth variance</td></tr>
+      <tr><td><strong>Standard list/read (scoped)</strong></td><td>&le; 1.5 s</td><td>paginated, cache-assisted</td></tr>
+      <tr><td><strong>Standard create/update</strong></td><td>&le; 1.5 s</td><td>single transaction</td></tr>
+      <tr><td><strong>Dashboard KPIs</strong></td><td>&le; 1 s</td><td>cached counters (distributor scope)</td></tr>
+      <tr><td><strong>Audit / report queries</strong></td><td>&le; 2.5 s</td><td>Cosmos paginated; date-bounded</td></tr>
+      <tr><td><strong>Report export</strong></td><td>async (202)</td><td>progress via GET /jobs/{jobId}</td></tr>
+    </tbody></table>
+    <div class="callout blue"><h4>Redis caches (funnel &amp; reads)</h4><p>Module-flag (funnel) cache &middot; permissions cache (<code>perms:{userId}</code>) &middot; dashboard counters (scoped to distributor_id). Cosmos audit queries must be <strong>partition-scoped + date-bounded</strong>; cross-partition fan-out prohibited on interactive paths (use async export).</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== RESILIENCE ===================== -->
+  <div class="section-label">Resilience</div>
+  <h2>Error Handling &amp; Failure Modes</h2>
+  <p class="sub">Beyond the standard error envelope, integration-heavy &amp; async flows define explicit failure behaviour</p>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Module / flow</th><th>Failure</th><th>Behaviour</th></tr></thead><tbody>
+      <tr><td><strong>Installer onboarding email</strong></td><td>email provider error</td><td>installer persisted <code>Pending</code>; email retried (backoff); distributor can resend activation</td></tr>
+      <tr><td><strong>Module enablement</strong></td><td>module outside HQ-allowed set</td><td>reject <span class="tag tag-red">403</span> (funnel); no partial state</td></tr>
+      <tr><td><strong>Installer suspend / delete</strong></td><td>active properties exist</td><td>reject <span class="tag tag-red">409</span>; deactivate downstream first</td></tr>
+      <tr><td><strong>Licence password/validity update</strong></td><td>SIP API error</td><td>change saved <code>pending</code>; retry + alert; secret never left un-encrypted</td></tr>
+      <tr><td><strong>Report export</strong></td><td>worker crash / partial</td><td>job <code>failed</code> with reason; safe to retry; no orphaned artifact</td></tr>
+      <tr><td><strong>Cross-scope access</strong></td><td>request outside distributor_id</td><td>reject <span class="tag tag-red">403</span>; logged</td></tr>
+      <tr><td><strong>External resilience (all)</strong></td><td>repeated failure</td><td>circuit breaker opens; fail fast with mapped <span class="tag tag-red">503</span> + correlation id; auto half-open retry</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <div class="callout amber"><h4>Cross-cutting resilience</h4><p>TLS on all integration calls; <code>Idempotency-Key</code> on mutating external calls; timeouts + retry-with-backoff + circuit breaker; structured logs carry <code>correlation_id</code>; no secrets/stack/SQL in any client-facing error.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+</div>
+<div class="page-footer">Genio 360 - Distributor Portal Technical SRS &nbsp;|&nbsp; React + NestJS + Microsoft Azure &nbsp;|&nbsp; Engineering Reference</div>
+</body></html>
