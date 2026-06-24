@@ -154,7 +154,7 @@
   <h1>Overall System Architecture Specification</h1>
   <p>The end-to-end engineering blueprint for the Genio360 platform — a Geo-Partitioned, Hierarchical, Multi-Tenant ecosystem rebuilt from the legacy PHP/Yii2 + Objective-C/Java monolith onto React 19, NestJS microservices, and Azure global + regional infrastructure.</p>
   <div class="meta-row">
-    <span class="chip2">Version 2.1 (ARB-Ready)</span>
+    <span class="chip2">Version 2.3 (300K Target)</span>
     <span class="chip2">Client: Fermax Asia Pacific</span>
     <span class="chip2">React 19 · NestJS/AKS · MySQL/Postgres · Cosmos · Redis · Azure</span>
     <span class="chip2">Status: ARB gap remediation complete — Sections 1–19</span>
@@ -169,7 +169,7 @@
   <div class="card">
     <div class="meta-strip">
       <div class="m"><b>Document:</b> Genio360 — Overall System Architecture Specification</div>
-      <div class="m"><b>Version:</b> 2.1 (ARB-Ready)</div>
+      <div class="m"><b>Version:</b> 2.3 (300K Target)</div>
       <div class="m"><b>Status:</b> ARB gap remediation complete — Sections 1–19 enhanced with TCO, resilience, compliance, security, IaC, SLO/SLI, and risk register</div>
       <div class="m"><b>Client:</b> Fermax Asia Pacific</div>
       <div class="m"><b>Audience:</b> Architecture, Engineering, DevOps, QA</div>
@@ -178,6 +178,8 @@
       <tr><td>1.0</td><td>2026-06-23</td><td>Architecture</td><td>Baseline system architecture: global vs regional topology, 4-tier governance, progressive funnel, consolidated integration catalogue, legacy optimization migrations, and governance/retention/security policies. Grounded in the Global Requirements r5.0, the Software Development Final Scope of Work, and the per-portal Technical SRS set (HQ, Distributor, Installer, Property Manager).</td></tr>
       <tr><td>2.0</td><td>2026-06-23</td><td>Principal Architecture</td><td>Production-grade enterprise extension (ARB-ready): added Azure Landing Zone, Network, AKS, CI/CD, Security, Service-to-Service, Observability, DR/BC, Data, Capacity Planning, ADRs, Risk Register, and End-to-End walkthroughs (§8–20). Aligned to Azure Well-Architected Framework, Cloud Adoption Framework, Kubernetes production best practices, OWASP, and Zero Trust.</td></tr>
       <tr><td>2.1</td><td>2026-06-23</td><td>Principal Architecture</td><td>ARB gap remediation: added TCO, business case, Genio360 Lite, shared-service resilience, API contract standards, portal deployment model, integration matrix + resilience patterns, webhook strategy, strangler-fig migration plan, GDPR/PDPA/SOC2/ISO mapping, audit immutability, Azure service limits, DDoS/mTLS/DNS details, pod resources + Velero + Istio/ingress-nginx, IaC/test pyramid/artifact retention, STRIDE threat model, token lifecycle + key rotation, PCI scope minimization, pen-test plan, schema registry/ordering/idempotency, SLO/SLI/error budgets, synthetic monitoring, failover criteria + runbooks, data classification + PII DFD, anonymization, Cosmos replication model, cost-per-scale tier, ADRs 006–008, and additional risks (skill gap, lock-in, migration, regulatory).</td></tr>
+      <tr><td>2.2</td><td>2026-06-23</td><td>Principal Architecture</td><td>Revised TCO tables (Sections 1 and 17) to align with Singapore/SEA budget of $2–3K per cluster per month. Lite row reduced to ~$2,000/mo; added explicit budget-alignment callout, trade-offs, and FinOps guidance.</td></tr>
+      <tr><td>2.3</td><td>2026-06-23</td><td>Principal Architecture</td><td>Target scale locked to 300K users per cluster. Removed Growth and 1M tiers from TCO and capacity tables. Lite row replaced with a single 300K target row at ~$3,000/mo per cluster. Updated AKS sizing, subtitles, and trade-off notes to match the new target.</td></tr>
     </tbody></table>
     <div class="callout amber"><h4>Status of this Baseline</h4><p>This is a <strong>To-Be system architecture specification</strong>. Integration and data claims have been cross-checked against the current PHP/Yii2 codebase (see the code-validated callouts in Section 5) and the <em>Global Requirements r5.0</em> hierarchy. The platform is <strong>100% Azure-native</strong> — there are no AWS dependencies. Any AWS service named in the legacy Scope of Work (S3, DynamoDB, Lambda, ElastiCache, the on-instance socket) maps to its Azure equivalent (Blob, Cosmos DB, Azure Functions, Azure Cache for Redis, Azure Web PubSub) throughout this document.</p></div>
   </div>
@@ -222,15 +224,14 @@
 
   <div class="card">
     <h3>High-Level TCO (per region, per month)</h3>
-    <p style="font-size:14px;">Estimates are directional and assume Azure East Asia pricing with 3-year reserved capacity for steady-state compute. Actual costs depend on negotiated EA rates and DAU/peak patterns.</p>
+    <p style="font-size:14px;">Estimate is directional and assumes Azure East Asia pricing with 3-year reserved capacity for steady-state compute. The target scale is <strong>300K users per cluster</strong> with a budget ceiling of <strong>$3,000 per cluster per month</strong>. Actual costs depend on negotiated EA rates, DAU/peak patterns, and the number of regions.</p>
     <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
-      <table><thead><tr><th>Scale</th><th>Users</th><th>AKS</th><th>Cosmos</th><th>Redis</th><th>MySQL/Postgres</th><th>Blob</th><th>APIM + FD + Other</th><th>Total/mo</th></tr></thead><tbody>
-        <tr><td><strong>Lite</strong></td><td>100K</td><td>~$2.5K</td><td>~$1.5K</td><td>~$0.5K</td><td>~$1K</td><td>~$0.5K</td><td>~$1.5K</td><td>~$7.5K</td></tr>
-        <tr><td><strong>Growth</strong></td><td>500K</td><td>~$8K</td><td>~$7K</td><td>~$2K</td><td>~$3.5K</td><td>~$2K</td><td>~$4K</td><td>~$26.5K</td></tr>
-        <tr><td><strong>Target</strong></td><td>1M</td><td>~$15K</td><td>~$15K</td><td>~$4K</td><td>~$7K</td><td>~$4K</td><td>~$7K</td><td>~$52K</td></tr>
+      <table><thead><tr><th>Scale</th><th>Users</th><th>DAU</th><th>AKS</th><th>Cosmos</th><th>Redis</th><th>MySQL/Postgres</th><th>Blob</th><th>APIM + FD + Other</th><th>Total/mo</th></tr></thead><tbody>
+        <tr><td><strong>Target</strong></td><td>300K</td><td>90K</td><td>~$800</td><td>~$600</td><td>~$200</td><td>~$400</td><td>~$200</td><td>~$600</td><td>~$3,000</td></tr>
       </tbody></table>
     </div>
-    <div class="callout amber"><h4>FinOps Note</h4><p>Reserved Instances for AKS and Cosmos reserved capacity reduce the above by 30–40% at steady state. Cosmos RU is the largest variable cost; autoscale caps and cold-data archiving are mandatory.</p></div>
+    <div class="callout green"><h4>Budget Alignment</h4><p>The single target row is sized to the <strong>$3,000 per cluster per month</strong> budget for Singapore/SEA. It assumes a lean AKS footprint (3–4 small nodes), moderate Cosmos RU, Premium Redis P1, Azure Front Door Standard, and API Management Consumption/Developer tier. This is the production ceiling for the current budget; further growth requires a budget increase or a new region/cluster.</p></div>
+    <div class="callout amber"><h4>FinOps Note</h4><p>Reserved Instances for AKS and Cosmos reserved capacity reduce the above by 30–40% at steady state. Cosmos RU is the largest variable cost; autoscale caps and cold-data archiving are mandatory. Spot instances and non-prod auto-shutdown cut dev/test costs further.</p></div>
   </div>
 
   <div class="section-label">Platform Stack at a Glance</div>
@@ -784,7 +785,7 @@ vnet-asia-prod (spoke)
   <!-- ===================== SECTION 10 — AKS ===================== -->
   <div class="section-label">Section 10 · Kubernetes</div>
   <a id="s10"></a><h2>AKS Kubernetes Architecture</h2>
-  <p class="sub">Cluster design, namespaces, node pools, autoscaling, and pod security for 1M+ users</p>
+  <p class="sub">Cluster design, namespaces, node pools, autoscaling, and pod security for the 300K-user target</p>
   <div class="card">
     <p style="font-size:14px;">Each region runs a dedicated, <strong>private</strong> AKS cluster (e.g. <code>aks-prod-asia</code>) with the API server isolated (private cluster + authorized IP ranges), Microsoft Entra + Kubernetes RBAC integration, Azure CNI Overlay networking, and a service mesh for mTLS. Workloads are partitioned by <strong>namespace per bounded context</strong>; system/ingress workloads run on a separate node pool from application workloads.</p>
 <div class="arch-tree" style="margin-top:16px;"><span class="h">CLUSTER: aks-prod-asia  (private, Entra-integrated, multi-AZ)</span>
@@ -812,7 +813,7 @@ NAMESPACES (network-policy isolated, mesh mTLS)
       <div class="what-item"><div class="icon">🔐</div><div><h3>Pod Security Standards</h3><p><strong>Restricted</strong> PSS enforced via Azure Policy/Gatekeeper: non-root, read-only rootfs, drop ALL caps, no privilege escalation, seccomp RuntimeDefault. Workload Identity for Key Vault (no secrets in pods).</p></div></div>
     </div>
     <div class="callout green"><h4>Namespace &amp; Isolation Strategy</h4><p>One namespace per bounded context with default-deny <code>NetworkPolicy</code>; resource quotas + limit ranges per namespace; separate node pools isolate noisy/PCI workloads. <strong>Environment isolation</strong> is by cluster/subscription (Dev/UAT/Prod never share a cluster).</p></div>
-    <div class="callout blue"><h4>Cluster Sizing (Prod, per region — 1M users)</h4><p>Baseline: <code>apps</code> pool 6-40 nodes (D8s_v5), <code>ingress</code> 3 nodes, <code>system</code> 3 nodes across 3 AZs; PodDisruptionBudgets + topology spread for AZ resilience; node surge upgrades. See Section 17 for the full sizing model.</p></div>
+    <div class="callout blue"><h4>Cluster Sizing (Prod, per region — 300K users)</h4><p>Baseline: <code>apps</code> pool 3-4 nodes (D4s_v5), <code>ingress</code> 2 nodes, <code>system</code> 2 nodes across 3 AZs; PodDisruptionBudgets + topology spread for AZ resilience; node surge upgrades. See Section 17 for the full sizing model.</p></div>
   </div>
 
   <div class="card">
@@ -991,7 +992,7 @@ Compensating events ◀── rollback: release licence · de-provision panels �
       <div class="what-item"><div class="icon">🏷️</div><div><h3>Event Versioning</h3><p>Schema registry; additive/backward-compatible changes; <code>eventType</code> + <code>v</code> in envelope; consumers tolerate unknown fields.</p></div></div>
       <div class="what-item"><div class="icon">🧭</div><div><h3>Correlation</h3><p><code>correlation_id</code> + <code>causation_id</code> flow through every hop for distributed tracing (Section 14).</p></div></div>
     </div>
-    <div class="callout amber"><h4>Consistency Choice</h4><p>Within a service boundary: ACID (relational). Across services: <strong>eventual consistency</strong> via events + sagas. This avoids distributed locks/2PC and is what keeps the platform responsive at 1M-user scale.</p></div>
+    <div class="callout amber"><h4>Consistency Choice</h4><p>Within a service boundary: ACID (relational). Across services: <strong>eventual consistency</strong> via events + sagas. This avoids distributed locks/2PC and keeps the platform responsive within the 300K-user target.</p></div>
   </div>
 
   <div class="card">
@@ -1165,37 +1166,34 @@ Resident / PM
   <!-- ===================== SECTION 17 — CAPACITY ===================== -->
   <div class="section-label">Section 17 · Capacity</div>
   <a id="s17"></a><h2>Capacity Planning</h2>
-    <p class="sub">Sizing assumptions for 100K, 500K, and 1M active users per region</p>
+    <p class="sub">Sizing assumptions for the 300K active-user target per region</p>
   <div class="card">
-    <p style="font-size:14px;">Capacity is modelled per region; each region can scale independently. Estimates assume daily-active users (DAU) at 30% of total users, ~20 API calls per user per day, peak load 5x average, and a 1KB average record size for high-write logs. Reserved capacity is purchased for the steady-state baseline; on-demand scaling handles peaks.</p>
+    <p style="font-size:14px;">Capacity is modelled per region; each region can scale independently. The target is <strong>300K users / 90K DAU</strong>, with ~20 API calls per user per day, peak load 5x average (~100 RPS sustained, ~500 RPS burst), and a 1KB average record size for high-write logs. Reserved capacity is purchased for the steady-state baseline; on-demand scaling handles peaks.</p>
     <div class="card" style="padding:0;overflow:hidden;">
       <table><thead><tr><th>Scale</th><th>Users</th><th>DAU</th><th>AKS apps nodes</th><th>Cosmos RU/s</th><th>Redis</th><th>MySQL</th><th>Blob (monthly)</th></tr></thead><tbody>
-        <tr><td><strong>Launch</strong></td><td>100K</td><td>30K</td><td>6-12 (D4s_v5)</td><td>20K</td><td>6 GB P1</td><td>16 vCore, 1 replica</td><td>~500 GB</td></tr>
-        <tr><td><strong>Growth</strong></td><td>500K</td><td>150K</td><td>12-24 (D8s_v5)</td><td>100K</td><td>26 GB P2</td><td>32 vCore, 2 replicas</td><td>~2.5 TB</td></tr>
-        <tr><td><strong>Target</strong></td><td>1M</td><td>300K</td><td>24-40 (D8s_v5)</td><td>200K+</td><td>53 GB P4</td><td>64 vCore, 3 replicas</td><td>~5 TB</td></tr>
+        <tr><td><strong>Target</strong></td><td>300K</td><td>90K</td><td>3-4 (D4s_v5)</td><td>10-20K</td><td>6 GB P1</td><td>8-16 vCore, 1 replica</td><td>~1.5 TB</td></tr>
       </tbody></table>
     </div>
     <div class="what-grid">
       <div class="what-item"><div class="icon">🧮</div><div><h3>AKS Scaling</h3><p>Cluster Autoscaler with HPA per service; burstable pool for peaks; KEDA for Service Bus consumers. Memory pool for heavy report builders.</p></div></div>
       <div class="what-item"><div class="icon">🪙</div><div><h3>Cosmos RU</h3><p>Autoscale 20%–100% of peak; per-container provisioning; separate hot-path (events) from cold-path (audit archive). Reserved capacity for baseline.</p></div></div>
       <div class="what-item"><div class="icon">🔥</div><div><h3>Redis</h3><p>Start Premium P1; cluster mode at P2+; geo-replica for failover. Estimated hit rate > 90% for funnel flags and session data.</p></div></div>
-      <div class="what-item"><div class="icon">💾</div><div><h3>Storage</h3><p>Blob lifecycle: Hot 30 days, Cool 90 days, Archive 7 years. Estimated 5 TB/month at 1M users, with 60% archive after 90 days.</p></div></div>
+      <div class="what-item"><div class="icon">💾</div><div><h3>Storage</h3><p>Blob lifecycle: Hot 30 days, Cool 90 days, Archive 7 years. Estimated ~1.5 TB/month at 300K users, with 60% archive after 90 days.</p></div></div>
     </div>
     <div class="callout amber"><h4>Capacity Review Cadence</h4><p>Run monthly at growth stage and quarterly at steady state. Load tests (k6/Artillery) mimic peak event days (e.g. AGM voting) and FR batch syncs. Results feed the autoscaler thresholds and resource quotas.</p></div>
   </div>
 
   <div class="card">
-    <h3>Cost Model per Scale Tier</h3>
-    <p style="font-size:14px;">Capacity is sized to user count; cost is driven by AKS compute, Cosmos RU, Redis, MySQL, Blob, and shared services. Reserved capacity and autoscale caps are the primary levers.</p>
+    <h3>Cost Model</h3>
+    <p style="font-size:14px;">Capacity is sized to the <strong>300K-user target</strong> with a budget ceiling of <strong>$3,000 per cluster per month</strong>. Cost is driven by AKS compute, Cosmos RU, Redis, MySQL, Blob, and shared services. Reserved capacity and autoscale caps are the primary levers.</p>
     <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
       <table><thead><tr><th>Scale</th><th>AKS/mo</th><th>Cosmos RU/mo</th><th>Redis/mo</th><th>MySQL/mo</th><th>Blob/mo</th><th>APIM+FD/mo</th><th>Total/mo</th></tr></thead><tbody>
-        <tr><td><strong>Lite 100K</strong></td><td>~$2.5K</td><td>~$1.5K</td><td>~$0.5K</td><td>~$1K</td><td>~$0.5K</td><td>~$1.5K</td><td>~$7.5K</td></tr>
-        <tr><td><strong>Growth 500K</strong></td><td>~$8K</td><td>~$7K</td><td>~$2K</td><td>~$3.5K</td><td>~$2K</td><td>~$4K</td><td>~$26.5K</td></tr>
-        <tr><td><strong>Target 1M</strong></td><td>~$15K</td><td>~$15K</td><td>~$4K</td><td>~$7K</td><td>~$4K</td><td>~$7K</td><td>~$52K</td></tr>
+        <tr><td><strong>Target 300K</strong></td><td>~$800</td><td>~$600</td><td>~$200</td><td>~$400</td><td>~$200</td><td>~$600</td><td>~$3,000</td></tr>
       </tbody></table>
     </div>
     <div class="sec-item green"><h4>RU Cost Model</h4><p>Cosmos is provisioned with autoscale between 20% and 100% of peak. Reserved capacity is purchased for the baseline. Hot path (events) and cold path (audit archive) are in separate containers to prevent cold data from consuming hot RU.</p></div>
-    <div class="sec-item blue"><h4>Storage Cost Model</h4><p>Blob lifecycle moves data Hot→Cool after 30 days, Cool→Archive after 90 days. Archive is 7 years for audit. At 1M users, ~60% of monthly Blob volume is archived after 90 days, reducing effective storage cost by ~40%.</p></div>
+    <div class="sec-item blue"><h4>Storage Cost Model</h4><p>Blob lifecycle moves data Hot→Cool after 30 days, Cool→Archive after 90 days. Archive is 7 years for audit. At 300K users, ~60% of monthly Blob volume is archived after 90 days, reducing effective storage cost by ~40%.</p></div>
+    <div class="sec-item red"><h4>Trade-Offs at $3K Budget</h4><p>The target assumes a lean footprint: 3–4 small AKS nodes, API Management Consumption or Developer tier, Premium Redis P1, and constrained Cosmos RU. This supports HA across Availability Zones for the 300K target but is not over-provisioned for large spikes. Growth beyond 300K users requires either a larger budget or an additional cluster/region.</p></div>
   </div>
   <div class="section-divider"></div>
 
@@ -1204,7 +1202,7 @@ Resident / PM
   <a id="s18"></a><h2>Architecture Decision Records (ADRs)</h2>
   <p class="sub">Rationale for major design choices</p>
   <div class="card">
-    <div class="sec-item"><h4>ADR-001 — Why AKS instead of App Service / Container Apps</h4><p><strong>Context:</strong> Need to host 10+ bounded-context services at 1M-user scale with independent scaling, network policies, and a service mesh.</p><p><strong>Alternatives:</strong> App Service (simpler but per-plan scaling limits and no service mesh), Container Apps (better for event-driven but less mature control over networking).</p><p><strong>Decision:</strong> AKS. Private cluster, custom node pools, NetworkPolicy, HPA/VPA, mature service mesh, and enterprise support.</p></div>
+    <div class="sec-item"><h4>ADR-001 — Why AKS instead of App Service / Container Apps</h4><p><strong>Context:</strong> Need to host 10+ bounded-context services at 300K-user scale with independent scaling, network policies, and a service mesh.</p><p><strong>Alternatives:</strong> App Service (simpler but per-plan scaling limits and no service mesh), Container Apps (better for event-driven but less mature control over networking).</p><p><strong>Decision:</strong> AKS. Private cluster, custom node pools, NetworkPolicy, HPA/VPA, mature service mesh, and enterprise support.</p></div>
     <div class="sec-item blue"><h4>ADR-002 — Why Cosmos DB instead of MongoDB / DynamoDB</h4><p><strong>Context:</strong> High-write logs, audit, events, and forms must be globally distributed but Azure-native.</p><p><strong>Alternatives:</strong> MongoDB Atlas (third-party, vendor ops), DynamoDB (AWS-only), PostgreSQL partitioning (complex at this scale).</p><p><strong>Decision:</strong> Azure Cosmos DB for 99.999% SLA, turnkey global distribution, TTL, and unified Azure security.</p></div>
     <div class="sec-item green"><h4>ADR-003 — Why Azure API Management</h4><p><strong>Context:</strong> Single external gateway for web/mobile, routing to regional clusters, and enforcing auth/quota.</p><p><strong>Alternatives:</strong> Application Gateway + custom auth layer (more code), Ambassador Edge Stack (operational burden).</p><p><strong>Decision:</strong> APIM for built-in token validation, throttling, caching, routing, and centralized policy.</p></div>
     <div class="sec-item amber"><h4>ADR-004 — Why Azure Cache for Redis</h4><p><strong>Context:</strong> Sessions, funnel flags, and FR sync rules need sub-millisecond, atomic access.</p><p><strong>Alternatives:</strong> In-memory (no shared cache across pods), Memcached (no persistence/geo-replica).</p><p><strong>Decision:</strong> Redis Premium for atomic operations, pub/sub, geo-replication, and high availability.</p></div>
@@ -1243,6 +1241,6 @@ Resident / PM
 
 </div>
 <div class="page-footer">
-  Genio360 — Overall System Architecture Specification · Version 2.1 (ARB-Ready) · Fermax Asia Pacific · Engineering Reference
+  Genio360 — Overall System Architecture Specification · Version 2.3 (300K Target) · Fermax Asia Pacific · Engineering Reference
 </div>
 </body></html>
