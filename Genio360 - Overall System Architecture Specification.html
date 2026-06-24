@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genio360 — Overall System Architecture Specification</title>
+<style>
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --blue:#1B4FD8;--blue-lt:#EEF2FF;--green:#0F9C60;--green-lt:#ECFDF5;
+    --red:#DC2626;--red-lt:#FEF2F2;--amber:#D97706;--amber-lt:#FFFBEB;
+    --indigo:#4F46E5;--indigo-lt:#EEF2FF;--gray:#64748B;--gray-lt:#F8FAFC;
+    --border:#E2E8F0;--text:#1E293B;--heading:#0F172A;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text);background:#F1F5F9;line-height:1.6;}
+  .page-header{background:linear-gradient(135deg,#0F172A 0%,#4F46E5 100%);color:#fff;padding:48px 60px 40px;}
+  .page-header .badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+       border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1.2px;padding:4px 14px;margin-bottom:18px;text-transform:uppercase;}
+  .page-header h1{font-size:36px;font-weight:800;line-height:1.15;margin-bottom:12px;}
+  .page-header p{font-size:16px;opacity:.85;max-width:760px;}
+  .meta-row{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;}
+  .meta-row .chip2{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;font-size:12px;padding:5px 12px;color:#fff;}
+  .container{max-width:1100px;margin:0 auto;padding:48px 24px;}
+  .toc{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:36px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .toc h3{font-size:15px;color:var(--heading);margin-bottom:14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 18px;}
+  @media(max-width:780px){.toc-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:520px){.toc-grid{grid-template-columns:1fr;}}
+  .toc-grid a{font-size:13px;color:var(--blue);text-decoration:none;padding:3px 0;display:flex;gap:8px;}
+  .toc-grid a .n{color:var(--gray);font-variant-numeric:tabular-nums;min-width:24px;}
+  .section-label{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--indigo);margin-bottom:8px;}
+  .section-label::before{content:'';display:block;width:28px;height:2px;background:var(--indigo);}
+  h2{font-size:24px;font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .sub{font-size:14px;color:var(--gray);margin-bottom:22px;}
+  h3{font-size:16px;font-weight:700;color:var(--heading);margin-bottom:10px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  code{background:#E8EDF5;border-radius:4px;padding:2px 6px;font-size:12px;font-family:"Fira Code","Courier New",monospace;color:var(--indigo);}
+  .meta-strip{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .meta-strip .m{background:var(--gray-lt);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;}
+  .meta-strip .m b{color:var(--heading);}
+  .callout{border-radius:12px;padding:16px 20px;margin-top:16px;border:1px solid;}
+  .callout.amber{background:var(--amber-lt);border-color:#FCD68A;}
+  .callout.green{background:var(--green-lt);border-color:#A7F3D0;}
+  .callout.blue{background:var(--blue-lt);border-color:#C7D7F9;}
+  .callout.red{background:var(--red-lt);border-color:#FECACA;}
+  .callout.indigo{background:var(--indigo-lt);border-color:#C7D2FE;}
+  .callout h4{font-size:13px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .callout.green h4{color:var(--green);}.callout.blue h4{color:var(--blue);}
+  .callout.red h4{color:var(--red);}.callout.indigo h4{color:var(--indigo);}
+  .callout p{font-size:14px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .chip{background:var(--indigo-lt);color:var(--indigo);border-radius:20px;font-size:12.5px;font-weight:600;padding:5px 13px;}
+  .flow{display:flex;flex-direction:column;}
+  .flow-step{display:flex;position:relative;}
+  .flow-left{display:flex;flex-direction:column;align-items:center;width:56px;flex-shrink:0;}
+  .step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;z-index:1;}
+  .step-line{width:2px;flex:1;min-height:20px;background:var(--border);margin:0 auto;}
+  .flow-step:last-child .step-line{display:none;}
+  .flow-body{flex:1;padding:0 0 26px 16px;}
+  .flow-body .title{font-weight:700;font-size:15px;color:var(--heading);margin:8px 0 6px;}
+  .flow-body .desc{font-size:14px;color:var(--gray);margin-bottom:10px;}
+  .detail-box{background:var(--gray-lt);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;}
+  .detail-box code{background:#E2E8F0;}
+  .tag{display:inline-block;border-radius:5px;font-size:11px;font-weight:600;padding:2px 8px;margin:2px 2px 2px 0;}
+  .tag-blue{background:var(--blue-lt);color:var(--blue);}.tag-green{background:var(--green-lt);color:var(--green);}
+  .tag-red{background:var(--red-lt);color:var(--red);}.tag-amber{background:var(--amber-lt);color:var(--amber);}
+  .tag-indigo{background:var(--indigo-lt);color:var(--indigo);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{background:var(--indigo);color:#fff;padding:10px 14px;text-align:left;font-weight:600;}
+  tbody tr:nth-child(even){background:var(--gray-lt);}
+  tbody td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tbody td code{background:#E2E8F0;}
+  .pill{display:inline-block;border-radius:20px;font-size:11px;font-weight:600;padding:2px 9px;}
+  .pill-new{background:var(--green-lt);color:var(--green);}
+  .pill-fut{background:var(--amber-lt);color:var(--amber);}
+  .arch-tree{font-family:"Fira Code","Courier New",monospace;font-size:12.5px;background:var(--gray-lt);
+       border:1px solid var(--border);border-radius:10px;padding:20px 24px;white-space:pre;overflow-x:auto;color:var(--text);line-height:1.7;}
+  .arch-tree .h{color:var(--indigo);font-weight:700;}
+  .section-divider{height:40px;}
+  .page-footer{background:var(--heading);color:rgba(255,255,255,.5);text-align:center;padding:24px;font-size:12px;}
+  .mod-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .mod-num{font-size:13px;font-weight:700;color:var(--indigo);background:var(--indigo-lt);border-radius:8px;padding:3px 10px;}
+
+  .stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
+  @media(max-width:880px){.stack-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.stack-grid{grid-template-columns:1fr;}}
+  .stack-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.04);border-top:3px solid var(--indigo);}
+  .stack-card .ic{font-size:24px;margin-bottom:8px;}
+  .stack-card h4{font-size:14px;color:var(--heading);margin-bottom:4px;}
+  .stack-card p{font-size:12.5px;color:var(--gray);}
+  .gloss-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+  @media(max-width:680px){.gloss-grid{grid-template-columns:1fr;}}
+  .gloss-grid .g{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .gloss-grid .g b{color:var(--indigo);min-width:120px;flex-shrink:0;}
+  .perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:680px){.perf-grid{grid-template-columns:1fr;}}
+
+    /* ── ACTORS ── */
+    .actors-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media(max-width:900px){ .actors-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width:600px){ .actors-grid { grid-template-columns: 1fr; } }
+
+    .actor-card {
+      border-radius: 12px;
+      padding: 20px 22px;
+      border: 1px solid transparent;
+    }
+    .actor-card .icon { font-size: 28px; margin-bottom: 10px; }
+    .actor-card h3 { font-size: 15px; margin-bottom: 10px; }
+    .actor-card p { font-size: 13px; }
+    .ac-blue   { background: var(--blue-lt);   border-color: #C7D7F9; color: var(--blue); }
+    .ac-green  { background: var(--green-lt);  border-color: #A7F3D0; color: var(--green); }
+    .ac-amber  { background: var(--amber-lt);  border-color: #FCD68A; color: var(--amber); }
+    .ac-red    { background: var(--red-lt);    border-color: #FECACA; color: var(--red); }
+    .ac-indigo { background: var(--indigo-lt); border-color: #C7D2FE; color: var(--indigo); }
+    .ac-gray   { background: var(--gray-lt);   border-color: var(--border); color: var(--gray); }
+    .actor-card .body { color: var(--text); margin-top:8px; }
+    .actor-card ul { margin:8px 0 0 0; padding-left:18px; }
+    .actor-card li { font-size:12.5px; margin-bottom:4px; }
+
+    /* ── MIGRATION FLOW ── */
+    .flow-body .mig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:680px){ .flow-body .mig-grid { grid-template-columns: 1fr; } }
+
+    .detail-box.legacy   { border-left: 4px solid var(--red);   }
+    .detail-box.proposed { border-left: 4px solid var(--green); }
+    .detail-box .mh { display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+    .detail-box.legacy .mh   { color: var(--red); }
+    .detail-box.proposed .mh { color: var(--green); }
+
+  .what-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+  @media(max-width:680px){.what-grid{grid-template-columns:1fr;}}
+  .what-item{display:flex;gap:14px;align-items:flex-start;background:var(--gray-lt);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .what-item .icon{font-size:24px;line-height:1;flex-shrink:0;}
+  .what-item h3{font-size:14px;color:var(--heading);margin-bottom:4px;}
+  .what-item p{font-size:13px;color:var(--gray);}
+
+  .sec-item{border-left:4px solid var(--indigo);background:var(--gray-lt);border-radius:8px;padding:12px 16px;margin-top:12px;}
+  .sec-item.blue{border-left-color:var(--blue);}
+  .sec-item.green{border-left-color:var(--green);}
+  .sec-item.red{border-left-color:var(--red);}
+  .sec-item.amber{border-left-color:var(--amber);}
+  .sec-item h4{font-size:13px;color:var(--heading);margin-bottom:4px;}
+  .sec-item p{font-size:13px;color:var(--gray);}
+
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="badge">Genio 360 — Engineering Reference</div>
+  <h1>Overall System Architecture Specification</h1>
+  <p>The end-to-end engineering blueprint for the Genio360 platform — a Geo-Partitioned, Hierarchical, Multi-Tenant ecosystem rebuilt from the legacy PHP/Yii2 + Objective-C/Java monolith onto React 19, NestJS microservices, and Azure global + regional infrastructure.</p>
+  <div class="meta-row">
+    <span class="chip2">Version 2.1 (ARB-Ready)</span>
+    <span class="chip2">Client: Fermax Asia Pacific</span>
+    <span class="chip2">React 19 · NestJS/AKS · MySQL/Postgres · Cosmos · Redis · Azure</span>
+    <span class="chip2">Status: ARB gap remediation complete — Sections 1–19</span>
+  </div>
+</div>
+<div class="container">
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <div class="section-label">Section 1 · Document Control</div>
+  <a id="s1"></a><h2>Document Control &amp; Executive Summary</h2>
+  <p class="sub">Ownership, revision history, and the high-level modernization narrative</p>
+  <div class="card">
+    <div class="meta-strip">
+      <div class="m"><b>Document:</b> Genio360 — Overall System Architecture Specification</div>
+      <div class="m"><b>Version:</b> 2.1 (ARB-Ready)</div>
+      <div class="m"><b>Status:</b> ARB gap remediation complete — Sections 1–19 enhanced with TCO, resilience, compliance, security, IaC, SLO/SLI, and risk register</div>
+      <div class="m"><b>Client:</b> Fermax Asia Pacific</div>
+      <div class="m"><b>Audience:</b> Architecture, Engineering, DevOps, QA</div>
+    </div>
+    <table><thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Summary of changes</th></tr></thead><tbody>
+      <tr><td>1.0</td><td>2026-06-23</td><td>Architecture</td><td>Baseline system architecture: global vs regional topology, 4-tier governance, progressive funnel, consolidated integration catalogue, legacy optimization migrations, and governance/retention/security policies. Grounded in the Global Requirements r5.0, the Software Development Final Scope of Work, and the per-portal Technical SRS set (HQ, Distributor, Installer, Property Manager).</td></tr>
+      <tr><td>2.0</td><td>2026-06-23</td><td>Principal Architecture</td><td>Production-grade enterprise extension (ARB-ready): added Azure Landing Zone, Network, AKS, CI/CD, Security, Service-to-Service, Observability, DR/BC, Data, Capacity Planning, ADRs, Risk Register, and End-to-End walkthroughs (§8–20). Aligned to Azure Well-Architected Framework, Cloud Adoption Framework, Kubernetes production best practices, OWASP, and Zero Trust.</td></tr>
+      <tr><td>2.1</td><td>2026-06-23</td><td>Principal Architecture</td><td>ARB gap remediation: added TCO, business case, Genio360 Lite, shared-service resilience, API contract standards, portal deployment model, integration matrix + resilience patterns, webhook strategy, strangler-fig migration plan, GDPR/PDPA/SOC2/ISO mapping, audit immutability, Azure service limits, DDoS/mTLS/DNS details, pod resources + Velero + Istio/ingress-nginx, IaC/test pyramid/artifact retention, STRIDE threat model, token lifecycle + key rotation, PCI scope minimization, pen-test plan, schema registry/ordering/idempotency, SLO/SLI/error budgets, synthetic monitoring, failover criteria + runbooks, data classification + PII DFD, anonymization, Cosmos replication model, cost-per-scale tier, ADRs 006–008, and additional risks (skill gap, lock-in, migration, regulatory).</td></tr>
+    </tbody></table>
+    <div class="callout amber"><h4>Status of this Baseline</h4><p>This is a <strong>To-Be system architecture specification</strong>. Integration and data claims have been cross-checked against the current PHP/Yii2 codebase (see the code-validated callouts in Section 5) and the <em>Global Requirements r5.0</em> hierarchy. The platform is <strong>100% Azure-native</strong> — there are no AWS dependencies. Any AWS service named in the legacy Scope of Work (S3, DynamoDB, Lambda, ElastiCache, the on-instance socket) maps to its Azure equivalent (Blob, Cosmos DB, Azure Functions, Azure Cache for Redis, Azure Web PubSub) throughout this document.</p></div>
+  </div>
+
+  <div class="section-label">Executive Summary</div>
+  <h2>Modernization Strategy at a Glance</h2>
+  <p class="sub">From a single-tenant Singapore monolith to a white-label, multi-region governance platform</p>
+  <div class="card">
+    <p style="font-size:14px;">The legacy <strong>iPlusLiving</strong> system is a PHP/Yii2 monolith (mobile clients in Objective-C / Java) scoped only by <code>company_id</code> / <code>condo_id</code>, hosted single-region. <strong>Genio360</strong> re-platforms this into a four-tier, geo-partitioned, multi-tenant ecosystem, deployed <strong>end-to-end on Microsoft Azure</strong>. <strong>Web portals</strong> are built in <strong>React</strong>; <strong>mobile apps</strong> are built in <strong>Flutter</strong>; both clients talk to the same <strong>NestJS</strong> (TypeScript) backend running on Azure. Every capability above the property layer (HQ governance, Distributor channel management, the funnel) is <span class="pill pill-new">NEW</span>; property and resident features are migrated As-Is with optimization.</p>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🌐</div><div><h3>White-Label, Multi-Region</h3><p>One codebase serves Europe, Asia, and Middle East clusters; each region is a fully isolated Azure Resource Group. Data never crosses regional boundaries.</p></div></div>
+      <div class="what-item"><div class="icon">🪜</div><div><h3>Hierarchical Governance</h3><p>HQ → Distributor → Installer → Property/Resident. Each tier only acts on what it owns; upstream may observe downstream but never operate it.</p></div></div>
+      <div class="what-item"><div class="icon">🚰</div><div><h3>Progressive Funnel</h3><p>Module availability cascades downward — each tier can only enable a subset of what its parent permitted, enforced server-side at the API.</p></div></div>
+      <div class="what-item"><div class="icon">📦</div><div><h3>Batched, Phased Rollout</h3><p>Genio360 Lite (priority modules) goes live first; the full platform follows. Properties migrate to the new MeetMe Stream SDK in phased batches.</p></div></div>
+    </div>
+    <div class="callout blue"><h4>Tech-Stack Modernization (one cloud: Azure)</h4><p><strong>Web</strong> — React 19 SPA (Vite) on <strong>Azure Static Web Apps</strong> + CDN. &nbsp;<strong>Mobile</strong> — <strong>Flutter</strong> (iOS + Android) calling the same API. &nbsp;<strong>Backend</strong> — <strong>NestJS</strong> (TypeScript) microservices on <strong>Azure Kubernetes Service (AKS)</strong>, fronted by <strong>Azure API Management</strong>. &nbsp;<strong>Data</strong> — Azure Database for MySQL/PostgreSQL + <strong>Azure Cosmos DB</strong>. &nbsp;<strong>Platform</strong> — Azure Cache for Redis, Blob Storage, Key Vault, Service Bus, Web PubSub, Functions, App Insights. Push remains on <strong>Firebase Cloud Messaging</strong> (device delivery only). <strong>No AWS dependencies.</strong></p></div>
+  </div>
+
+  <div class="card">
+    <h3>Business Case &amp; Value Proposition</h3>
+    <p style="font-size:14px;">The modernization is justified by four measurable value drivers: <strong>white-label revenue</strong> (new distributor/installer tiers and multi-region expansion), <strong>operational cost reduction</strong> (moving from single-instance PHP to auto-scaling Azure services), <strong>velocity</strong> (shared NestJS API + React/Flutter enables one team to ship web and mobile simultaneously), and <strong>risk reduction</strong> (tenant isolation, audit trails, and compliance-by-design replace implicit per-condo scoping).</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Driver</th><th>Legacy State</th><th>Target State</th><th>Expected Outcome</th></tr></thead><tbody>
+        <tr><td><strong>White-label &amp; scale</strong></td><td>Single-tenant, SG-only PHP monolith</td><td>Multi-region, multi-tenant Azure platform</td><td>Enter new markets without code forks</td></tr>
+        <tr><td><strong>Cost efficiency</strong></td><td>Over-provisioned web instances, deadlocks</td><td>Auto-scaling AKS + serverless Functions</td><td>Pay per use; reduce infra incidents</td></tr>
+        <tr><td><strong>Velocity</strong></td><td>Objective-C/Java mobile + PHP backend</td><td>React + Flutter + NestJS</td><td>Shared API, faster release cycles</td></tr>
+        <tr><td><strong>Risk &amp; compliance</strong></td><td>Implicit scope, limited audit</td><td>Guard chain + immutable audit trails</td><td>GDPR/PDPA-ready tenant isolation</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Genio360 Lite &amp; Phased Rollout</h3>
+    <p style="font-size:14px;"><strong>Genio360 Lite</strong> is the first production slice: HQ governance, Distributor onboarding, Installer property provisioning, and the core resident modules (visitor, access events, notifications). It validates the funnel, the Azure landing zone, and the NestJS/AKS backbone before the full integration catalogue is enabled. Subsequent phases add payments, FR/ANPR, MeetMe, and advanced reporting.</p>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Lite — Foundation</div><div class="desc">Auth, tenant funnel, property/unit provisioning, visitor, basic access log.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--blue);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Phase 2 — Core Operations</div><div class="desc">Payments, facilities booking, eAGM, intercom call-divert.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Phase 3 — Smart Building</div><div class="desc">FR, ANPR, MQTT integrations, advanced analytics.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Phase 4 — Global Scale</div><div class="desc">New regions, global reporting, AI readiness.</div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>High-Level TCO (per region, per month)</h3>
+    <p style="font-size:14px;">Estimates are directional and assume Azure East Asia pricing with 3-year reserved capacity for steady-state compute. Actual costs depend on negotiated EA rates and DAU/peak patterns.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Scale</th><th>Users</th><th>AKS</th><th>Cosmos</th><th>Redis</th><th>MySQL/Postgres</th><th>Blob</th><th>APIM + FD + Other</th><th>Total/mo</th></tr></thead><tbody>
+        <tr><td><strong>Lite</strong></td><td>100K</td><td>~$2.5K</td><td>~$1.5K</td><td>~$0.5K</td><td>~$1K</td><td>~$0.5K</td><td>~$1.5K</td><td>~$7.5K</td></tr>
+        <tr><td><strong>Growth</strong></td><td>500K</td><td>~$8K</td><td>~$7K</td><td>~$2K</td><td>~$3.5K</td><td>~$2K</td><td>~$4K</td><td>~$26.5K</td></tr>
+        <tr><td><strong>Target</strong></td><td>1M</td><td>~$15K</td><td>~$15K</td><td>~$4K</td><td>~$7K</td><td>~$4K</td><td>~$7K</td><td>~$52K</td></tr>
+      </tbody></table>
+    </div>
+    <div class="callout amber"><h4>FinOps Note</h4><p>Reserved Instances for AKS and Cosmos reserved capacity reduce the above by 30–40% at steady state. Cosmos RU is the largest variable cost; autoscale caps and cold-data archiving are mandatory.</p></div>
+  </div>
+
+  <div class="section-label">Platform Stack at a Glance</div>
+  <div class="stack-grid">
+    <div class="stack-card"><div class="ic">⚛️</div><h4>React Web + Flutter Mobile</h4><p>React SPA on Azure Static Web Apps (role-rendered Admin + Management portals) and Flutter iOS/Android apps — both consume the same NestJS API.</p></div>
+    <div class="stack-card"><div class="ic">🟢</div><h4>NestJS on AKS</h4><p>Shared TypeScript backend and single point of authorization; guard chain + AuditInterceptor enforce RBAC and the funnel server-side on every request.</p></div>
+    <div class="stack-card"><div class="ic">🗃️</div><h4>MySQL/Postgres + Cosmos</h4><p>Azure Database for MySQL/PostgreSQL for relational transactional state + Azure Cosmos DB for high-write logs, events, audit trails, and online forms.</p></div>
+    <div class="stack-card"><div class="ic">☁️</div><h4>Redis · Blob · Key Vault</h4><p>Sessions &amp; funnel flags, media/exports/audit archives, and all secrets by alias — behind Azure API Management.</p></div>
+  </div>
+
+  <div class="toc">
+    <h3>Sections in this specification</h3>
+    <div class="toc-grid">
+      <a href="#s1"><span class="n">01</span>Document Control &amp; Executive Summary</a>
+      <a href="#s2"><span class="n">02</span>Global Shared vs Regional Infrastructure</a>
+      <a href="#eco"><span class="n">2.1</span>Ecosystem &amp; Service Communication</a>
+      <a href="#s3"><span class="n">03</span>4-Tier Hierarchical Governance Model</a>
+      <a href="#s4"><span class="n">04</span>Progressive Module Enablement Funnel</a>
+      <a href="#s5"><span class="n">05</span>Consolidated Integration Catalogue</a>
+      <a href="#s6"><span class="n">06</span>Legacy Optimization &amp; Performance Fixes</a>
+      <a href="#s7"><span class="n">07</span>Governance, Retention &amp; Security</a>
+      <a href="#s8"><span class="n">08</span>Azure Landing Zone Architecture</a>
+      <a href="#s9"><span class="n">09</span>Network Architecture</a>
+      <a href="#s10"><span class="n">10</span>AKS Kubernetes Architecture</a>
+      <a href="#s11"><span class="n">11</span>CI/CD &amp; Release Architecture</a>
+      <a href="#s12"><span class="n">12</span>Security Architecture</a>
+      <a href="#s13"><span class="n">13</span>Service-to-Service Communication</a>
+      <a href="#s14"><span class="n">14</span>Observability Architecture</a>
+      <a href="#s15"><span class="n">15</span>Disaster Recovery &amp; BC</a>
+      <a href="#s16"><span class="n">16</span>Data Architecture</a>
+      <a href="#s17"><span class="n">17</span>Capacity Planning</a>
+      <a href="#s18"><span class="n">18</span>Architecture Decision Records</a>
+      <a href="#s19"><span class="n">19</span>Risks &amp; Mitigations</a>
+      <a href="#s20"><span class="n">20</span>End-to-End Walkthrough</a>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <div class="section-label">Section 2 · Topology</div>
+  <a id="s2"></a><h2>Global Shared Services vs. Regional Infrastructure</h2>
+  <p class="sub">A globally-shared control band over independent, data-isolated regional clusters</p>
+  <div class="card">
+    <p style="font-size:14px;">The platform separates <strong>globally-shared control services</strong> (authentication, API routing, secrets, the one React Admin SPA) from <strong>regional execution clusters</strong> that hold all tenant data. A request authenticates against the global Shared Auth DB, receives a JWT carrying <code>cluster_id</code> / <code>distributor_id</code> / <code>role</code>, and Azure API Management routes it to the correct regional cluster. Tenant data is <strong>resident in its region only</strong> and never crosses boundaries.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">GLOBAL SHARED SERVICES  (deployed once, distributed via CDN)</span>
+Shared Auth DB        centralized credentials · JWT issuance · user registry
+                      resolves (cluster_id, distributor_id, role) at login, embeds in token
+Azure API Management  single gateway; routes each request to the correct regional cluster by cluster_id
+Azure Static Web Apps one React Admin Portal (HQ / Distributor / Installer, role-rendered)
+                      + one Management web app (Condo) — CDN edge-distributed
+Azure Key Vault       all secrets, certificates, encryption keys — referenced by alias
+Single-Session limit  1 active device per user; Redis-backed denylist on re-login / logout
+CI/CD Pipelines       one codebase → consistent deploys across every regional cluster
+
+        │  HTTPS + Bearer JWT  (routed by cluster_id)
+        ▼
+<span class="h">REGIONAL CLUSTER  (Europe / Asia / Middle East — isolated Azure Resource Group)</span>
+AKS Cluster           NestJS containerised microservices (BFF + domain services)
+                      guard chain: JwtAuthGuard → SessionGuard → RolesGuard → ScopeGuard → ModuleEnabledGuard
+MySQL / PostgreSQL    transactional / relational entities (distributors, installers, units, bookings)
+Cosmos DB             high-write logs · audit trails · events · online forms (partitioned, TTL per region)
+Azure Cache for Redis sessions · funnel module-flags · permission cache
+Azure Blob Storage    media · CSV · report exports · audit archives (retention mirrors DB)
+App Insights          per-cluster telemetry; powers the escalation audit/error trail
+Data residency        all data stays within cluster_id region (GDPR enforced in EU cluster)</div>
+    <div class="callout blue"><h4>Routing &amp; Isolation Contract</h4><p>APIM resolves the target cluster from the token's <code>cluster_id</code>; there is <strong>no cross-region data path</strong>. Retention/purge jobs run independently per cluster. The EU cluster enforces GDPR; Asia and Middle East adopt equivalent policies. Multiple distributors may share a region but are mutually isolated by <code>entity_id</code>.</p></div>
+    <div class="callout green"><h4>Standard Response Envelope</h4><p>Every API response uses one envelope with a <code>correlation_id</code>. Error codes: <code>400</code> validation · <code>401</code> unauthenticated · <code>403</code> out-of-scope / funnel · <code>404</code> not found · <code>409</code> conflict · <code>422</code> semantically invalid · <code>429</code> rate-limit · <code>500</code> internal.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Shared Control Services — Resilience</h3>
+    <p style="font-size:14px;">The Shared Auth DB, APIM, and Front Door are global dependencies. Their failure would affect all regions, so each is designed for high availability with explicit failover behavior.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Component</th><th>HA Strategy</th><th>Failover Behavior</th></tr></thead><tbody>
+        <tr><td><strong>Shared Auth DB</strong></td><td>Azure DB zone-redundant HA + geo-replica</td><td>Auto-failover to replica; JWT validation continues via cached JWKS for up to 5 min; read-only degraded mode for existing sessions</td></tr>
+        <tr><td><strong>Azure API Management</strong></td><td>Zone-redundant Premium tier; capacity units scaled per region</td><td>Self-hosted gateway in AKS as fallback; health checks route around unhealthy APIM instance</td></tr>
+        <tr><td><strong>Azure Front Door</strong></td><td>Global anycast, health probes to all origins</td><td>Automatic traffic steering away from failed region; WAF rules enforced at edge</td></tr>
+      </tbody></table>
+    </div>
+    <div class="callout red"><h4>Shared Auth DB is the Global SPOF</h4><p>Even with HA, a global Shared Auth DB outage is the highest-impact failure. Mitigations: JWT JWKS cached at APIM, Redis session store per region, and a documented degraded mode where existing sessions continue while new logins are blocked. Login retry logic must be graceful.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 2.1 — ECOSYSTEM ===================== -->
+  <div class="section-label">Section 2.1 · Ecosystem View</div>
+  <a id="eco"></a><h2>The Whole Ecosystem &amp; How Services Communicate</h2>
+  <p class="sub">Every app, every service, where it runs on Azure, and how they talk to each other</p>
+  <div class="card">
+    <p style="font-size:14px;">There are four kinds of participants: <strong>client apps</strong> (React web portals + Flutter mobile apps), the <strong>Azure edge</strong> (Static Web Apps/CDN + API Management), the <strong>NestJS backend services</strong> (containers on AKS) with their <strong>async/realtime helpers</strong> (Service Bus, Web PubSub, Functions), and the <strong>data &amp; integration plane</strong> (MySQL, Cosmos, Redis, Blob, Key Vault, plus on-site hardware). Clients never touch a database or another service directly — <strong>every</strong> call goes through API Management to the NestJS gateway, which is the single authorization point.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">CLIENT APPS  (run on user devices / browser; built + hosted via Azure Static Web Apps + CDN)</span>
+React Admin Portal     HQ · Distributor · Installer        ─┐
+React Management Portal Property Manager (condo ops)        ─┤   role-rendered from one JWT
+Flutter Resident App   iOS / Android                        ─┤   (carries role, tier, cluster_id, *_id)
+Flutter Security App    guard tablet / kiosk                ─┘
+        │
+        │  HTTPS + Bearer JWT  (REST/JSON)              realtime ▲ WSS (Web PubSub)     push ▲ FCM
+        ▼                                                       │                            │
+<span class="h">AZURE EDGE  (global shared band)</span>
+Azure Static Web Apps + CDN   serves the React bundles from edge nodes near the user
+Shared Auth DB                login → issues JWT access + refresh; resolves cluster_id / role
+Azure API Management (APIM)   ONE gateway; authn check + routes each request by cluster_id to a region
+        │
+        ▼
+<span class="h">REGIONAL CLUSTER  (isolated Azure Resource Group — Europe / Asia / Middle East)</span>
+AKS · NestJS API Gateway (BFF)   guard chain on EVERY request:
+        JwtAuthGuard → SessionGuard → RolesGuard → ScopeGuard → ModuleEnabledGuard   (AuditInterceptor)
+        │
+        ├──▶ Domain microservices (NestJS containers on AKS) ── sync, in-cluster REST/gRPC ──┐
+        │      Auth · Distributor · Installer · Property/Unit · Access-Control · Visitor      │
+        │      Facilities · Payments · Notifications · Reports · Audit · Licence              │
+        │                                                                                     ▼
+        ├──▶ Azure Service Bus      async commands/events  ─▶  Azure Functions (workers)   Data plane
+        │      (emails, FR-sync, ANPR ingest, report builds, retention/purge jobs)           │
+        ├──▶ Azure Web PubSub       realtime push to clients (live access events, dashboards) │
+        └──▶ Hardware bridge        MQTT (Event Grid broker / IoT Hub) ◀──▶ on-site devices   │
+                                                                                              ▼
+<span class="h">DATA &amp; INTEGRATION PLANE  (per region; reached ONLY by backend services)</span>
+Azure DB for MySQL/PostgreSQL  relational truth        Azure Cosmos DB   logs · events · audit · forms
+Azure Cache for Redis          sessions · funnel flags Azure Blob        media · exports · archives
+Azure Key Vault                secrets by alias        App Insights      telemetry · escalation trail
+On-site hardware               Microengine · Hikvision · Dahua · MEET/LYNX/VIDA intercoms (via bridge)</div>
+    <div class="callout blue"><h4>The Golden Rule</h4><p>Clients → <strong>APIM</strong> → <strong>NestJS gateway</strong> → domain services → data. No client reaches a database directly; no service is called without passing the guard chain. Authorization, tenancy scope, and the funnel are decided <strong>once</strong>, server-side, on every request.</p></div>
+  </div>
+
+  <h3 style="margin-top:8px;">Where each piece runs &amp; what it owns</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Component</th><th>Runs on (Azure)</th><th>Responsibility</th><th>Talks to</th></tr></thead><tbody>
+      <tr><td><strong>React Admin / Management portals</strong></td><td>Azure Static Web Apps + CDN</td><td>Role-rendered UI for HQ/Distributor/Installer + PM</td><td>APIM (REST/JWT), Web PubSub (WSS)</td></tr>
+      <tr><td><strong>Flutter Resident / Security apps</strong></td><td>iOS / Android devices</td><td>Resident features, guard check-in, QR/face entry</td><td>APIM (REST/JWT), Web PubSub, FCM</td></tr>
+      <tr><td><strong>Shared Auth DB</strong></td><td>Global shared band</td><td>Credentials, JWT issuance, user registry</td><td>APIM, NestJS AuthModule</td></tr>
+      <tr><td><strong>Azure API Management</strong></td><td>Global shared band</td><td>Single gateway; authenticates &amp; routes by <code>cluster_id</code></td><td>All clients → regional AKS</td></tr>
+      <tr><td><strong>NestJS API Gateway (BFF)</strong></td><td>AKS (per region)</td><td>Guard chain; single authorization point</td><td>Domain services, data plane</td></tr>
+      <tr><td><strong>Domain microservices</strong></td><td>AKS containers (per region)</td><td>Business logic per bounded context</td><td>Each other (REST/gRPC), data plane, Service Bus</td></tr>
+      <tr><td><strong>Azure Service Bus</strong></td><td>Regional</td><td>Async commands/events; decouples slow work</td><td>Services ⇄ Functions workers</td></tr>
+      <tr><td><strong>Azure Functions (workers)</strong></td><td>Regional (serverless)</td><td>Email, FR-sync, ANPR ingest, reports, retention jobs</td><td>Service Bus, Cosmos, Blob, hardware</td></tr>
+      <tr><td><strong>Azure Web PubSub</strong></td><td>Regional</td><td>Realtime server→client push</td><td>Services → web/mobile clients</td></tr>
+      <tr><td><strong>Hardware bridge (MQTT)</strong></td><td>Event Grid MQTT broker / IoT Hub</td><td>Two-way device messaging</td><td>Services/Functions ⇄ on-site controllers</td></tr>
+      <tr><td><strong>Data stores</strong></td><td>Regional (MySQL/Postgres, Cosmos, Redis, Blob, Key Vault)</td><td>Persistence, cache, secrets</td><td>Backend services only</td></tr>
+    </tbody></table>
+  </div>
+
+  <h3 style="margin-top:24px;">How they communicate — the four patterns</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Pattern</th><th>Transport</th><th>Direction</th><th>Used for</th></tr></thead><tbody>
+      <tr><td><strong>Synchronous request/response</strong></td><td>HTTPS REST/JSON + Bearer JWT (via APIM)</td><td>Client → Backend</td><td>All CRUD, queries, config — the default path</td></tr>
+      <tr><td><strong>Service-to-service</strong></td><td>In-cluster REST / gRPC (AKS network)</td><td>Service ↔ Service</td><td>Composing a request across bounded contexts</td></tr>
+      <tr><td><strong>Asynchronous messaging</strong></td><td>Azure Service Bus → Azure Functions</td><td>Backend → Workers</td><td>Email, FR-sync, ANPR ingest, report builds, retention/purge</td></tr>
+      <tr><td><strong>Realtime push</strong></td><td>Azure Web PubSub (WSS) · FCM</td><td>Backend → Client</td><td>Live access events, dashboard updates, mobile notifications</td></tr>
+      <tr><td><strong>Hardware messaging</strong></td><td>MQTT (Event Grid broker / IoT Hub)</td><td>Backend ⇄ Devices</td><td>Face load/delete, gate-open commands, panel sync, ANPR events</td></tr>
+    </tbody></table>
+  </div>
+  <div class="callout amber"><h4>Why this shape</h4><p>Synchronous calls keep the UX simple; <strong>Service Bus + Functions</strong> absorb spiky/slow work so the request path stays fast (this is what fixes the legacy deadlocks in Section 6); <strong>Web PubSub</strong> replaces the legacy single-instance socket; and the <strong>MQTT bridge</strong> isolates flaky on-site hardware from the API. Everything scales independently and stays inside one Azure region per tenant.</p></div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 3 ===================== -->
+  <div class="section-label">Section 3 · Governance Model</div>
+  <a id="s3"></a><h2>The 4-Tier Hierarchical Governance Model</h2>
+  <p class="sub">Ownership-based access — each layer acts only on what it owns; no lateral or upward operation</p>
+  <div class="card">
+    <p style="font-size:14px;">Genio360 operates across four administrative levels. The escalation path is strictly <code>User → Property → Installer → Distributor → HQ</code> (direct User→HQ is not permitted). Upstream layers may <strong>observe</strong> downstream data for oversight, but cannot operate it; downstream layers have no visibility upward or laterally.</p>
+    <div class="actors-grid" style="margin-top:16px;">
+      <div class="actor-card ac-indigo"><div class="icon">🏛️</div><h3>Tier 1 (L1) — HQ / FAP</h3><div class="body"><p>Strategy &amp; governance authority (Fermax Asia Pacific).</p><ul><li>Provision distributors under region clusters</li><li>Define the global module catalogue (top of funnel)</li><li>Set global roles, security &amp; data-retention policies</li><li>System-wide <strong>view-only</strong> oversight — no day-to-day ops</li></ul></div></div>
+      <div class="actor-card ac-blue"><div class="icon">🤝</div><h3>Tier 2 (L2) — Distributor</h3><div class="body"><p>Channel layer; bridge between HQ and execution.</p><ul><li>Scoped to assigned country/countries (<code>entity_id</code>)</li><li>Allocate a subset of HQ-permitted modules to installers</li><li>Onboard &amp; manage installation companies</li><li>Read-only aggregate analytics; no upward/lateral view</li></ul></div></div>
+      <div class="actor-card ac-green"><div class="icon">🔧</div><h3>Tier 3 (L3) — Installation Company</h3><div class="body"><p>Technical execution &amp; project delivery.</p><ul><li>Create &amp; provision properties (units, panels, keys)</li><li>Call-divert provisioning &amp; system integrations setup</li><li>Enable a subset of distributor-allowed modules per project</li><li>Assign Property Managers; review deployment/system logs</li></ul></div></div>
+      <div class="actor-card ac-amber"><div class="icon">🏢</div><h3>Tier 4 (L4) — Property Mgmt &amp; Residents</h3><div class="body"><p>Daily building operations &amp; end-user features.</p><ul><li>PM: configuration, approvals, access-control events, reports</li><li>Hardware integrations (intercom, ANPR, FR, parking)</li><li>Resident: bookings, QR/face entry, wall, wallet, feedback</li><li>Residents strictly isolated to their own unit</li></ul></div></div>
+      <div class="actor-card ac-gray"><div class="icon">⬇️</div><h3>Downward Permission Flow</h3><div class="body"><p>Constraints inherit top-down. A tier can never grant more than it was granted — the funnel ceiling propagates HQ → Distributor → Installer → Condo.</p></div></div>
+      <div class="actor-card ac-red"><div class="icon">🚨</div><h3>Escalation (Upward Only)</h3><div class="body"><p>Issues travel <code>User → Property → Installer → Distributor → HQ</code>. HQ may receive explicit, time-limited, read-only temporary access — never standing operational control.</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Business Capability Map</h3>
+    <p style="font-size:14px;">Capabilities are grouped by domain and mapped to the AKS namespaces / services that implement them. This ensures the 4-tier governance model has a clear technology realization.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Capability</th><th>Namespace</th><th>Services</th><th>Primary Tiers</th></tr></thead><tbody>
+        <tr><td>Identity &amp; Access</td><td>auth</td><td>AuthService, SessionService, TokenService</td><td>L1–L4</td></tr>
+        <tr><td>Tenant &amp; Channel Management</td><td>tenant</td><td>DistributorService, InstallerService</td><td>L1–L3</td></tr>
+        <tr><td>Property &amp; Unit Provisioning</td><td>property</td><td>PropertyService, UnitService, FacilityService</td><td>L3–L4</td></tr>
+        <tr><td>Access Control</td><td>access-control</td><td>VisitorService, DoorService, FRService, ANPRService</td><td>L4</td></tr>
+        <tr><td>Payments</td><td>payments</td><td>PaymentService, InvoiceService</td><td>L4</td></tr>
+        <tr><td>Notifications</td><td>notifications</td><td>NotificationService, PushService</td><td>L4</td></tr>
+        <tr><td>Reporting &amp; Audit</td><td>reporting</td><td>ReportService, AuditService</td><td>L1–L4</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Portal Deployment Model</h3>
+    <p style="font-size:14px;">There is <strong>one React codebase</strong> deployed to <strong>Azure Static Web Apps</strong>, served from a single URL and role-rendered based on the JWT. The HQ/Distributor/Installer/PM experiences are not separate deployables — they are permission-driven views from the same bundle. Mobile is <strong>one Flutter codebase</strong> with two app flavors: Resident and Security Guard. This reduces drift and lets a single CI/CD pipeline serve all portals.</p>
+    <div class="callout blue"><h4>Why Not Separate Portals?</h4><p>Separate portals would duplicate authentication, navigation, and component logic. Role rendering ensures a bug fix or component update reaches all tiers simultaneously while the API guard chain enforces that no role can see unauthorized data.</p></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Feature</th><th>L1 — HQ</th><th>L2 — Distributor</th><th>L3 — Installer</th><th>L4 — PM</th></tr></thead><tbody>
+      <tr><td><strong>Global Dashboard</strong></td><td>Full Access</td><td>No Access</td><td>No Access</td><td>No Access</td></tr>
+      <tr><td><strong>Distributor Management</strong></td><td>Full Access</td><td>View — own profile</td><td>No Access</td><td>No Access</td></tr>
+      <tr><td><strong>Installer Management</strong></td><td>View Access</td><td>Full — own data</td><td>View — own profile</td><td>No Access</td></tr>
+      <tr><td><strong>Unit Management</strong></td><td>View Access</td><td>View — own data</td><td>Full — own data</td><td>Full — own data</td></tr>
+      <tr><td><strong>Resident Management</strong></td><td>No Access</td><td>No Access</td><td>No Access</td><td>Full — own data</td></tr>
+      <tr><td><strong>Modules Configuration</strong></td><td>Enable subset for Distributors</td><td>Enable subset for Installers</td><td>Enable subset per project</td><td>No configure option</td></tr>
+      <tr><td><strong>Licences (MeetMe)</strong></td><td>Full Access</td><td>View — own data</td><td>View — own data</td><td>No Access</td></tr>
+      <tr><td><strong>Reports &amp; Analytics</strong></td><td>Full (system-wide)</td><td>View — own data</td><td>View — own data</td><td>View — own data</td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <div class="section-label">Section 4 · Funnel</div>
+  <a id="s4"></a><h2>The Progressive Module Enablement Funnel</h2>
+  <p class="sub">Module availability cascades downward — a tier can only enable what its parent permitted</p>
+  <div class="card">
+    <p style="font-size:14px;">The "funnel" is the platform's core multi-tenant safety mechanism. HQ defines the master module catalogue (the ceiling). Each tier narrows that set for the tier below. The constraint is enforced <strong>server-side at the API</strong> — never merely hidden in the UI — using a NestJS <code>ModuleEnabledGuard</code> backed by fast-lookup Redis flags, so a tier can never exceed its parent's ceiling and cannot leak data laterally or upward.</p>
+    <div class="flow" style="margin-top:16px;">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">HQ Ceiling — Global Catalogue</div><div class="desc">HQ (L1) defines the full module set and the subset each Distributor MAY use.</div><div class="detail-box">Top of funnel: <code>moduleCatalogue[]</code>. HQ enables a per-distributor allow-list; this is the absolute maximum any descendant can ever see.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--blue);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Distributor Assignment</div><div class="desc">Distributor (L2) enables a subset of HQ's allow-list for each Installer.</div><div class="detail-box">Constraint: <code>installerModules[] ⊆ distributorAllowed[]</code>. Exceeding HQ's ceiling → <code>403</code>.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Installer Project Provisioning</div><div class="desc">Installer (L3) enables a subset of distributor-allowed modules per property.</div><div class="detail-box">On <code>POST /api/v1/properties</code>: <code>moduleIds[] ⊆ Distributor-allowed</code> (else <code>403</code>). Modules bind to the property at provisioning time.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Condo Feature Toggle</div><div class="desc">Property Management (L4) toggles features within the installer-provisioned set.</div><div class="detail-box">PM can switch on/off only modules already provisioned for the property; it has <strong>no configure-upward</strong> option.</div></div></div>
+    </div>
+<div class="arch-tree" style="margin-top:8px;"><span class="h">API-LEVEL ENFORCEMENT</span>
+Request ──▶ JwtAuthGuard ──▶ SessionGuard ──▶ RolesGuard ──▶ ScopeGuard ──▶ ModuleEnabledGuard ──▶ Handler
+                                                            │                    │
+                            (WHERE *_id = caller scope)─────┘                    │
+                            Redis: module-flags:{cluster_id}:{tenant_id} ────────┘  (cache miss → DB → backfill)
+                            AuditInterceptor logs every config write to the System Config Audit Trail</div>
+    <div class="callout red"><h4>Why API-Level (not UI-Level)</h4><p>Hiding a button is not security. <code>ModuleEnabledGuard</code> rejects any request for a module not enabled for the caller's tenant with <code>403</code>, regardless of how the request was crafted. This prevents <strong>lateral</strong> (peer tenant) and <strong>upward</strong> (parent tier) data leaks even if the SPA is bypassed.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Module-Flags Cache Invalidation</h3>
+    <p style="font-size:14px;">Funnel flags are cached in Redis with a TTL. When a parent tier changes a module allowance, the config-write API publishes an invalidation event to a Redis pub/sub channel; each regional gateway refreshes its cache and evicts the stale key. A fallback background job reconciles cache vs. DB every 60 seconds.</p>
+<div class="arch-tree"><span class="h">INVALIDATION FLOW</span>
+HQ/Distributor/Installer changes module allowance
+  → ConfigService writes DB
+  → Publish <code>module-flags:invalidate:{cluster_id}:{tenant_id}</code> to Redis pub/sub
+  → All NestJS gateways delete the key
+  → Next request: cache miss → DB read → backfill Redis
+  → Reconciliation job (60s) ensures no stale keys remain</div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 5 ===================== -->
+  <div class="section-label">Section 5 · Integrations</div>
+  <a id="s5"></a><h2>Consolidated Multi-Tier Integration Catalogue</h2>
+  <p class="sub">Hardware, payment, and cloud services across the platform — all calls use a resilient client (TLS, timeout + retry + circuit breaker; credentials from Key Vault; idempotent ingestion)</p>
+  <div class="callout green"><h4>Validated Against Legacy Codebase (Yii2)</h4><p><b>Confirmed in code:</b> Hikvision (<code>HikvisionController</code>, <code>HikvisionfaceController</code>, <code>HikvisioncameraController</code>) · Microengine ME (<code>callMqtt</code>, <code>hikvision_me_face_photo</code> sync) · VIDA (<code>VidaController</code>) · MeetMe / SIP (<code>IntercomController</code> → <code>sip.fermax.com</code>, <code>MeetController</code>) · Call-Divert permission · Stripe (<code>StripePayment.php</code>), Braintree (<code>Braintree.php</code>), PayNow (<code>OCBCpayment.php</code> QR), PayLah (<code>paylah_mid</code>) · LTA DataMall (<code>BusStopCodeController</code>) · EPS/MHI (<code>EpsController</code>, <code>MhiController</code>) · Dahua people-counting (<code>admin_amenity_people_count_list</code>) · Email async queue (<code>Mail::addMailToQueue</code>) · FCM (<code>NotificationController</code>). The Scope of Work integration register lists 33 systems (SDK / MQTT / API / Algorithm / Listening-server methods).</p></div>
+  <div class="callout amber"><h4>To-Be &amp; Items to Verify</h4><p>NestJS/AKS, Cosmos DB, JWT/refresh, the Shared Auth DB, and the Distributor→Installer <strong>funnel tier</strong> are net-new. The VIDA <strong>"Quantum"</strong> product name is confirmed by the Scope of Work (Vida Quantum Gateway). Verify <strong>HikCentral</strong> (vs ISAPI/Artemis) usage and the MEET FR broker host during discovery.</p></div>
+
+  <h3 style="margin-top:24px;">5.1 Fermax Intercoms</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Integration</th><th>Method / Protocol</th><th>Purpose</th><th>Tier(s)</th></tr></thead><tbody>
+      <tr><td><strong>MEETMe Stream SDK</strong></td><td>SDK + SIP cloud pipeline</td><td>New intercom stream; alternative <strong>Call-Divert</strong> SIP routing to mobile; phased property migration</td><td>L3 / L4</td></tr>
+      <tr><td><strong>MEET Intercom Call SDK</strong></td><td>SDK</td><td>Door-station ↔ app voice/video calls</td><td>L4</td></tr>
+      <tr><td><strong>LYNX Intercom Call</strong></td><td>SDK</td><td>LYNX device call handling</td><td>L4</td></tr>
+      <tr><td><strong>MeetMe Licensing</strong></td><td>SIP provisioning API</td><td>Global shared licence pool; allocation lifecycle (HQ full, L2/L3 view)</td><td>L1–L3</td></tr>
+    </tbody></table>
+  </div>
+
+  <h3 style="margin-top:24px;">5.2 Access Control Hardware</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Integration</th><th>Method / Protocol</th><th>Purpose</th><th>Tier(s)</th></tr></thead><tbody>
+      <tr><td><strong>MEET FR (Facial Recognition)</strong></td><td>MQTT (Azure Event Grid MQTT broker / IoT Hub)</td><td>Face-load / delete / clear to FR panels; sync rules cached in Redis to cut DB load</td><td>L4</td></tr>
+      <tr><td><strong>Microengine (ME) Controller</strong></td><td>Controller API · serverless data-prep loops (Azure Functions + Cosmos DB)</td><td>Door / parking / facility access; visitor QR &amp; PIN check-in; virtual buttons</td><td>L3 / L4</td></tr>
+      <tr><td><strong>VIDA (Quantum) Gateway</strong></td><td>device API · URL link</td><td>Access-control credentials / gateway launch within app</td><td>L4</td></tr>
+      <tr><td><strong>EPS / MHI Parking</strong></td><td>API / Database</td><td>Season parking self-registration via plate recognition</td><td>L4</td></tr>
+      <tr><td><strong>S2 Gateway</strong></td><td>URL schema (app-in-app)</td><td>Embedded gateway access</td><td>L4</td></tr>
+    </tbody></table>
+  </div>
+
+  <h3 style="margin-top:24px;">5.3 Surveillance &amp; AI</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Integration</th><th>Method / Protocol</th><th>Purpose</th><th>Tier(s)</th></tr></thead><tbody>
+      <tr><td><strong>Hikvision ANPR / Vehicle Plate Cameras</strong></td><td>API / Listening server · Azure Cache for Redis blocklists</td><td>Vehicle entry/exit, season &amp; guest parking, overstay, blacklist; fast cache lookup at the barrier</td><td>L4</td></tr>
+      <tr><td><strong>Hikvision FR (HikCentral)</strong></td><td>vendor REST / SDK</td><td>Facial-recognition door access</td><td>L4</td></tr>
+      <tr><td><strong>Camera Snapshot / Video Streaming</strong></td><td>API / SDK (RTSP)</td><td>Live monitoring &amp; snapshot reload</td><td>L4</td></tr>
+      <tr><td><strong>Dahua People Counting</strong></td><td>camera API</td><td>Occupancy counting within a space</td><td>L4</td></tr>
+      <tr><td><strong>Dahua Car Washing Bay</strong></td><td>camera API</td><td>Washing-bay availability monitoring</td><td>L4</td></tr>
+    </tbody></table>
+  </div>
+
+  <h3 style="margin-top:24px;">5.4 E-Commerce &amp; Core Rails</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Integration</th><th>Method / Protocol</th><th>Purpose</th><th>Tier(s)</th></tr></thead><tbody>
+      <tr><td><strong>Stripe</strong></td><td>Credit-card SDK + APIs + webhooks</td><td>Online form / facilities / MCST card payments</td><td>L4</td></tr>
+      <tr><td><strong>DBS PayLah</strong></td><td>Certificate API</td><td>Online payment rail</td><td>L4</td></tr>
+      <tr><td><strong>OCBC PayNow</strong></td><td>Certificate API (QR)</td><td>Online payment rail</td><td>L4</td></tr>
+      <tr><td><strong>Braintree</strong></td><td>gateway SDK</td><td>Card payment (merchants)</td><td>L4</td></tr>
+      <tr><td><strong>Firebase Cloud Messaging</strong></td><td>push API (FCM)</td><td>VoIP high-priority push payloads &amp; standard notifications</td><td>L4</td></tr>
+      <tr><td><strong>LTA DataMall</strong></td><td>public REST</td><td>Next-bus arrival (SG only)</td><td>L4</td></tr>
+    </tbody></table>
+  </div>
+
+  <h3 style="margin-top:24px;">5.5 Integration Matrix &amp; Resilience</h3>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Vendor</th><th>Protocol</th><th>Direction</th><th>Format</th><th>Frequency</th><th>SLA</th><th>Owner</th></tr></thead><tbody>
+      <tr><td>MEETMe / SIP</td><td>SDK + SIP</td><td>bidirectional</td><td>binary/media</td><td>realtime</td><td>99.9%</td><td>Access-Control</td></tr>
+      <tr><td>Microengine ME</td><td>HTTP + MQTT</td><td>bidirectional</td><td>JSON</td><td>realtime</td><td>99.5%</td><td>Access-Control</td></tr>
+      <tr><td>Hikvision ANPR/FR</td><td>REST + webhook</td><td>bidirectional</td><td>JSON/ISO</td><td>event-driven</td><td>99.5%</td><td>Access-Control</td></tr>
+      <tr><td>Dahua</td><td>REST</td><td>inbound</td><td>JSON</td><td>event-driven</td><td>99.0%</td><td>Access-Control</td></tr>
+      <tr><td>VIDA Quantum</td><td>device API</td><td>bidirectional</td><td>JSON</td><td>on-demand</td><td>99.0%</td><td>Access-Control</td></tr>
+      <tr><td>Stripe</td><td>REST + webhook</td><td>bidirectional</td><td>JSON</td><td>on-demand</td><td>99.9%</td><td>Payments</td></tr>
+      <tr><td>PayLah / PayNow</td><td>certificate API</td><td>outbound</td><td>JSON/QR</td><td>on-demand</td><td>99.5%</td><td>Payments</td></tr>
+      <tr><td>FCM</td><td>push API</td><td>outbound</td><td>JSON</td><td>realtime</td><td>99.9%</td><td>Notifications</td></tr>
+      <tr><td>LTA DataMall</td><td>public REST</td><td>outbound</td><td>JSON</td><td>on-demand</td><td>99.0%</td><td>Property</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <h3>Resilience Patterns for External Integrations</h3>
+    <p style="font-size:14px;">Every external call uses a resilient client configured per integration criticality. Timeouts and retries are tuned to the vendor's observed behavior; circuit breakers prevent cascading failures; bulkheads isolate vendor failures from the main request path.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Pattern</th><th>Config</th><th>Purpose</th></tr></thead><tbody>
+        <tr><td><strong>Timeout</strong></td><td>2s connect / 10s read (default); 30s for report builds</td><td>Fail fast, avoid thread starvation</td></tr>
+        <tr><td><strong>Retry</strong></td><td>Exponential backoff 1s→8s, max 3 attempts</td><td>Recover transient vendor errors</td></tr>
+        <tr><td><strong>Circuit Breaker</strong></td><td>Open after 50% errors in 60s; half-open after 30s</td><td>Stop hammering failed vendors</td></tr>
+        <tr><td><strong>Fallback</strong></td><td>Queue for async retry or return degraded data</td><td>Graceful UX degradation</td></tr>
+        <tr><td><strong>Bulkhead</strong></td><td>Dedicated HTTP client pool per vendor</td><td>Isolate vendor resource contention</td></tr>
+        <tr><td><strong>Idempotency</strong></td><td>Idempotency-Key header; dedupe in Redis 24h</td><td>Safe retries, no double charges</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Webhook Handling</h3>
+    <p style="font-size:14px;">Vendor webhooks (Stripe payment events, Hikvision callbacks) are received by a dedicated ingress path, validated by signature, and immediately persisted to an idempotent queue in Service Bus. Processing is asynchronous to avoid blocking the vendor and to provide replay capability.</p>
+<div class="arch-tree"><span class="h">WEBHOOK INGEST</span>
+Vendor POST webhook
+  → Front Door → WAF → APIM → WebhookController (AKS)
+  → Validate signature + idempotency key
+  → Persist raw payload to Cosmos
+  → Enqueue to Service Bus topic
+  → Azure Function / consumer processes business logic
+  → Ack 200 to vendor (or 202 if async)
+  → Failed validation returns 400; retries handled by vendor</div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <div class="section-label">Section 6 · Engineering "How"</div>
+  <a id="s6"></a><h2>Legacy Optimization &amp; Performance Fixes</h2>
+  <p class="sub">Structural data migrations that resolve the legacy system's deadlocks, slow reads, and instance-bound load</p>
+  <div class="card">
+    <p style="font-size:14px;">The Scope of Work catalogues recurring legacy pain points — MySQL deadlocks under concurrency, slow ANPR barrier responses, instance-bound WebSocket load, and notification fan-out delays. Each is resolved by moving the offending workload off the relational hot path onto a fit-for-purpose <strong>Azure</strong> store (Azure Cosmos DB for high-write, Azure Cache for Redis for atomic counters/cache, Azure Blob for files, Azure Functions for fan-out).</p>
+    <div class="flow" style="margin-top:16px;">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--red);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">File Storage Migration</div><div class="desc">High-write <code>attachment</code> rows in MySQL caused read/write contention.</div><div class="mig-grid"><div class="detail-box legacy"><span class="mh">Legacy</span>Attachment links + metadata in MySQL <code>attachment</code> table; binaries on AWS S3. Frequent add/update/delete causes performance issues.</div><!-- legacy state retained for context only --><div class="detail-box proposed"><span class="mh">Proposed</span>Binaries to <strong>Azure Blob Storage</strong> (private + SAS); document links/metadata to <strong>Cosmos DB</strong>. MySQL is relieved of the high-write churn.</div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">eAGM Voting / Poll Deadlocks</div><div class="desc">Simultaneous poll submissions deadlocked MySQL and slowed other modules.</div><div class="mig-grid"><div class="detail-box legacy"><span class="mh">Legacy</span>Polls stored in MySQL with complex config; concurrent submissions periodically deadlock the server and stall unrelated modules.</div><div class="detail-box proposed"><span class="mh">Proposed</span>Live tallies in <strong>atomic Azure Cache for Redis count keys</strong> (<code>INCR</code>); async persistence to <strong>Azure Cosmos DB</strong>. Concurrency is lock-free; relational store is no longer the hot path.</div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--blue);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Notification Engine &amp; WebSockets</div><div class="desc">50+ trigger points and an on-instance socket created peak-time load on Web 1.</div><div class="mig-grid"><div class="detail-box legacy"><span class="mh">Legacy</span>Self-hosted socket on a single web instance (refresh for Android &amp; Web); 50+ notification triggers with many conditions add load.</div><div class="detail-box proposed"><span class="mh">Proposed</span>Managed <strong>Azure Web PubSub</strong> for fan-out; notification logic moved to <strong>serverless Azure Functions</strong> with Cosmos DB storage — decoupled from the request path.</div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">ANPR Logging Overhead</div><div class="desc">Large vehicle in/out tables in MySQL slowed barrier workflow and caused deadlocks.</div><div class="mig-grid"><div class="detail-box legacy"><span class="mh">Legacy</span>Vehicle In/Out/Event in MySQL grows huge; ANPR needs fast response but the shared table deadlocks (check-in time vs previous-entry reads).</div><div class="detail-box proposed"><span class="mh">Proposed</span>High-throughput entry/exit history to an isolated <strong>Azure Cosmos DB</strong> partition pattern; blacklisted-vehicle lookups served from <strong>Azure Cache for Redis</strong>. Barrier latency and cross-module slowness are eliminated.</div></div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">5</div><div class="step-line"></div></div><div class="flow-body"><div class="title">MQTT Event History &amp; FR Sync</div><div class="desc">MQTT events flooded MySQL; FR face-load rules hammered the DB.</div><div class="mig-grid"><div class="detail-box legacy"><span class="mh">Legacy</span>MQTT generates many event rows in MySQL; searching them causes downtime elsewhere. FR photo-sync checks many DB rules per panel.</div><div class="detail-box proposed"><span class="mh">Proposed</span>Historical MQTT events to <strong>Azure Cosmos DB</strong>; FR sync rules <strong>cached in Azure Cache for Redis</strong> so faces load fast without high DB CPU. The <strong>Azure Event Grid MQTT broker</strong> auto-scales for peaks.</div></div></div></div>
+    </div>
+    <div class="callout green"><h4>Common Pattern</h4><p>Keep Azure Database for MySQL/PostgreSQL for <strong>transactional truth</strong>; offload <strong>high-write, append-only, or ephemeral</strong> workloads (logs, events, tallies, history, sessions, flags) to <strong>Azure Cosmos DB</strong> and <strong>Azure Cache for Redis</strong>; put <strong>binaries</strong> in <strong>Azure Blob</strong>; run <strong>fan-out</strong> on <strong>Azure Functions</strong>. This removes deadlocks and decouples peak load from the request path — all within Azure.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Migration Strategy</h3>
+    <p style="font-size:14px;">The legacy PHP/Yii2 monolith is migrated using a <strong>Strangler Fig</strong> pattern: functionality is extracted bounded-context by bounded-context, wrapped behind the NestJS API, and switched over via feature flags. High-risk modules (payments, access-control) are dual-written during cut-over so rollback is immediate.</p>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Wrap</div><div class="desc">Add a NestJS facade in front of the legacy PHP module for reads and writes.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--blue);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Migrate</div><div class="desc">Move business logic and data to the new Azure-backed service; dual-write to legacy for safety.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Switch</div><div class="desc">Feature flag routes traffic to the new service; monitor SLOs for 48h before disabling legacy path.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Retire</div><div class="desc">Stop dual-write, archive legacy data, decommission PHP module.</div></div></div>
+    </div>
+    <div class="callout amber"><h4>Rollback Plan</h4><p>Each module has a 5-minute rollback plan: toggle feature flag back to legacy, drain in-flight requests, and verify with synthetic checks. DB changes are backward-compatible (expand/contract) so app rollback never breaks schema.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 7 ===================== -->
+  <div class="section-label">Section 7 · Governance &amp; Security</div>
+  <a id="s7"></a><h2>Governance, Retention &amp; Security Policies</h2>
+  <p class="sub">Audit trails, data-retention enforcement, and escalated temporary access</p>
+  <div class="card">
+    <h3>Audit Logging — Three Distinct Trails</h3>
+    <table><thead><tr><th>Audit Trail</th><th>Captures</th><th>Visible To</th><th>Default Retention</th></tr></thead><tbody>
+      <tr><td><strong>Access Control Log</strong></td><td>All access events at the property level (door/gate/QR/face entry)</td><td>Property Management (PM) only</td><td><code>6 months</code> — configurable by HQ per region</td></tr>
+      <tr><td><strong>Operational Audit Trail</strong></td><td>Actions/modifications by PMs and Residents — approvals, updates, transactions</td><td>PM &amp; Installer levels</td><td><code>1 year</code> — configurable by HQ per region</td></tr>
+      <tr><td><strong>System Configuration Audit Trail</strong> <span class="pill pill-new">NEW</span></td><td>Config changes at higher tiers — module settings, retention policies, permissions across Global / Regional / Installer</td><td>Managed centrally (HQ governance)</td><td>Configurable by HQ per region</td></tr>
+    </tbody></table>
+    <div class="callout blue"><h4>How It's Captured</h4><p>The System Configuration Audit Trail is written by a NestJS <code>AuditInterceptor</code> on every config-write request — append-only and immutable in Cosmos DB, partitioned and TTL'd per region. This gives full cross-tier traceability for governance and compliance.</p></div>
+  </div>
+  <div class="card">
+    <h3>Data-Retention Enforcement</h3>
+    <p style="font-size:14px;">Purge policies are <strong>centrally defined at HQ</strong> and <strong>enforced per cluster</strong>. Each regional cluster runs scheduled jobs that automatically purge records beyond the defined retention period — across both the database and mirrored Blob archives — with no manual intervention. The EU cluster enforces GDPR; Asia and Middle East adopt equivalent policies.</p>
+    <div class="sec-item green"><h4>Consistent Across Stores</h4><p>Retention applied to the database is mirrored to Blob Storage, so purging is consistent across all data stores within a cluster.</p></div>
+    <div class="sec-item blue"><h4>Per-Region Configurable</h4><p>Example (EU): Access Control Logs — 6 months; Audit Trails — 1 year; Backend Audit Trails — configurable. Values are set by HQ per region cluster.</p></div>
+  </div>
+  <div class="card">
+    <h3>Escalated Temporary Access</h3>
+    <p style="font-size:14px;">By design, HQ has system-wide <strong>visibility</strong> but not operational control — this prevents accidental modification of live environments and preserves accountability at the Distributor/Installer level. The sole exception is a tightly-governed temporary-access grant.</p>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--amber);">1</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Explicit Lower-Tier Authorization</div><div class="desc">Access must be <strong>requested by the lower tier</strong> (e.g. when a Distributor cannot resolve an Installer's issue). It is never self-granted from above.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--blue);">2</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Time-Limited, Read-Only Session</div><div class="desc">The grant is scoped to the relevant configuration only, read-only, and bounded by an explicit expiry window.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--green);">3</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Automatic Background Revocation</div><div class="desc">A background worker revokes access automatically on session expiry — no manual cleanup, no lingering elevated access.</div></div></div>
+      <div class="flow-step"><div class="flow-left"><div class="step-circle" style="background:var(--indigo);">4</div><div class="step-line"></div></div><div class="flow-body"><div class="title">Comprehensive Log Signatures</div><div class="desc">The full lifecycle (request, grant, actions, expiry, revocation) is recorded in the Backend Audit Trail with signed entries for compliance review.</div></div></div>
+    </div>
+    <div class="callout red"><h4>Cross-Cutting Security Standards</h4><p>JWT access + refresh tokens · single active session (Redis denylist) · PII columns encrypted with keys from <strong>Azure Key Vault</strong> (secrets by alias, never in config/logs) · <code>ValidationPipe</code> + DTOs on every input · soft-delete via <code>is_deleted</code> / <code>status</code> · all external calls via a resilient client (TLS, timeout, retry, circuit breaker, idempotent ingestion).</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Compliance Mapping</h3>
+    <p style="font-size:14px;">The platform is designed to satisfy GDPR, Singapore PDPA, SOC2 Type II, and ISO 27001 controls. The table below maps architectural decisions to the relevant control areas.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Regulation</th><th>Key Requirement</th><th>How Architecture Satisfies</th></tr></thead><tbody>
+        <tr><td><strong>GDPR</strong></td><td>Lawfulness, data minimization, retention, erasure, portability</td><td>Consent captured in MySQL; retention policies enforced by Azure Functions; data subject requests processed via workflow; EU data stays in EU</td></tr>
+        <tr><td><strong>PDPA (SG)</strong></td><td>Consent, purpose limitation, access/correction, DPO notification</td><td>Role-based access limits purpose; audit trail records access; DPO dashboard for requests</td></tr>
+        <tr><td><strong>SOC2 Type II</strong></td><td>CC6.1 logical access, CC7.2 system monitoring, A1.2 availability</td><td>ScopeGuard + RBAC; App Insights logging; multi-AZ + DR</td></tr>
+        <tr><td><strong>ISO 27001</strong></td><td>A.9 access control, A.12 operations, A.18 compliance</td><td>Entra PIM, NetworkPolicy, Private Endpoints, retention, encryption</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Audit Log Immutability</h3>
+    <p style="font-size:14px;">All audit trails are append-only. Writes to Cosmos use a dedicated service principal with insert-only permissions. A hash chain or Cosmos change feed can be used to detect tampering. Backups are WORM-protected in Blob for long-term retention.</p>
+    <div class="sec-item red"><h4>Tamper Evidence</h4><p>Each audit record contains a <code>previous_hash</code> field linking it to the prior record in the same tenant. A periodic verifier runs in Azure Functions and raises a critical alert if the chain is broken.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 8 — LANDING ZONE ===================== -->
+  <div class="section-label">Section 8 · Cloud Foundation</div>
+  <a id="s8"></a><h2>Azure Landing Zone Architecture</h2>
+  <p class="sub">Tenant, management groups, subscriptions, and governance per the Cloud Adoption Framework</p>
+  <div class="card">
+    <p style="font-size:14px;">The platform follows the <strong>Azure Cloud Adoption Framework (CAF) enterprise-scale landing zone</strong>. A single Microsoft Entra ID tenant hosts a management-group hierarchy that separates platform from workloads, and workloads by <strong>region</strong> (data-residency boundary) and <strong>environment</strong> (Dev / UAT / Prod). Policy, RBAC, and tagging are inherited top-down so every regional cluster is governed identically.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">MANAGEMENT GROUP &amp; SUBSCRIPTION HIERARCHY</span>
+Fermax Tenant (Entra ID)
+│
+├── mg-platform                         platform / shared services
+│     ├── sub-connectivity              hub VNet, Azure Firewall, DNS, ExpressRoute/VPN
+│     ├── sub-identity                  Shared Auth DB, Entra integration, PIM
+│     └── sub-management                Log Analytics, Azure Monitor, backup vault, automation
+│
+├── mg-workloads
+│     ├── mg-europe
+│     │     ├── sub-eu-prod             AKS prod, MySQL, Cosmos, Redis (GDPR boundary)
+│     │     ├── sub-eu-uat
+│     │     └── sub-eu-dev
+│     ├── mg-asia
+│     │     ├── sub-asia-prod           AKS prod, MySQL, Cosmos, Redis
+│     │     ├── sub-asia-uat
+│     │     └── sub-asia-dev
+│     └── mg-middle-east
+│           ├── sub-me-prod
+│           ├── sub-me-uat
+│           └── sub-me-dev
+│
+└── mg-sandbox                          experimentation (auto-expiry, budget-capped)</div>
+    <div class="callout blue"><h4>Environment Separation</h4><p>Dev / UAT / Prod are <strong>separate subscriptions</strong> (not just resource groups) for hard blast-radius, quota, and cost isolation. Prod subscriptions deny public network exposure by policy; lower environments allow developer access via JIT/PIM.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Resource Group &amp; Naming Strategy</h3>
+    <p style="font-size:14px;">Resource groups are organised by lifecycle and tier within each workload subscription, e.g. <code>rg-asia-prod-aks</code>, <code>rg-asia-prod-data</code>, <code>rg-asia-prod-network</code>, <code>rg-asia-prod-observability</code>.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:0;">
+      <table><thead><tr><th>Resource</th><th>Convention</th><th>Example</th></tr></thead><tbody>
+        <tr><td>Resource Group</td><td><code>rg-{region}-{env}-{tier}</code></td><td><code>rg-asia-prod-aks</code></td></tr>
+        <tr><td>AKS Cluster</td><td><code>aks-{env}-{region}</code></td><td><code>aks-prod-asia</code></td></tr>
+        <tr><td>MySQL / Postgres</td><td><code>mysql-{env}-{region}-{nn}</code></td><td><code>mysql-prod-asia-01</code></td></tr>
+        <tr><td>Cosmos DB</td><td><code>cosmos-{env}-{region}</code></td><td><code>cosmos-prod-asia</code></td></tr>
+        <tr><td>Key Vault</td><td><code>kv-{env}-{region}-{nn}</code></td><td><code>kv-prod-asia-01</code></td></tr>
+        <tr><td>Storage</td><td><code>st{env}{region}{purpose}</code></td><td><code>stprodasiamedia</code></td></tr>
+        <tr><td>VNet / Subnet</td><td><code>vnet-{region}-{env}</code> / <code>snet-{role}</code></td><td><code>vnet-asia-prod</code> / <code>snet-aks</code></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="what-grid">
+    <div class="what-item"><div class="icon">🛡️</div><div><h3>Azure Policy (Governance)</h3><p>Deny public IPs on prod data; enforce Private Endpoints; require TLS 1.2+; allowed regions per MG; require diagnostic settings → Log Analytics; require encryption with CMK; mandatory tags. Initiatives assigned at MG level.</p></div></div>
+    <div class="what-item"><div class="icon">👥</div><div><h3>RBAC Model</h3><p>Entra groups → custom roles at MG/sub scope. Least-privilege; <strong>no standing prod write</strong> — elevation via Entra PIM (JIT, approval, time-boxed). Separate Reader for ARB/audit.</p></div></div>
+    <div class="what-item"><div class="icon">🏷️</div><div><h3>Tagging Strategy</h3><p>Mandatory: <code>env</code>, <code>region</code>, <code>workload</code>, <code>costCenter</code>, <code>owner</code>, <code>dataClass</code>, <code>compliance</code>. Enforced by policy; drives cost allocation &amp; security reporting.</p></div></div>
+    <div class="what-item"><div class="icon">💰</div><div><h3>Cost Governance</h3><p>Per-subscription budgets + alerts; Cosmos/AKS reserved capacity; anomaly detection. Sandbox auto-expiry. Cost dashboards per distributor region.</p></div></div>
+  </div>
+  <div class="callout green"><h4>WAF Alignment</h4><p>Implements CAF landing-zone design areas (identity, network topology &amp; connectivity, resource organization, governance, management) and the WAF pillars of <strong>Operational Excellence</strong>, <strong>Security</strong>, and <strong>Cost Optimization</strong>.</p></div>
+
+  <div class="card">
+    <h3>Azure Service Limits &amp; Subscription Quotas</h3>
+    <p style="font-size:14px;">Production quotas are reviewed before go-live and requested via Azure Support. Each region is deployed in a dedicated subscription to avoid noisy-neighbor quota contention.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Service</th><th>Limit at Risk</th><th>Mitigation</th></tr></thead><tbody>
+        <tr><td><strong>AKS</strong></td><td>Max nodes per cluster (1,000 default)</td><td>Per-region clusters; scale node pools, not cluster count</td></tr>
+        <tr><td><strong>APIM</strong></td><td>Capacity units / scale units</td><td>Premium tier with auto-scaled units; self-hosted gateway for burst</td></tr>
+        <tr><td><strong>Cosmos DB</strong></td><td>Max RU/s per account / partition</td><td>Multiple accounts per region if needed; partition key design review</td></tr>
+        <tr><td><strong>Redis</strong></td><td>Max connections per tier</td><td>Premium tier with clustering; connection pooling in clients</td></tr>
+        <tr><td><strong>Front Door</strong></td><td>Origins / routes per profile</td><td>One profile per environment; origin groups per region</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Sandbox Decommissioning Policy</h3>
+    <p style="font-size:14px;">Sandbox subscriptions are time-boxed and budget-capped. Every sandbox resource is tagged with an <code>expiryDate</code>; an Azure Automation runbook deletes resources 7 days after expiry and sends a cost summary to the owner. No production data is allowed in sandbox.</p>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 9 — NETWORK ===================== -->
+  <div class="section-label">Section 9 · Network</div>
+  <a id="s9"></a><h2>Network Architecture</h2>
+  <p class="sub">Hub-spoke topology, Zero-Trust segmentation, and end-to-end traffic flow</p>
+  <div class="card">
+    <p style="font-size:14px;">Each region uses a <strong>hub-spoke</strong> topology. The hub (in <code>sub-connectivity</code>) holds shared egress/inspection (Azure Firewall), DNS, and hybrid connectivity. Each environment is a <strong>spoke VNet</strong> peered to the hub. All PaaS data services are reached via <strong>Private Endpoints</strong> only — no public data plane. Ingress is fronted by <strong>Azure Front Door + WAF</strong>, then APIM, then internal-only AKS ingress.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">NORTH-SOUTH TRAFFIC FLOW (ingress)</span>
+Internet / Mobile
+   │  TLS 1.3
+   ▼
+Azure Front Door (global)  ──▶  WAF policy (OWASP CRS, bot, rate-limit, geo)
+   │  anycast, TLS offload, caching of static React bundles
+   ▼
+Azure API Management (APIM, internal mode)   authn + routes by cluster_id
+   │  (private link into the regional spoke)
+   ▼
+Application Gateway Ingress / AKS internal LB   (snet-ingress)
+   │
+   ▼
+NestJS API Gateway pod (AKS)  ──▶  domain service pods
+   │  Private Endpoint (no public route)
+   ▼
+Data plane: MySQL · Cosmos · Redis · Blob · Key Vault   (snet-data, PE only)
+
+<span class="h">REGIONAL HUB-SPOKE</span>
+vnet-hub-asia (sub-connectivity)
+  ├── AzureFirewallSubnet        egress filtering / FQDN allow-list / IDPS
+  ├── DNS forwarders             Private DNS Zones (privatelink.*)
+  └── GatewaySubnet              VPN / ExpressRoute (ops only)
+        │  VNet peering
+        ▼
+vnet-asia-prod (spoke)
+  ├── snet-ingress   AppGw / ingress LB        NSG: 443 in from APIM PL
+  ├── snet-aks       AKS node pools (pods)     NSG: intra-cluster only
+  ├── snet-data      Private Endpoints         NSG: 1433/3306/443 from snet-aks only
+  └── snet-mgmt      bastion / jumpbox         NSG: PIM-gated</div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">↕️</div><div><h3>North-South</h3><p>External traffic: Front Door → WAF → APIM → ingress → gateway. TLS everywhere; WAF blocks OWASP Top 10; APIM enforces auth, quotas, throttling.</p></div></div>
+      <div class="what-item"><div class="icon">↔️</div><div><h3>East-West</h3><p>Service-to-service stays inside <code>snet-aks</code> via the service mesh with mTLS; NSGs + network policies deny cross-namespace traffic unless explicitly allowed.</p></div></div>
+      <div class="what-item"><div class="icon">🔒</div><div><h3>Service Isolation</h3><p>Data subnet reachable only from AKS subnet; Private Endpoints remove public exposure; Private DNS resolves <code>privatelink</code> zones internally.</p></div></div>
+      <div class="what-item"><div class="icon">🚪</div><div><h3>Controlled Egress</h3><p>All outbound (vendor APIs: Hikvision, Stripe, FCM) routed through Azure Firewall with an FQDN allow-list + TLS inspection + logging.</p></div></div>
+    </div>
+    <div class="callout blue"><h4>DNS &amp; Private Link</h4><p>Private DNS Zones (<code>privatelink.database.azure.com</code>, <code>privatelink.documents.azure.com</code>, <code>privatelink.vaultcore.azure.net</code>, <code>privatelink.blob.core.windows.net</code>) are linked to each spoke; PaaS resolves to private IPs only. Public network access is <strong>Disabled</strong> on all prod data services.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>DDoS, mTLS &amp; DNS Details</h3>
+    <p style="font-size:14px;">Azure DDoS Protection Standard is enabled on the Front Door and VNets. mTLS is used between APIM and the AKS ingress, and between service-mesh sidecars. Private DNS zones are linked to each spoke and conditional forwarders route vendor domains through Azure Firewall.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Control</th><th>Implementation</th></tr></thead><tbody>
+        <tr><td><strong>DDoS Protection</strong></td><td>Azure DDoS Standard on Front Door + VNets; auto-mitigation; attack analytics</td></tr>
+        <tr><td><strong>mTLS APIM→AKS</strong></td><td>APIM backend certificate authentication; AKS ingress validates client cert</td></tr>
+        <tr><td><strong>Service Mesh mTLS</strong></td><td>Istio/ASM: peer authentication STRICT; egress Gateway for outbound TLS</td></tr>
+        <tr><td><strong>Private DNS</strong></td><td>Zones linked to spoke VNets; Azure Firewall as DNS proxy for external FQDNs</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 10 — AKS ===================== -->
+  <div class="section-label">Section 10 · Kubernetes</div>
+  <a id="s10"></a><h2>AKS Kubernetes Architecture</h2>
+  <p class="sub">Cluster design, namespaces, node pools, autoscaling, and pod security for 1M+ users</p>
+  <div class="card">
+    <p style="font-size:14px;">Each region runs a dedicated, <strong>private</strong> AKS cluster (e.g. <code>aks-prod-asia</code>) with the API server isolated (private cluster + authorized IP ranges), Microsoft Entra + Kubernetes RBAC integration, Azure CNI Overlay networking, and a service mesh for mTLS. Workloads are partitioned by <strong>namespace per bounded context</strong>; system/ingress workloads run on a separate node pool from application workloads.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">CLUSTER: aks-prod-asia  (private, Entra-integrated, multi-AZ)</span>
+NODE POOLS
+  system     1-3 nodes   taint CriticalAddonsOnly   (CoreDNS, metrics, mesh control plane)
+  ingress    2-N nodes    ingress controllers + APIM self-hosted GW
+  apps       3-N nodes    general workloads (HPA-driven)            zones 1,2,3
+  memory     0-N nodes    reporting / cache-heavy (VPA-tuned)       (scale-to-zero)
+
+NAMESPACES (network-policy isolated, mesh mTLS)
+  ingress          ingress-nginx / AGIC, cert-manager
+  auth             AuthService, SessionService, TokenService
+  tenant           Distributor + Installer services
+  property         Property / Unit / Facilities
+  access-control   doors, FR, ANPR, visitor, MQTT bridge
+  payments         Stripe / PayNow / PayLah (PCI-scoped, tight egress)
+  notifications    Service Bus consumers, Web PubSub, FCM
+  reporting        async report builders (memory pool)
+  monitoring       Prometheus, Grafana, OTel collector
+  kube-system      platform add-ons</div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">📈</div><div><h3>Autoscaling</h3><p><strong>HPA</strong> on CPU/mem + custom metrics (queue depth, RPS via KEDA). <strong>VPA</strong> right-sizes reporting pods. <strong>Cluster Autoscaler</strong> grows/shrinks node pools; KEDA scales Service Bus consumers to zero when idle.</p></div></div>
+      <div class="what-item"><div class="icon">🕸️</div><div><h3>Service Mesh</h3><p>Istio / Open Service Mesh provides mTLS, retries, circuit-breaking, and traffic-splitting for canary releases. Sidecars enforce east-west policy.</p></div></div>
+      <div class="what-item"><div class="icon">🚦</div><div><h3>Ingress</h3><p>AGIC / ingress-nginx behind the internal LB; cert-manager for TLS; APIM self-hosted gateway option for consistent policy at the edge of the cluster.</p></div></div>
+      <div class="what-item"><div class="icon">🔐</div><div><h3>Pod Security Standards</h3><p><strong>Restricted</strong> PSS enforced via Azure Policy/Gatekeeper: non-root, read-only rootfs, drop ALL caps, no privilege escalation, seccomp RuntimeDefault. Workload Identity for Key Vault (no secrets in pods).</p></div></div>
+    </div>
+    <div class="callout green"><h4>Namespace &amp; Isolation Strategy</h4><p>One namespace per bounded context with default-deny <code>NetworkPolicy</code>; resource quotas + limit ranges per namespace; separate node pools isolate noisy/PCI workloads. <strong>Environment isolation</strong> is by cluster/subscription (Dev/UAT/Prod never share a cluster).</p></div>
+    <div class="callout blue"><h4>Cluster Sizing (Prod, per region — 1M users)</h4><p>Baseline: <code>apps</code> pool 6-40 nodes (D8s_v5), <code>ingress</code> 3 nodes, <code>system</code> 3 nodes across 3 AZs; PodDisruptionBudgets + topology spread for AZ resilience; node surge upgrades. See Section 17 for the full sizing model.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Pod Resources, Backup &amp; Runtime Choices</h3>
+    <p style="font-size:14px;">Every production pod declares explicit requests and limits; quality-of-service is Guaranteed or Burstable, never BestEffort. Cluster state and persistent volumes are backed up with Velero to Blob. The service mesh and ingress controllers are finalized as Istio and ingress-nginx respectively.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Item</th><th>Decision</th><th>Rationale</th></tr></thead><tbody>
+        <tr><td><strong>Service Mesh</strong></td><td>Istio (via AKS add-on or managed ASM)</td><td>Mature mTLS, traffic management, observability, enterprise support</td></tr>
+        <tr><td><strong>Ingress Controller</strong></td><td>ingress-nginx</td><td>Flexible, well-known, works with cert-manager and APIM private link</td></tr>
+        <tr><td><strong>Pod QoS</strong></td><td>Requests = limits for critical services</td><td>Predictable scheduling, eviction protection, accurate capacity planning</td></tr>
+        <tr><td><strong>Cluster Backup</strong></td><td>Velero → Azure Blob</td><td>Backs up manifests, CRDs, and PVCs for fast cluster rebuild</td></tr>
+        <tr><td><strong>Node Surge</strong></td><td>Max surge 33%, max unavailable 0</td><td>Zero-downtime upgrades; PDBs protect critical workloads</td></tr>
+      </tbody></table>
+    </div>
+    <div class="callout amber"><h4>Pod Resource Example</h4><p>Critical API gateway: <code>requests: cpu: 500m, memory: 512Mi</code>; <code>limits: cpu: 1000m, memory: 1Gi</code>. Reporting pods: higher memory limits, no CPU cap. HPA scales on 70% CPU target.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 11 — CI/CD ===================== -->
+  <div class="section-label">Section 11 · DevSecOps</div>
+  <a id="s11"></a><h2>CI/CD &amp; Release Architecture</h2>
+  <p class="sub">GitHub Enterprise + Azure DevOps/Harness, Helm, GitOps, and progressive delivery</p>
+  <div class="card">
+    <p style="font-size:14px;">Source lives in <strong>GitHub Enterprise</strong>; CI runs in <strong>Azure DevOps</strong> (or Harness) with security gates; images land in <strong>Azure Container Registry (ACR)</strong>; deployment to AKS is <strong>GitOps</strong> via Argo CD / Flux reading Helm charts from an environment config repo. Promotion is Dev → UAT → Prod with manual approval + automated quality gates at each boundary.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">PIPELINE FLOW</span>
+Developer
+   │ feature branch + commit
+   ▼
+GitHub Enterprise ──▶ Pull Request ──▶ required reviews + branch protection
+   │
+   ▼  CI (Azure DevOps / Harness)
+[ Build + Unit tests ] ─▶ [ SAST (CodeQL) ] ─▶ [ SCA (Dependabot/Snyk) ] ─▶ [ Secret scan (gitleaks) ]
+   │                                                                              │
+   ▼                                                                              ▼
+[ Container build ] ─▶ [ Image scan (Defender/Trivy) ] ─▶ [ Sign (cosign) ] ─▶ ACR (artifact registry)
+   │
+   ▼  CD (GitOps: Argo CD / Flux)
+update Helm values in env-repo ──▶ Argo syncs ──▶ Deploy DEV (auto)
+                                              ──▶ Deploy UAT (approval + smoke/integration)
+                                              ──▶ Deploy PROD (approval + change ticket)
+                                                       │
+                                                       ▼  progressive delivery
+                                              Blue/Green  or  Canary (mesh traffic split + analysis)</div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🌿</div><div><h3>Branching</h3><p>Trunk-based: short-lived feature branches → <code>main</code>; release tags drive prod. Branch protection: required checks, 2 reviews, signed commits, linear history.</p></div></div>
+      <div class="what-item"><div class="icon">⎈</div><div><h3>Helm Structure</h3><p>One umbrella chart per service; shared library chart for common templates; <code>values-{env}.yaml</code> per environment in a separate GitOps config repo (no secrets — pulled from Key Vault via CSI).</p></div></div>
+      <div class="what-item"><div class="icon">🔁</div><div><h3>GitOps</h3><p>Argo CD is the single source of truth for cluster state; drift auto-reconciled; every change is an auditable Git commit. Rollback = revert commit.</p></div></div>
+      <div class="what-item"><div class="icon">↩️</div><div><h3>Rollback</h3><p>Helm revision history + Argo rollback to last-known-good; DB changes are expand/contract (backward-compatible) so app rollback never breaks schema.</p></div></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Strategy</th><th>How</th><th>Use case</th><th>Rollback</th></tr></thead><tbody>
+        <tr><td><strong>Blue/Green</strong></td><td>Two identical releases; switch ingress/mesh route 100%</td><td>Risky releases, DB cutover windows</td><td>Flip route back instantly</td></tr>
+        <tr><td><strong>Canary</strong></td><td>Mesh splits 5%→25%→50%→100% with metric analysis (Argo Rollouts/Flagger)</td><td>Default for most services</td><td>Auto-abort on SLO breach</td></tr>
+        <tr><td><strong>Rolling</strong></td><td>maxSurge/maxUnavailable on Deployment</td><td>Low-risk patches</td><td>Pause + undo rollout</td></tr>
+      </tbody></table>
+    </div>
+    <div class="callout green"><h4>DevSecOps Gates (shift-left)</h4><p>Pipeline fails closed on: critical/high SAST or SCA findings, unsigned images, exposed secrets, failing PSS/Gatekeeper policy, or missing test coverage threshold. Defender for Containers scans ACR + runtime continuously.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Infrastructure as Code, Test Pyramid &amp; Artifact Policy</h3>
+    <p style="font-size:14px;">All Azure resources are defined in <strong>Bicep</strong> (preferred for Azure-native consistency) or Terraform where multi-cloud abstraction is needed. The CI/CD pipeline runs a test pyramid that gates promotion.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Layer</th><th>Tooling</th><th>Gate</th></tr></thead><tbody>
+        <tr><td><strong>Unit</strong></td><td>Jest, pytest, Flutter test</td><td>≥80% coverage; fail on drop</td></tr>
+        <tr><td><strong>Integration</strong></td><td>NestJS test containers, Testcontainers</td><td>Pass on every PR</td></tr>
+        <tr><td><strong>Contract</strong></td><td>Pact / OpenAPI diff</td><td>Consumer-driven contract tests pass</td></tr>
+        <tr><td><strong>E2E</strong></td><td>Playwright (web), Maestro (Flutter)</td><td>Pass before UAT promotion</td></tr>
+        <tr><td><strong>Performance</strong></td><td>k6, Artillery</td><td>Baseline vs. target SLOs</td></tr>
+        <tr><td><strong>Security</strong></td><td>CodeQL, Snyk, OWASP ZAP</td><td>Zero critical/high findings</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec-item blue"><h4>Artifact Retention</h4><p>Container images and Helm charts retained for 90 days in ACR; release-candidate images tagged and retained for 1 year. Build logs and test reports kept in Azure DevOps for 365 days.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 12 — SECURITY ===================== -->
+  <div class="section-label">Section 12 · Security</div>
+  <a id="s12"></a><h2>Security Architecture</h2>
+  <p class="sub">Zero-Trust, defense-in-depth across identity, network, data, and runtime — OWASP-aligned</p>
+  <div class="card">
+    <p style="font-size:14px;">Security is layered per <strong>Zero Trust</strong> ("never trust, always verify"): every request is authenticated, authorized, scoped, and logged; every hop is encrypted; every secret is brokered by Key Vault via Managed Identity; and every workload runs least-privilege.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">DEFENSE-IN-DEPTH LAYERS</span>
+L1 Edge        Front Door + WAF (OWASP CRS) · DDoS Protection · bot &amp; geo filtering · TLS 1.3
+L2 Identity    Entra ID (admins/SSO) · JWT access+refresh · MFA · single session · PIM (JIT)
+L3 Gateway     APIM: token validation, quotas, throttling, IP allow-list, mTLS to backend
+L4 Authz       NestJS guard chain: Roles (RBAC) + Scope (ABAC: tenant/cluster) + ModuleEnabled (funnel)
+L5 Network     Private cluster · NSGs · NetworkPolicy (default-deny) · Private Endpoints · no public data
+L6 Workload    Restricted PSS · Workload Identity · signed images · admission control (Gatekeeper)
+L7 Data        TLS in transit · TDE at rest (CMK in Key Vault) · column-level PII encryption · RLS by tenant
+L8 Audit       AuditInterceptor → immutable trail · Defender for Cloud · Sentinel SIEM correlation</div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🔑</div><div><h3>Authentication</h3><p>End-users: JWT access (short TTL) + refresh (httpOnly), MFA/OTP, single active session. Admin/staff: <strong>Entra ID SSO</strong> + Conditional Access. Service identities: <strong>Managed Identity</strong>.</p></div></div>
+      <div class="what-item"><div class="icon">🧩</div><div><h3>Authorization</h3><p><strong>RBAC</strong> (role → permissions) + <strong>ABAC</strong> (attributes: <code>tenant_id</code>, <code>cluster_id</code>, tier) + the funnel guard. Tenant isolation enforced in every query (<code>WHERE *_id = scope</code>) and DB Row-Level Security.</p></div></div>
+      <div class="what-item"><div class="icon">🗝️</div><div><h3>Secrets</h3><p>Azure Key Vault only, referenced by alias; AKS Secrets Store CSI + Workload Identity injects at runtime. <strong>No secrets in Git, images, env, or logs.</strong> Auto-rotation for keys/certs.</p></div></div>
+      <div class="what-item"><div class="icon">🛰️</div><div><h3>Network Security</h3><p>WAF at edge, NSGs per subnet, default-deny NetworkPolicy per namespace, Private Endpoints for all PaaS, Azure Firewall egress allow-list.</p></div></div>
+      <div class="what-item"><div class="icon">🧮</div><div><h3>Data Security</h3><p>TLS 1.2+ in transit; TDE/at-rest with customer-managed keys; <strong>column-level encryption</strong> for PII (NRIC, phone, plate); tokenized payment data (PCI scope minimized).</p></div></div>
+      <div class="what-item"><div class="icon">📦</div><div><h3>Container Security</h3><p>Image scanning in ACR + CI; <strong>cosign</strong> signature verification at admission; Gatekeeper policies; Defender for Containers runtime threat detection; read-only rootfs.</p></div></div>
+    </div>
+    <div class="callout red"><h4>OWASP &amp; Zero-Trust Controls</h4><p>Mitigations mapped to OWASP Top 10 &amp; API Security Top 10: input validation (DTO/ValidationPipe), authz on every object (BOLA via ScopeGuard), rate-limiting (APIM <code>429</code>), no mass-assignment (explicit DTOs), security headers (Front Door), and full request logging with <code>correlation_id</code>.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Threat Model</h3>
+    <p style="font-size:14px;">The STRIDE threat model for Genio360 identifies the top threats and their mitigations. Threat modeling is repeated for every major feature release and for each new third-party integration.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Threat</th><th>Example</th><th>Mitigation</th></tr></thead><tbody>
+        <tr><td><strong>Spoofing</strong></td><td>Fake JWT / impersonation</td><td>Short TTL, signed tokens, JWKS validation, single session</td></tr>
+        <tr><td><strong>Tampering</strong></td><td>Modified audit log</td><td>Append-only Cosmos, hash chain, WORM backups</td></tr>
+        <tr><td><strong>Repudiation</strong></td><td>Deny admin action</td><td>AuditInterceptor logs every config change with user + timestamp</td></tr>
+        <tr><td><strong>Information Disclosure</strong></td><td>Tenant isolation bypass</td><td>ScopeGuard, DB RLS, column-level PII encryption</td></tr>
+        <tr><td><strong>Denial of Service</strong></td><td>API abuse</td><td>APIM throttling, WAF rate-limits, circuit breakers</td></tr>
+        <tr><td><strong>Elevation</strong></td><td>L4 user accessing L3 data</td><td>RolesGuard + ScopeGuard + ModuleEnabledGuard</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Token Lifecycle &amp; Key Rotation</h3>
+    <p style="font-size:14px;">Access tokens are short-lived; refresh tokens are long-lived but single-use and stored as httpOnly cookies. Signing keys and encryption keys are rotated automatically with zero downtime.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Token / Key</th><th>Lifetime</th><th>Rotation / Revocation</th></tr></thead><tbody>
+        <tr><td><strong>Access Token</strong></td><td>15 minutes</td><td>Implicitly rotated by refresh; no server-side revocation needed</td></tr>
+        <tr><td><strong>Refresh Token</strong></td><td>7 days</td><td>Single-use rotation; revoked on logout or suspicious activity</td></tr>
+        <tr><td><strong>JWT Signing Key</strong></td><td>—</td><td>Rotated every 90 days; old key accepted for 24h overlap</td></tr>
+        <tr><td><strong>PII Encryption Key</strong></td><td>—</td><td>Rotated annually via Azure Key Vault; re-encrypt data in background job</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>PCI DSS Scope Minimization</h3>
+    <p style="font-size:14px;">Cardholder data is minimized by using tokenization (Stripe tokens, Braintree nonces) so the platform never stores raw PAN. The payments namespace is network-isolated and subject to the strictest egress controls. Annual PCI SAQ-A is the target.</p>
+    <div class="sec-item red"><h4>Scope Boundary</h4><p>Only the <code>payments</code> namespace, Stripe/Braintree SDKs, and the payment webhooks touch card data. All other services receive only a payment-intent reference or token ID.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Penetration Testing &amp; Red Team</h3>
+    <p style="font-size:14px;">External penetration testing is performed annually and after major architecture changes. Internal red-team exercises focus on tenant isolation, privilege escalation, and supply-chain attacks. Findings are tracked in a vulnerability register with SLA-based remediation.</p>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 13 — SVC-TO-SVC ===================== -->
+  <div class="section-label">Section 13 · Integration Patterns</div>
+  <a id="s13"></a><h2>Service-to-Service Communication</h2>
+  <p class="sub">REST, gRPC, and event-driven messaging with reliability patterns</p>
+  <div class="card">
+    <p style="font-size:14px;">Synchronous reads/queries use <strong>REST</strong> (external) and <strong>gRPC</strong> (internal, low-latency). State-changing cross-service workflows are <strong>event-driven</strong> over <strong>Azure Service Bus</strong>, using the <strong>Transactional Outbox</strong> to guarantee no lost events and the <strong>Saga</strong> pattern for distributed consistency without 2PC.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Mechanism</th><th>When used</th><th>Reliability</th></tr></thead><tbody>
+        <tr><td><strong>REST/JSON</strong> (via APIM)</td><td>Client ↔ backend; external vendor APIs</td><td>Retry + circuit breaker; idempotency keys</td></tr>
+        <tr><td><strong>gRPC</strong></td><td>Internal service ↔ service, high throughput</td><td>Deadlines, retries, mesh mTLS</td></tr>
+        <tr><td><strong>Service Bus (queue)</strong></td><td>Async commands (email, FR-sync, report)</td><td>At-least-once, DLQ, sessions for ordering</td></tr>
+        <tr><td><strong>Service Bus (topic)</strong></td><td>Domain events (PropertyProvisioned, VisitorRegistered)</td><td>Pub/sub fan-out, per-subscriber DLQ</td></tr>
+      </tbody></table>
+    </div>
+    <h3 style="margin-top:24px;">Outbox + Saga — sequence</h3>
+<div class="arch-tree"><span class="h">TRANSACTIONAL OUTBOX (no lost events)</span>
+Service A
+  BEGIN tx
+    write business row  (MySQL)
+    write event row     (outbox table, same tx)   ◀── atomic
+  COMMIT
+  Relay/CDC ──poll/stream──▶ publish to Service Bus ──▶ mark outbox row sent
+
+<span class="h">SAGA (Property Provisioning — choreographed)</span>
+PropertyService    ──PropertyCreated──▶ Service Bus topic
+   │                                       ├─▶ AccessControlService  provision panels/credentials
+   │                                       ├─▶ LicenceService        reserve MeetMe licence
+   │                                       └─▶ NotificationService   send PM onboarding email
+   ▼ (on any step failure)
+Compensating events ◀── rollback: release licence · de-provision panels · mark property pending</div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🔂</div><div><h3>Retry Strategy</h3><p>Exponential backoff + jitter; bounded attempts; idempotent consumers keyed by message id so retries are safe.</p></div></div>
+      <div class="what-item"><div class="icon">📥</div><div><h3>Dead Letter Queue</h3><p>Poison messages after max-delivery move to DLQ; alerting + a replay tool; never silently dropped.</p></div></div>
+      <div class="what-item"><div class="icon">🏷️</div><div><h3>Event Versioning</h3><p>Schema registry; additive/backward-compatible changes; <code>eventType</code> + <code>v</code> in envelope; consumers tolerate unknown fields.</p></div></div>
+      <div class="what-item"><div class="icon">🧭</div><div><h3>Correlation</h3><p><code>correlation_id</code> + <code>causation_id</code> flow through every hop for distributed tracing (Section 14).</p></div></div>
+    </div>
+    <div class="callout amber"><h4>Consistency Choice</h4><p>Within a service boundary: ACID (relational). Across services: <strong>eventual consistency</strong> via events + sagas. This avoids distributed locks/2PC and is what keeps the platform responsive at 1M-user scale.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Schema Registry, Ordering &amp; Idempotency</h3>
+    <p style="font-size:14px;">Event schemas are stored in an Azure Event Hubs Schema Registry or Apicurio registry. Producers and consumers validate schemas at runtime. Ordered processing is achieved via Service Bus sessions for business-entity streams. All consumers are idempotent.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Concern</th><th>Implementation</th></tr></thead><tbody>
+        <tr><td><strong>Schema Registry</strong></td><td>Azure Schema Registry or Apicurio; backward-compatible additive changes only</td></tr>
+        <tr><td><strong>Ordering</strong></td><td>Service Bus sessions keyed by <code>tenant_id</code> or <code>property_id</code>; in-order delivery per session</td></tr>
+        <tr><td><strong>Idempotency</strong></td><td>Every event carries <code>event_id</code>; consumers store processed IDs in Redis for 24h</td></tr>
+        <tr><td><strong>Duplication</strong></td><td>At-least-once delivery + idempotent consumers; duplicate detection in Service Bus</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 14 — OBSERVABILITY ===================== -->
+  <div class="section-label">Section 14 · Observability</div>
+  <a id="s14"></a><h2>Observability Architecture</h2>
+  <p class="sub">Three pillars, SLOs, and alerting at scale</p>
+  <div class="card">
+    <p style="font-size:14px;">Observability is built on the three pillars — <strong>logs, metrics, and traces</strong> — using a single Azure Monitor backbone. Every service emits OpenTelemetry telemetry through the collector to App Insights (distributed traces + logs), Log Analytics (centralized logs), and Prometheus/Grafana (infrastructure/SRE metrics). A <code>correlation_id</code> is generated at the edge and carried through every synchronous, asynchronous, and database call.</p>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">TELEMETRY FLOW</span>
+React / Flutter / NestJS
+  └── OpenTelemetry SDK / App Insights SDK
+        │
+        ├── Traces ──▶ Azure Monitor (App Insights)   request-to-dependency map
+        ├── Logs   ──▶ Log Analytics Workspace        retention per region, KQL queries
+        └── Metrics ──▶ Prometheus + Grafana          SLO burn-rate, infra capacity, business KPIs
+        │
+        ├── Alert rules (Prometheus Alertmanager / Azure Alert)
+        │      ▶ Critical → PagerDuty/Slack → On-call
+        │      ▶ Warning → Teams channel
+        │      ▶ Info → dashboard / daily digest
+        │
+        └── Azure Dashboards / Grafana for product, SRE, and exec views</div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Pillar</th><th>Source</th><th>Store</th><th>Examples</th></tr></thead><tbody>
+        <tr><td><strong>Metrics</strong></td><td>AKS, App Insights, PaaS, custom</td><td>Prometheus / Azure Monitor</td><td>RPS, p95/p99 latency, error rate, queue depth, pod CPU, Cosmos RU, Redis load</td></tr>
+        <tr><td><strong>Logs</strong></td><td>App Insights, AKS, APIM, Azure Firewall, PaaS</td><td>Log Analytics</td><td>Request logs, security logs, audit logs, gateway denied access</td></tr>
+        <tr><td><strong>Traces</strong></td><td>NestJS OTel interceptor</td><td>App Insights</td><td>End-to-end request waterfall incl. Service Bus, DB, Redis, vendor API</td></tr>
+      </tbody></table>
+    </div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🎯</div><div><h3>SLOs</h3><p><strong>API latency p99</strong> &lt; 500ms; <strong>availability</strong> 99.9% (core), 99.5% (reporting); <strong>error rate</strong> &lt; 0.1% per service. Reviewed quarterly.</p></div></div>
+      <div class="what-item"><div class="icon">🚨</div><div><h3>Alerting</h3><p>Multi-channel alert matrix: Sev1 → page/call, Sev2 → Slack/Teams, Sev3 → daily digest. SLO-based alerts use multi-window burn-rate to avoid noise.</p></div></div>
+      <div class="what-item"><div class="icon">📊</div><div><h3>Dashboards</h3><p>Product dashboard (DAU, funnel adoption), SRE dashboard (latency/error/burn), security dashboard (failed auth, WAF blocks), executive dashboard (cost, availability).</p></div></div>
+      <div class="what-item"><div class="icon">📖</div><div><h3>Runbooks</h3><p>Every alert links to a runbook: symptoms, triage steps, escalation path, safe rollback. Stored in the internal wiki and linked from alert context.</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>SLOs, SLIs &amp; Error Budgets</h3>
+    <p style="font-size:14px;">Service-level objectives are defined per service class. Error budgets are tracked monthly; if a team burns more than 50% of its budget in the first half of the month, releases are frozen until reliability is restored.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Service Class</th><th>Availability SLO</th><th>Latency p99</th><th>SLI</th><th>Error Budget</th></tr></thead><tbody>
+        <tr><td><strong>Critical</strong> (auth, payments, access)</td><td>99.9%</td><td>300ms</td><td>App Insights availability + latency</td><td>43.8 min/month</td></tr>
+        <tr><td><strong>Standard</strong> (visitor, notifications)</td><td>99.5%</td><td>500ms</td><td>App Insights request metrics</td><td>3.65 hr/month</td></tr>
+        <tr><td><strong>Background</strong> (reports, FR sync)</td><td>95%</td><td>—</td><td>Queue completion rate</td><td>36 hr/month</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Synthetic Monitoring &amp; Incident Management</h3>
+    <p style="font-size:14px;">Synthetic probes run every minute from multiple locations against the public health endpoint and critical user journeys (login, visitor pass, payment intent). Alerts route to PagerDuty for Sev1/Sev2 and to Teams for Sev3. Major incidents use a defined incident commander structure.</p>
+    <div class="sec-item blue"><h4>Tooling</h4><p>Azure Application Insights synthetic tests → PagerDuty → ServiceNow for incident tracking. Grafana dashboards provide SRE context. Runbooks are linked directly from alert annotations.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 15 — DR/BC ===================== -->
+  <div class="section-label">Section 15 · Resilience</div>
+  <a id="s15"></a><h2>Disaster Recovery &amp; Business Continuity</h2>
+  <p class="sub">Multi-AZ, multi-region, backups, and defined RPO/RTO by service tier</p>
+  <div class="card">
+    <p style="font-size:14px;">Each region is designed to survive an Availability Zone loss with no operator action. For region-level disasters, the platform supports failover to a paired/secondary region. Because data residency is a first-class constraint, the secondary region is chosen within the same data-residency boundary (e.g. EU West → EU North) or as a cold standby if a jurisdiction does not allow cross-border replication.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Service Tier</th><th>Examples</th><th>HA Strategy</th><th>RPO</th><th>RTO</th></tr></thead><tbody>
+        <tr><td><strong>Critical</strong></td><td>Auth, API gateway, access-control events, payments</td><td>Multi-AZ + regional active-passive standby</td><td>&lt; 5 min</td><td>&lt; 30 min</td></tr>
+        <tr><td><strong>Important</strong></td><td>Provisioning, visitor, notifications, reporting</td><td>Multi-AZ + point-in-time restore / geo-replica</td><td>&lt; 1 hr</td><td>&lt; 4 hr</td></tr>
+        <tr><td><strong>Non-Critical</strong></td><td>Analytics exports, archived audit logs</td><td>Multi-AZ + geo-backup</td><td>&lt; 24 hr</td><td>&lt; 24 hr</td></tr>
+      </tbody></table>
+    </div>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">REGIONAL FAILOVER MODEL</span>
+Primary Region (e.g. Asia Southeast)
+  ├─ AKS: multi-AZ node pools, PDBs, topology spread
+  ├─ MySQL: zone-redundant HA + geo-replica to Asia East
+  ├─ Cosmos DB: zone-redundant, async geo-replication
+  ├─ Redis: zone-redundant (Premium), async geo-replica for warm failover
+  └─ Blob: RA-GRS / GRS replication
+
+Failure detected by health checks / App Insights / Azure Service Health
+        │
+        ▼
+Failover decision (automated for AZ, manual for region)
+        │
+        ▼
+Standby region: promote MySQL replica, redirect Cosmos DB traffic, activate Redis replica, DNS switch at Front Door</div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🗄️</div><div><h3>Backups</h3><p>MySQL: daily full + hourly log, 35-day PITR; Cosmos: continuous backup, 30-day point-in-time restore; Blob: soft-delete + versioning; Key Vault: soft-delete + backup to paired region.</p></div></div>
+      <div class="what-item"><div class="icon">🧪</div><div><h3>DR Testing</h3><p>Quarterly game-day: failover reporting region, validate RPO/RTO, run critical user journeys (login, visitor entry, payment). Results feed back into runbooks.</p></div></div>
+      <div class="what-item"><div class="icon">🌍</div><div><h3>Data Residency</h3><p>EU data stays in EU regions (GDPR). Asia and Middle East adopt equivalent policies. Failover target region is selected from the same geopolitical boundary.</p></div></div>
+      <div class="what-item"><div class="icon">📞</div><div><h3>Incident Response</h3><p>Sev1 bridge with incident commander, engineering lead, comms lead. Status page integration for external stakeholders.</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Failover Criteria &amp; DR Validation</h3>
+    <p style="font-size:14px;">Availability Zone failures are handled automatically by Azure platform and Kubernetes topology spread. Region-level failover requires an explicit decision because it impacts data-residency and cost; automation prepares the standby region but a human approves the DNS switch.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Failure Type</th><th>Detection</th><th>Failover</th><th>Decision</th></tr></thead><tbody>
+        <tr><td><strong>AZ failure</strong></td><td>Azure platform + pod readiness</td><td>Automatic</td><td>None</td></tr>
+        <tr><td><strong>AKS node pool</strong></td><td>Health probes / HPA</td><td>Automatic</td><td>None</td></tr>
+        <tr><td><strong>DB primary</strong></td><td>Azure DB monitoring</td><td>Auto-failover</td><td>Alert only</td></tr>
+        <tr><td><strong>Region-level</strong></td><td>Front Door health + App Insights</td><td>Prepared by automation</td><td>Manual approval for DNS switch</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec-item green"><h4>Runbook Template</h4><p>Every runbook contains: symptom, detection query, impact assessment, immediate mitigation, safe rollback steps, escalation path, and post-incident review link. Runbooks are stored in the internal wiki and tested quarterly.</p></div>
+    <div class="sec-item amber"><h4>DR Validation Plan</h4><p>Quarterly game-day: pick a non-peak window, fail over a reporting region, execute critical user journeys, verify RPO/RTO, and document gaps. Annual full-region failover for one production region.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 16 — DATA ARCHITECTURE ===================== -->
+  <div class="section-label">Section 16 · Data</div>
+  <a id="s16"></a><h2>Data Architecture</h2>
+    <p class="sub">Purpose-fit stores, ownership, partitioning, and retention</p>
+  <div class="card">
+    <p style="font-size:14px;">The platform uses a <strong>polyglot persistence</strong> model: relational databases own transactional entities, Cosmos DB owns high-write/append-only data, Redis owns ephemeral cache and counters, and Blob owns unstructured files. Each store is isolated by <code>cluster_id</code> and <code>tenant_id</code> and is reachable only via Private Endpoint.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Store</th><th>Azure Service</th><th>Owns</th><th>Why it exists</th><th>Partitioning</th></tr></thead><tbody>
+        <tr><td><strong>Relational</strong></td><td>Azure Database for MySQL/PostgreSQL</td><td>Distributors, installers, properties, units, users, bookings, payments, licences, config</td><td>ACID transactions, strong consistency, complex relationships</td><td>Partition by tenant_id / cluster_id; read replicas for reporting</td></tr>
+        <tr><td><strong>NoSQL</strong></td><td>Azure Cosmos DB (SQL API)</td><td>Audit logs, access events, MQTT events, online forms, notification history, tallies</td><td>High write throughput, elastic scale, TTL, geo-replication</td><td>Partition key: <code>cluster_id</code> + <code>tenant_id</code>; TTL per container</td></tr>
+        <tr><td><strong>Cache</strong></td><td>Azure Cache for Redis</td><td>Sessions, funnel flags, permission cache, counters, FR sync rules</td><td>Sub-millisecond reads, atomic ops, rate-limiting</td><td>Single instance per cluster; replica per region</td></tr>
+        <tr><td><strong>Object</strong></td><td>Azure Blob Storage</td><td>Media, CSV/exports, audit archives, signed documents</td><td>Cost-effective, scalable, lifecycle policies</td><td>Container per cluster/tenant; access tiers (Hot→Cool→Archive)</p></td></tr>
+      </tbody></table>
+    </div>
+    <div class="callout blue"><h4>Data Ownership Principle</h4><p>Every row/record carries <code>cluster_id</code> and <code>tenant_id</code>. All queries are scoped by these columns; the database layer has Row-Level Security (RLS) policies as a second line of defence. Soft-delete is implemented via <code>is_deleted</code> / <code>status</code> with a hard purge after retention.</p></div>
+    <div class="callout green"><h4>ER &amp; Partitioning Strategy</h4><p>Relational ER is bounded-context split: <code>auth</code>, <code>tenant</code>, <code>property</code>, <code>access-control</code>, <code>payments</code>. Cosmos containers are partitioned by <code>cluster_id</code> to keep tenant data physically co-located and avoid cross-partition hot spots. Sharding is not needed initially — horizontal scaling is handled by Cosmos throughput and read replicas.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Data Classification &amp; PII Data Flow</h3>
+    <p style="font-size:14px;">All data is classified into four tiers. PII and payment data are Restricted; access logs and audit trails are Confidential; configuration and marketing data are Internal; static help content is Public.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Classification</th><th>Examples</th><th>Controls</th></tr></thead><tbody>
+        <tr><td><strong>Restricted</strong></td><td>NRIC, phone, face photos, PAN tokens, keys</td><td>Column-level encryption, Key Vault, strict RBAC, no non-prod</td></tr>
+        <tr><td><strong>Confidential</strong></td><td>Access logs, audit trails, resident unit data</td><td>RLS, TLS, retention, Private Endpoints</td></tr>
+        <tr><td><strong>Internal</strong></td><td>Config, module catalogue, reports</td><td>RBAC, audit, standard encryption</td></tr>
+        <tr><td><strong>Public</strong></td><td>Help content, static assets</td><td>CDN, public read, no auth</td></tr>
+      </tbody></table>
+    </div>
+<div class="arch-tree" style="margin-top:16px;"><span class="h">PII DATA FLOW (RESTRICTED)</span>
+Resident / PM
+  → React/Flutter (PII masked in UI unless needed)
+  → TLS 1.3 → APIM → NestJS gateway
+  → ScopeGuard + RolesGuard verify authorization
+  → PII fields encrypted at app layer with Key Vault key
+  → Stored: MySQL (encrypted columns) or Blob (SAS-only media)
+  → AuditInterceptor writes access to Cosmos (who, when, what)
+  → Non-prod refresh: anonymized subset only; no production PII</div>
+  </div>
+
+  <div class="card">
+    <h3>Non-Production Data &amp; Cosmos Replication</h3>
+    <p style="font-size:14px;">Production data never flows to dev/uat. Instead, a masked/anonymized subset is generated using synthetic data or tokenized production samples. Cosmos DB uses single-region write with multi-region read replicas for low-latency reads; multi-region writes are enabled only if a region requires local write latency and conflict resolution is acceptable.</p>
+    <div class="sec-item blue"><h4>Anonymization</h4><p>Names are hashed; phone numbers are tokenized; face photos are replaced with synthetic images; NRICs are redacted. The process is run by an Azure Function that scans production backups and produces a sanitized dataset.</p></div>
+    <div class="sec-item amber"><h4>Cosmos Replication Model</h4><p><strong>Default:</strong> single-region write with 1–2 read replicas. <strong>Writes</strong> always go to the primary region to avoid conflicts. <strong>Reads</strong> can be served from the nearest replica if eventual consistency is acceptable. GDPR boundaries are respected: EU replicas are in EU regions only.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 17 — CAPACITY ===================== -->
+  <div class="section-label">Section 17 · Capacity</div>
+  <a id="s17"></a><h2>Capacity Planning</h2>
+    <p class="sub">Sizing assumptions for 100K, 500K, and 1M active users per region</p>
+  <div class="card">
+    <p style="font-size:14px;">Capacity is modelled per region; each region can scale independently. Estimates assume daily-active users (DAU) at 30% of total users, ~20 API calls per user per day, peak load 5x average, and a 1KB average record size for high-write logs. Reserved capacity is purchased for the steady-state baseline; on-demand scaling handles peaks.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table><thead><tr><th>Scale</th><th>Users</th><th>DAU</th><th>AKS apps nodes</th><th>Cosmos RU/s</th><th>Redis</th><th>MySQL</th><th>Blob (monthly)</th></tr></thead><tbody>
+        <tr><td><strong>Launch</strong></td><td>100K</td><td>30K</td><td>6-12 (D4s_v5)</td><td>20K</td><td>6 GB P1</td><td>16 vCore, 1 replica</td><td>~500 GB</td></tr>
+        <tr><td><strong>Growth</strong></td><td>500K</td><td>150K</td><td>12-24 (D8s_v5)</td><td>100K</td><td>26 GB P2</td><td>32 vCore, 2 replicas</td><td>~2.5 TB</td></tr>
+        <tr><td><strong>Target</strong></td><td>1M</td><td>300K</td><td>24-40 (D8s_v5)</td><td>200K+</td><td>53 GB P4</td><td>64 vCore, 3 replicas</td><td>~5 TB</td></tr>
+      </tbody></table>
+    </div>
+    <div class="what-grid">
+      <div class="what-item"><div class="icon">🧮</div><div><h3>AKS Scaling</h3><p>Cluster Autoscaler with HPA per service; burstable pool for peaks; KEDA for Service Bus consumers. Memory pool for heavy report builders.</p></div></div>
+      <div class="what-item"><div class="icon">🪙</div><div><h3>Cosmos RU</h3><p>Autoscale 20%–100% of peak; per-container provisioning; separate hot-path (events) from cold-path (audit archive). Reserved capacity for baseline.</p></div></div>
+      <div class="what-item"><div class="icon">🔥</div><div><h3>Redis</h3><p>Start Premium P1; cluster mode at P2+; geo-replica for failover. Estimated hit rate > 90% for funnel flags and session data.</p></div></div>
+      <div class="what-item"><div class="icon">💾</div><div><h3>Storage</h3><p>Blob lifecycle: Hot 30 days, Cool 90 days, Archive 7 years. Estimated 5 TB/month at 1M users, with 60% archive after 90 days.</p></div></div>
+    </div>
+    <div class="callout amber"><h4>Capacity Review Cadence</h4><p>Run monthly at growth stage and quarterly at steady state. Load tests (k6/Artillery) mimic peak event days (e.g. AGM voting) and FR batch syncs. Results feed the autoscaler thresholds and resource quotas.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Cost Model per Scale Tier</h3>
+    <p style="font-size:14px;">Capacity is sized to user count; cost is driven by AKS compute, Cosmos RU, Redis, MySQL, Blob, and shared services. Reserved capacity and autoscale caps are the primary levers.</p>
+    <div class="card" style="padding:0;overflow:hidden;margin:16px 0 0;">
+      <table><thead><tr><th>Scale</th><th>AKS/mo</th><th>Cosmos RU/mo</th><th>Redis/mo</th><th>MySQL/mo</th><th>Blob/mo</th><th>APIM+FD/mo</th><th>Total/mo</th></tr></thead><tbody>
+        <tr><td><strong>Lite 100K</strong></td><td>~$2.5K</td><td>~$1.5K</td><td>~$0.5K</td><td>~$1K</td><td>~$0.5K</td><td>~$1.5K</td><td>~$7.5K</td></tr>
+        <tr><td><strong>Growth 500K</strong></td><td>~$8K</td><td>~$7K</td><td>~$2K</td><td>~$3.5K</td><td>~$2K</td><td>~$4K</td><td>~$26.5K</td></tr>
+        <tr><td><strong>Target 1M</strong></td><td>~$15K</td><td>~$15K</td><td>~$4K</td><td>~$7K</td><td>~$4K</td><td>~$7K</td><td>~$52K</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec-item green"><h4>RU Cost Model</h4><p>Cosmos is provisioned with autoscale between 20% and 100% of peak. Reserved capacity is purchased for the baseline. Hot path (events) and cold path (audit archive) are in separate containers to prevent cold data from consuming hot RU.</p></div>
+    <div class="sec-item blue"><h4>Storage Cost Model</h4><p>Blob lifecycle moves data Hot→Cool after 30 days, Cool→Archive after 90 days. Archive is 7 years for audit. At 1M users, ~60% of monthly Blob volume is archived after 90 days, reducing effective storage cost by ~40%.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 18 — ADRs ===================== -->
+  <div class="section-label">Section 18 · Decisions</div>
+  <a id="s18"></a><h2>Architecture Decision Records (ADRs)</h2>
+  <p class="sub">Rationale for major design choices</p>
+  <div class="card">
+    <div class="sec-item"><h4>ADR-001 — Why AKS instead of App Service / Container Apps</h4><p><strong>Context:</strong> Need to host 10+ bounded-context services at 1M-user scale with independent scaling, network policies, and a service mesh.</p><p><strong>Alternatives:</strong> App Service (simpler but per-plan scaling limits and no service mesh), Container Apps (better for event-driven but less mature control over networking).</p><p><strong>Decision:</strong> AKS. Private cluster, custom node pools, NetworkPolicy, HPA/VPA, mature service mesh, and enterprise support.</p></div>
+    <div class="sec-item blue"><h4>ADR-002 — Why Cosmos DB instead of MongoDB / DynamoDB</h4><p><strong>Context:</strong> High-write logs, audit, events, and forms must be globally distributed but Azure-native.</p><p><strong>Alternatives:</strong> MongoDB Atlas (third-party, vendor ops), DynamoDB (AWS-only), PostgreSQL partitioning (complex at this scale).</p><p><strong>Decision:</strong> Azure Cosmos DB for 99.999% SLA, turnkey global distribution, TTL, and unified Azure security.</p></div>
+    <div class="sec-item green"><h4>ADR-003 — Why Azure API Management</h4><p><strong>Context:</strong> Single external gateway for web/mobile, routing to regional clusters, and enforcing auth/quota.</p><p><strong>Alternatives:</strong> Application Gateway + custom auth layer (more code), Ambassador Edge Stack (operational burden).</p><p><strong>Decision:</strong> APIM for built-in token validation, throttling, caching, routing, and centralized policy.</p></div>
+    <div class="sec-item amber"><h4>ADR-004 — Why Azure Cache for Redis</h4><p><strong>Context:</strong> Sessions, funnel flags, and FR sync rules need sub-millisecond, atomic access.</p><p><strong>Alternatives:</strong> In-memory (no shared cache across pods), Memcached (no persistence/geo-replica).</p><p><strong>Decision:</strong> Redis Premium for atomic operations, pub/sub, geo-replication, and high availability.</p></div>
+    <div class="sec-item red"><h4>ADR-005 — Why Azure Functions</h4><p><strong>Context:</strong> Offload spiky, non-latency-sensitive work (emails, reports, FR sync, retention).</p><p><strong>Alternatives:</strong> Always-on pods in AKS (waste), Logic Apps (less flexible for complex logic).</p><p><strong>Decision:</strong> Functions for cost-efficient, scalable, queue-triggered processing that can scale to zero.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Additional ADRs</h3>
+    <div class="sec-item"><h4>ADR-006 — Modular Monolith vs. Microservices</h4><p><strong>Context:</strong> The team could build a modular NestJS monolith on AKS instead of 10+ services.</p><p><strong>Decision:</strong> Start with a modular monolith split into deployable bounded contexts (auth, tenant, property, access-control, payments, notifications). Each context can be scaled independently. This avoids premature microservices overhead while preserving future decomposition.</p></div>
+    <div class="sec-item blue"><h4>ADR-007 — Single React SPA vs. Separate Portals</h4><p><strong>Context:</strong> HQ, Distributor, Installer, and PM have different UIs but share patterns.</p><p><strong>Decision:</strong> One React codebase deployed once, role-rendered by JWT. Reduces duplication and ensures a single CI/CD pipeline. The API guard chain enforces data boundaries.</p></div>
+    <div class="sec-item green"><h4>ADR-008 — Flutter vs. Native Mobile</h4><p><strong>Context:</strong> iOS and Android apps need feature parity and fast iteration.</p><p><strong>Decision:</strong> Flutter with two flavors (Resident, Security Guard). Single codebase, native plugin bridge for VoIP/FCM and hardware SDKs where needed.</p></div>
+  </div>
+  <div class="section-divider"></div>
+
+  <!-- ===================== SECTION 19 — RISK REGISTER ===================== -->
+  <div class="section-label">Section 19 · Risk</div>
+  <a id="s19"></a><h2>Architecture Risks &amp; Mitigations</h2>
+  <p class="sub">Top risks mapped to impact, likelihood, and mitigation</p>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table><thead><tr><th>Finding</th><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th></tr></thead><tbody>
+      <tr><td>RISK-001</td><td>Cosmos cost explosion at 1M users</td><td>High</td><td>Medium</td><td>Autoscale caps, per-container RU budgets, lifecycle/archive for cold data, monthly capacity review</td></tr>
+      <tr><td>RISK-002</td><td>Regional outage</td><td>High</td><td>Low</td><td>Multi-AZ by default; geo-replica for critical DBs; documented runbook; quarterly game-day</td></tr>
+      <tr><td>RISK-003</td><td>APIM becomes a single point of failure</td><td>High</td><td>Low</td><td>Zone-redundant APIM, health checks, throttling tuning, self-hosted gateway as fallback</td></tr>
+      <tr><td>RISK-004</td><td>Shared Auth DB outage</td><td>Critical</td><td>Low</td><td>Azure DB zone-redundant HA, geo-replica, JWT refresh grace, degraded-mode read-only policy</td></tr>
+      <tr><td>RISK-005</td><td>Hardware integration failure (MQTT / vendor)</td><td>Medium</td><td>Medium</td><td>Retry/queue with DLQ; vendor fallback modes; circuit breaker; ops runbook per vendor</td></tr>
+      <tr><td>RISK-006</td><td>MQTT message loss</td><td>Medium</td><td>Medium</td><td>QoS 1, persistent sessions, Service Bus bridge, duplicate handling via idempotency keys</td></tr>
+      <tr><td>RISK-007</td><td>Tenant isolation bypass</td><td>Critical</td><td>Low</td><td>ScopeGuard + DB RLS + policy audit; automated integration tests; bug-bounty security review</td></tr>
+      <tr><td>RISK-008</td><td>Single session denial for legitimate users</td><td>Medium</td><td>Medium</td><td>Session control with logout notification, device-aware policies, configurable exceptions</td></tr>
+      <tr><td>RISK-009</td><td>Skill gap in AKS / NestJS / Azure</td><td>High</td><td>Medium</td><td>Training plan, pair architecture reviews, Azure FastTrack, runbooks, hire/Azure partner support</td></tr>
+      <tr><td>RISK-010</td><td>Vendor lock-in / Azure exit cost</td><td>Medium</td><td>Low</td><td>Containerized workloads, standard APIs, Terraform/Bicep portability, documented exit TCO</td></tr>
+      <tr><td>RISK-011</td><td>Data migration failure or corruption</td><td>High</td><td>Medium</td><td>Phased migration, dual-write, checksum validation, rollback windows, dry-run in UAT</td></tr>
+      <tr><td>RISK-012</td><td>Regulatory change (GDPR/PDPA updates)</td><td>Medium</td><td>Medium</td><td>Compliance register, legal review cadence, configurable retention, regional data boundaries</td></tr>
+    </tbody></table>
+  </div>
+  <div class="section-divider"></div>
+
+</div>
+<div class="page-footer">
+  Genio360 — Overall System Architecture Specification · Version 2.1 (ARB-Ready) · Fermax Asia Pacific · Engineering Reference
+</div>
+</body></html>
