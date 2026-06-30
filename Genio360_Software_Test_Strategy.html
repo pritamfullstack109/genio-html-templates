@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Genio360 Platform Revamp — Software Test Strategy</title>
+<style>
+:root{
+  --navy:#0b2545; --navy2:#13315c; --accent:#0f6fb0; --accent-light:#e7f1f8;
+  --gold:#b8860b; --gray:#5a6675; --light:#f4f6f9; --border:#d7dee6; --green:#1d7a4c;
+  --amber:#b3760a; --red:#a32a2a; --text:#1c2733;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; font-family:"Segoe UI","Calibri",Arial,sans-serif; color:var(--text);
+  background:#fff; font-size:14px; line-height:1.6;
+}
+.layout{display:flex; max-width:1400px; margin:0 auto;}
+nav.sidebar{
+  width:270px; min-width:270px; background:var(--navy); color:#dce6f0; position:sticky; top:0;
+  height:100vh; overflow-y:auto; padding:18px 14px; font-size:12.5px;
+}
+nav.sidebar h3{color:#fff; font-size:13px; letter-spacing:.04em; border-bottom:1px solid #2a4670; padding-bottom:8px; margin-top:18px;}
+nav.sidebar h3:first-child{margin-top:0;}
+nav.sidebar a{display:block; color:#bcd0e5; text-decoration:none; padding:3px 0 3px 6px; border-left:2px solid transparent;}
+nav.sidebar a:hover{color:#fff; border-left:2px solid var(--gold); background:rgba(255,255,255,.04);}
+main{flex:1; min-width:0; padding:0 48px 60px 48px;}
+.doc-header{
+  position:sticky; top:0; background:#fff; border-bottom:1px solid var(--border); padding:10px 0;
+  display:flex; justify-content:space-between; font-size:11.5px; color:var(--gray); z-index:5;
+}
+.cover{
+  background:linear-gradient(160deg,var(--navy) 0%, var(--navy2) 55%, var(--accent) 130%);
+  color:#fff; padding:90px 60px; margin:0 -48px 40px -48px; page-break-after:always;
+}
+.cover .tag{letter-spacing:.25em; font-size:12px; color:#a9c6e6; text-transform:uppercase;}
+.cover h1{font-size:38px; margin:14px 0 6px 0; font-weight:600;}
+.cover h2{font-size:18px; font-weight:400; color:#cfe0f0; margin-top:0;}
+.cover .meta-box{
+  margin-top:60px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25);
+  border-radius:6px; padding:20px 26px; display:grid; grid-template-columns:1fr 1fr; gap:10px 30px; font-size:13px;
+}
+.cover .meta-box div span.k{display:block; color:#a9c6e6; font-size:11px; text-transform:uppercase; letter-spacing:.05em;}
+.cover .confid{margin-top:40px; font-size:11.5px; color:#9fb8d4;}
+h1.section-title{
+  font-size:22px; color:var(--navy); border-bottom:3px solid var(--accent); padding-bottom:8px; margin-top:46px;
+}
+h2.sub{font-size:16.5px; color:var(--navy2); margin-top:30px; border-left:4px solid var(--accent); padding-left:10px;}
+h3.minor{font-size:14px; color:var(--accent); margin-top:20px;}
+p{margin:8px 0 12px 0;}
+.objective{
+  background:var(--accent-light); border-left:4px solid var(--accent); padding:10px 16px; margin:14px 0; font-size:13.5px;
+}
+.objective strong{color:var(--navy);}
+table{border-collapse:collapse; width:100%; margin:14px 0; font-size:12.8px;}
+th{background:var(--navy); color:#fff; text-align:left; padding:8px 10px; font-weight:600;}
+td{padding:7px 10px; border:1px solid var(--border); vertical-align:top;}
+tr:nth-child(even) td{background:#f8fafc;}
+ul,ol{margin:6px 0 14px 22px; padding:0;}
+li{margin-bottom:4px;}
+.callout-risk{background:#fdf2f2; border:1px solid #f0c9c9; border-left:4px solid var(--red); padding:10px 14px; margin:12px 0; font-size:13px;}
+.callout-rec{background:#f1f8f3; border:1px solid #c8e6d0; border-left:4px solid var(--green); padding:10px 14px; margin:12px 0; font-size:13px;}
+.callout-best{background:#fdf8ec; border:1px solid #ecd9a8; border-left:4px solid var(--gold); padding:10px 14px; margin:12px 0; font-size:13px;}
+.badge{display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:600; color:#fff;}
+.b-crit{background:var(--red);} .b-high{background:#c0552c;} .b-med{background:var(--amber);} .b-low{background:var(--green);}
+.flow{display:flex; flex-wrap:wrap; gap:0; align-items:center; margin:18px 0;}
+.flow .step{
+  background:var(--navy); color:#fff; padding:10px 14px; border-radius:5px; font-size:12px; min-width:120px; text-align:center;
+}
+.flow .arrow{padding:0 8px; color:var(--accent); font-size:18px;}
+.pyramid{display:flex; flex-direction:column; align-items:center; margin:20px 0;}
+.pyramid .layer{color:#fff; text-align:center; padding:10px 0; font-size:12.5px; font-weight:600;}
+.pyramid .l1{width:30%; background:var(--navy);}
+.pyramid .l2{width:55%; background:var(--accent);}
+.pyramid .l3{width:80%; background:#5aa6d6;}
+.pyramid .l4{width:100%; background:#a9c9e2; color:var(--navy);}
+.checklist{list-style:none; margin:10px 0; padding:0;}
+.checklist li{padding-left:26px; position:relative; margin-bottom:7px; font-size:13px;}
+.checklist li::before{content:"☐"; position:absolute; left:0; color:var(--accent); font-size:15px;}
+.matrix-cell-h{background:#fdeaea; color:var(--red); font-weight:700; text-align:center;}
+.matrix-cell-m{background:#fdf2dc; color:var(--amber); font-weight:700; text-align:center;}
+.matrix-cell-l{background:#e9f6ee; color:var(--green); font-weight:700; text-align:center;}
+.kpi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:16px 0;}
+.kpi{border:1px solid var(--border); border-top:4px solid var(--accent); border-radius:4px; padding:14px; background:#fafcfe;}
+.kpi .num{font-size:22px; font-weight:700; color:var(--navy);}
+.kpi .lbl{font-size:11.5px; color:var(--gray); text-transform:uppercase; letter-spacing:.03em;}
+.sig-grid{display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:30px;}
+.sig-box{border-top:1px solid var(--text); padding-top:6px; margin-top:50px; font-size:12px; color:var(--gray);}
+.toc-grid a{font-size:12.5px;}
+.page-break{page-break-before:always;}
+.icon{margin-right:6px;}
+footer.doc-footer{margin-top:60px; border-top:1px solid var(--border); padding-top:14px; font-size:11px; color:var(--gray); display:flex; justify-content:space-between;}
+@media print{
+  nav.sidebar{display:none;}
+  main{padding:0; max-width:100%;}
+  .doc-header{display:none;}
+  .cover{margin:0;}
+  h1.section-title{page-break-after:avoid;}
+  table, .flow, .kpi-grid{page-break-inside:avoid;}
+  @page{size:A4; margin:18mm 14mm;}
+}
+@media (max-width:900px){
+  .layout{flex-direction:column;}
+  nav.sidebar{display:none;}
+  main{padding:0 18px 40px 18px;}
+  .kpi-grid{grid-template-columns:1fr;}
+  .sig-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="sidebar">
+<h3>📘 Front Matter</h3>
+<a href="#s1">1. Document Control</a>
+<a href="#s2">2. Revision History</a>
+<a href="#s3">3. Review &amp; Approval</a>
+<a href="#s4">4. Distribution List</a>
+<h3>🎯 Foundations</h3>
+<a href="#s5">5. Purpose</a>
+<a href="#s6">6. Scope</a>
+<a href="#s7">7. Business Context</a>
+<a href="#s8">8. Project Overview</a>
+<a href="#s9">9. References</a>
+<a href="#s10">10. Definitions &amp; Acronyms</a>
+<a href="#s11">11. Test Objectives</a>
+<a href="#s12">12. Quality Objectives</a>
+<a href="#s13">13. Test Governance</a>
+<a href="#s14">14. Testing Principles</a>
+<a href="#s15">15. Risk-Based Testing</a>
+<h3>📦 Scope Definition</h3>
+<a href="#s16">16. Test Scope</a>
+<a href="#s17">17. Features Included</a>
+<a href="#s18">18. Features Excluded</a>
+<a href="#s19">19. Assumptions</a>
+<a href="#s20">20. Constraints</a>
+<a href="#s21">21. Dependencies</a>
+<h3>🔄 Process</h3>
+<a href="#s22">22. Test Process</a>
+<a href="#s23">23. Test Lifecycle</a>
+<a href="#s24">24. Test Levels</a>
+<a href="#s25">25. Test Types</a>
+<a href="#s26">26. Test Design Techniques</a>
+<a href="#s27">27. Test Environment Strategy</a>
+<a href="#s28">28. Test Data Management</a>
+<a href="#s29">29. Configuration Management</a>
+<a href="#s30">30. Build Management</a>
+<a href="#s31">31. Release Management</a>
+<h3>🚦 Criteria</h3>
+<a href="#s32">32. Entry Criteria</a>
+<a href="#s33">33. Exit Criteria</a>
+<a href="#s34">34. Suspension Criteria</a>
+<a href="#s35">35. Resumption Criteria</a>
+<h3>🐞 Defect Management</h3>
+<a href="#s36">36. Defect Management Process</a>
+<a href="#s37">37. Severity Classification</a>
+<a href="#s38">38. Priority Classification</a>
+<a href="#s39">39. Defect Workflow</a>
+<a href="#s40">40. Defect SLA</a>
+<h3>⚠️ Risk</h3>
+<a href="#s41">41. Risk Assessment</a>
+<a href="#s42">42. Risk Register</a>
+<a href="#s43">43. Risk Matrix</a>
+<a href="#s44">44. Mitigation Strategy</a>
+<h3>👥 Governance &amp; People</h3>
+<a href="#s45">45. Resource Planning</a>
+<a href="#s46">46. Roles &amp; Responsibilities</a>
+<a href="#s47">47. RACI Matrix</a>
+<a href="#s48">48. Communication Plan</a>
+<a href="#s49">49. Test Deliverables</a>
+<a href="#s50">50. Traceability Strategy</a>
+<h3>🤖 Technical Strategy</h3>
+<a href="#s51">51. Automation Strategy</a>
+<a href="#s52">52. Playwright Framework Architecture</a>
+<a href="#s53">53. API Testing Strategy</a>
+<a href="#s54">54. Database Testing Strategy</a>
+<a href="#s55">55. Security Testing Strategy</a>
+<a href="#s56">56. Performance Testing Strategy</a>
+<a href="#s57">57. Accessibility Testing Strategy</a>
+<a href="#s58">58. Browser Compatibility Strategy</a>
+<a href="#s59">59. Mobile Responsiveness Strategy</a>
+<h3>🔁 Execution Strategies</h3>
+<a href="#s60">60. Regression Strategy</a>
+<a href="#s61">61. Smoke Testing Strategy</a>
+<a href="#s62">62. Sanity Testing Strategy</a>
+<a href="#s63">63. UAT Support Strategy</a>
+<a href="#s64">64. Production Validation</a>
+<h3>📊 Closure</h3>
+<a href="#s65">65. Metrics &amp; KPIs</a>
+<a href="#s66">66. Reporting Dashboard</a>
+<a href="#s67">67. Test Exit Report</a>
+<a href="#s68">68. Lessons Learned</a>
+<a href="#s69">69. Continuous Improvement</a>
+<a href="#s70">70. Sign-off</a>
+<a href="#s71">71. Appendix</a>
+</nav>
+
+<main>
+
+<div class="doc-header">
+  <span>Genio360 Platform Revamp — Software Test Strategy</span>
+  <span>Doc Ref: GEN360-QA-STS-002 | Confidential</span>
+</div>
+
+<!-- ===================== COVER PAGE ===================== -->
+<div class="cover">
+  <div class="tag">Software Test Strategy Document</div>
+  <h1>Genio360 Platform Revamp</h1>
+  <h2>Enterprise Test Strategy — Aligned to ISO/IEC/IEEE 29119 Principles</h2>
+  <div class="meta-box">
+    <div><span class="k">Client</span>Fermax Asia Pacific (FAP)</div>
+    <div><span class="k">Version</span>3.0</div>
+    <div><span class="k">Document Date</span>30 June 2026</div>
+    <div><span class="k">Status</span>Draft — For Review</div>
+    <div><span class="k">Prepared By</span>QA Architecture &amp; Test Management Office</div>
+    <div><span class="k">Methodology</span>Agile Scrum (2-Week Sprints)</div>
+  </div>
+  <div class="confid">This document is the confidential property of Fermax Asia Pacific and the delivery partner. Distribution is restricted to the parties listed in Section 4 — Distribution List.</div>
+</div>
+
+<!-- ===================== 1. DOCUMENT CONTROL ===================== -->
+<h1 class="section-title" id="s1">1. Document Control</h1>
+<div class="objective"><strong>Objective:</strong> Establish unambiguous ownership, identification, and lifecycle status for this Test Strategy so that all stakeholders reference a single authoritative version.</div>
+<table>
+<tr><th>Attribute</th><th>Detail</th></tr>
+<tr><td>Document Title</td><td>Genio360 Platform Revamp — Software Test Strategy</td></tr>
+<tr><td>Document Reference</td><td>GEN360-QA-STS-002</td></tr>
+<tr><td>Client</td><td>Fermax Asia Pacific (FAP)</td></tr>
+<tr><td>Project</td><td>Genio360 Platform Revamp (successor to iPlusLiving)</td></tr>
+<tr><td>Document Owner</td><td>Test Manager / QA Architect</td></tr>
+<tr><td>Classification</td><td>Confidential — Internal &amp; Client Distribution Only</td></tr>
+<tr><td>Storage Location</td><td>Confluence Space — GEN360 / QA Governance</td></tr>
+<tr><td>Linked Artifacts</td><td>Jira Project GEN360, Test Plan (per release), Automation Repository (GitHub)</td></tr>
+<tr><td>Review Cycle</td><td>Reviewed at the start of each Program Increment and upon material scope change</td></tr>
+</table>
+<div class="callout-rec"><strong>Recommendation:</strong> This strategy is a living document. Tactical, release-specific detail (test cases, schedules) belongs in subordinate Test Plans; this document should change only when the testing approach itself changes.</div>
+
+<!-- ===================== 2. REVISION HISTORY ===================== -->
+<h1 class="section-title" id="s2">2. Revision History</h1>
+<div class="objective"><strong>Objective:</strong> Provide a verifiable audit trail of how the strategy has evolved, supporting both internal governance and external/ISO audit review.</div>
+<table>
+<tr><th>Version</th><th>Date</th><th>Author</th><th>Summary of Change</th></tr>
+<tr><td>0.1</td><td>02 May 2026</td><td>QA Architecture Team</td><td>Initial draft structure circulated for internal review.</td></tr>
+<tr><td>1.0</td><td>22 May 2026</td><td>QA Architecture Team</td><td>Baseline strategy approved for Sprint 1 kickoff; incorporated initial hierarchy and module scope from Business Overview document.</td></tr>
+<tr><td>2.0</td><td>12 June 2026</td><td>QA Architecture Team / V. Parmar</td><td>Expanded to cover full multi-portal architecture (Installer Portal, Condo Management Portal, Mobile App), third-party integration testing, and refined risk-based prioritisation for Level 1–4 hierarchy modules.</td></tr>
+<tr><td>3.0</td><td>30 June 2026</td><td>QA Architecture Team</td><td>Aligned strategy with the iPlus Living Developer Documentation (63-module BRD+SRS catalogue and Software &amp; Hardware Specification): introduced Section 15.1 Module Priority Baseline (P1–P4 inheritance), updated Project Overview with legacy Yii2/134-controller/6-API-version context, expanded API Testing Strategy with version-migration and controller-mapping coverage, and updated References and Features Included to reflect the 63-module / 17-integration scope.</td></tr>
+</table>
+
+<!-- ===================== 3. REVIEW & APPROVAL ===================== -->
+<h1 class="section-title" id="s3">3. Review and Approval</h1>
+<div class="objective"><strong>Objective:</strong> Record formal sign-off accountability so the strategy carries organisational authority prior to execution.</div>
+<table>
+<tr><th>Name</th><th>Role</th><th>Organisation</th><th>Approval Status</th><th>Date</th></tr>
+<tr><td>To be confirmed</td><td>Delivery Manager</td><td>Delivery Partner</td><td><span class="badge b-med">Pending</span></td><td>—</td></tr>
+<tr><td>To be confirmed</td><td>Test Manager / QA Architect</td><td>Delivery Partner</td><td><span class="badge b-med">Pending</span></td><td>—</td></tr>
+<tr><td>To be confirmed</td><td>Engineering Lead (Frontend/Backend)</td><td>Delivery Partner</td><td><span class="badge b-med">Pending</span></td><td>—</td></tr>
+<tr><td>To be confirmed</td><td>Product Owner</td><td>Fermax Asia Pacific</td><td><span class="badge b-med">Pending</span></td><td>—</td></tr>
+<tr><td>To be confirmed</td><td>IT/Security Sponsor</td><td>Fermax Asia Pacific</td><td><span class="badge b-med">Pending</span></td><td>—</td></tr>
+</table>
+<div class="callout-best"><strong>Best Practice:</strong> Approval should be evidenced electronically (Confluence approval workflow or signed PDF export) rather than verbal agreement, to satisfy audit traceability requirements.</div>
+
+<!-- ===================== 4. DISTRIBUTION LIST ===================== -->
+<h1 class="section-title" id="s4">4. Distribution List</h1>
+<div class="objective"><strong>Objective:</strong> Define who receives controlled copies of this document and at what level of access.</div>
+<table>
+<tr><th>Stakeholder Group</th><th>Distribution Channel</th><th>Access Level</th></tr>
+<tr><td>FAP Executive Sponsor &amp; Product Owner</td><td>Confluence + PDF export</td><td>Read</td></tr>
+<tr><td>Delivery Manager / PMO</td><td>Confluence</td><td>Read</td></tr>
+<tr><td>QA / Test Team</td><td>Confluence + Jira</td><td>Edit</td></tr>
+<tr><td>Engineering Leads (Frontend, Backend, DevOps)</td><td>Confluence</td><td>Read</td></tr>
+<tr><td>Security &amp; Compliance Reviewer</td><td>PDF export</td><td>Read</td></tr>
+<tr><td>External Auditors (as required)</td><td>Controlled PDF copy</td><td>Read</td></tr>
+</table>
+
+<!-- ===================== 5. PURPOSE ===================== -->
+<h1 class="section-title" id="s5">5. Purpose</h1>
+<div class="objective"><strong>Objective:</strong> State why this document exists and what decisions it is intended to govern.</div>
+<p>This Test Strategy defines the overarching approach, governance model, and technical methods by which quality will be assured across the Genio360 Platform Revamp. It establishes a single point of reference for how testing is planned, executed, measured, and reported across the platform's three access channels — the Installer Portal, the Condo Management Portal, and the Mobile Application — and across the five-tier business hierarchy (Global Admin, Distributor, Installer, Property Management, Guard/Resident) that the platform exists to serve.</p>
+<p>The strategy is written to be implementation-agnostic at the level of individual test cases, but implementation-specific at the level of architecture: it assumes a React.js/TypeScript frontend, a Node.js/Express REST API backend, PostgreSQL persistence, JWT-based authentication with RBAC, Docker/Nginx/Azure infrastructure, and GitHub Actions CI/CD, with Playwright (TypeScript) as the automation framework of record.</p>
+<div class="callout-rec"><strong>Why this matters for Genio360 specifically:</strong> Because the platform's defining characteristic is its "Funnel Model" of progressive module enablement across hierarchy levels, the test strategy must explicitly account for permission-inheritance testing as a first-class concern, not an incidental one.</div>
+
+<!-- ===================== 6. SCOPE ===================== -->
+<h1 class="section-title" id="s6">6. Scope</h1>
+<div class="objective"><strong>Objective:</strong> Bound what this strategy governs, distinguishing it from module-level Business Requirement Documents (BRDs) and sprint-level Test Plans.</div>
+<p>This strategy governs all test activity performed against the Genio360 platform's three user-facing channels and the supporting API and data layers, across all hierarchy tiers (Global Admin through Resident/Guard). It applies uniformly to functional, non-functional, integration, and regression testing performed by the dedicated QA function, as well as to testing activities performed by developers (unit, component) under the "shift-left" principle described in Section 14.</p>
+<p>It does not replace module-specific BRDs, which define functional acceptance criteria at a granular level, nor does it replace sprint Test Plans, which schedule specific test cycles against specific releases. This strategy is the parent document from which those artifacts inherit method, governance, and tooling decisions.</p>
+
+<!-- ===================== 7. BUSINESS CONTEXT ===================== -->
+<h1 class="section-title" id="s7">7. Business Context</h1>
+<div class="objective"><strong>Objective:</strong> Ground the test approach in the commercial and operational reality the platform serves.</div>
+<p>Genio360 succeeds the iPlusLiving platform and re-architects it around a multi-tier governance model intended to support FAP's global expansion. Where iPlusLiving operated each property as a largely independent unit, Genio360 introduces Global Admin, Distributor, and Installer layers above Property Management, with module availability cascading downward via the Funnel Model. This is a significant business-risk shift from a testing perspective: defects in hierarchy logic, permission inheritance, or module enablement do not affect a single property — they can silently misconfigure an entire region's worth of properties. The test strategy is therefore deliberately risk-weighted toward hierarchy, access-control, and configuration-cascade scenarios over purely cosmetic UI concerns.</p>
+<p>The platform also carries meaningful safety and security exposure through its access-control and visitor-management modules (digital QR access, facial recognition, vehicle ANPR, intercom integrations). Defects here have physical-world consequences — an unauthorised entry or a failed visitor verification is not merely a software bug, it is a building-security incident. This context directly informs the prioritisation rules in Sections 15 and 41–44.</p>
+
+<!-- ===================== 8. PROJECT OVERVIEW ===================== -->
+<h1 class="section-title" id="s8">8. Project Overview</h1>
+<div class="objective"><strong>Objective:</strong> Summarise the technical and organisational shape of the project for readers who have not seen the Business Overview document.</div>
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Project Type</td><td>Enterprise multi-tenant web application with companion mobile app</td></tr>
+<tr><td>Frontend</td><td>React.js, TypeScript, HTML5, CSS3, responsive design</td></tr>
+<tr><td>Backend</td><td>Node.js, Express.js, REST API</td></tr>
+<tr><td>Database</td><td>PostgreSQL</td></tr>
+<tr><td>Authentication</td><td>JWT with refresh tokens, Role-Based Access Control (RBAC)</td></tr>
+<tr><td>Infrastructure</td><td>Docker, Nginx, Microsoft Azure</td></tr>
+<tr><td>CI/CD</td><td>GitHub Actions</td></tr>
+<tr><td>Automation Stack</td><td>Playwright with TypeScript</td></tr>
+<tr><td>Project Management</td><td>Jira (work tracking), Confluence (documentation)</td></tr>
+<tr><td>Version Control</td><td>GitHub</td></tr>
+<tr><td>Delivery Methodology</td><td>Agile Scrum, 2-week sprint cadence</td></tr>
+<tr><td>Primary Access Channels</td><td>Installer Portal, Condo Management Portal, Mobile Application (iOS/Android)</td></tr>
+<tr><td>Hierarchy Tiers</td><td>Global Admin → Distributor → Installer → Property Management → Guard / Resident</td></tr>
+</table>
+<div class="callout-rec"><strong>Legacy Platform Reference (iPlus Living Developer Documentation):</strong> Genio360 succeeds the iPlus Living platform, whose developer documentation set — comprising a combined BRD + SRS for each module plus a master Software &amp; Hardware Specification — catalogues <strong>63 modules</strong> on a <strong>Yii2 (PHP)</strong> backend with <strong>134 backend admin controllers</strong>, <strong>6 REST API versions</strong>, and <strong>17 third-party integrations</strong>. This catalogue is adopted in this strategy as the authoritative module inventory and priority baseline (Section 15.1), as Genio360's module set is a direct, re-platformed evolution of the iPlus Living module set onto React/Node.js/PostgreSQL.</div>
+
+<!-- ===================== 9. REFERENCES ===================== -->
+<h1 class="section-title" id="s9">9. References</h1>
+<div class="objective"><strong>Objective:</strong> List the source artifacts this strategy was derived from or must remain consistent with.</div>
+<ul>
+<li>Genio360 Business Overview Document, v2.0, 12 June 2026</li>
+<li>iPlus Living Developer Documentation Portal (BRD + SRS per module, 63 modules; Software &amp; Hardware Specification, master document) — used as the legacy module/priority baseline for Genio360</li>
+<li>Module-specific Business Requirement Documents (issued progressively per module)</li>
+<li>System Architecture Document (to be referenced upon publication)</li>
+<li>API Specification / OpenAPI Contract (maintained in repository)</li>
+<li>Organisational QA Framework and ISTQB-aligned internal testing standards</li>
+<li>ISO/IEC/IEEE 29119 software testing principles, as applied through internal QA governance (this document does not reproduce the standard text)</li>
+<li>Jira Project GEN360 — Epics, Stories, and Defect Tracking</li>
+</ul>
+
+<!-- ===================== 10. DEFINITIONS & ACRONYMS ===================== -->
+<h1 class="section-title" id="s10">10. Definitions and Acronyms</h1>
+<table>
+<tr><th>Term</th><th>Definition</th></tr>
+<tr><td>RBAC</td><td>Role-Based Access Control — permission model gating feature visibility by user role</td></tr>
+<tr><td>Funnel Model</td><td>Genio360's progressive module-enablement model; downstream hierarchy tiers can only access modules explicitly enabled by parent tiers</td></tr>
+<tr><td>STLC</td><td>Software Testing Life Cycle</td></tr>
+<tr><td>RTM</td><td>Requirement Traceability Matrix</td></tr>
+<tr><td>BRD</td><td>Business Requirement Document</td></tr>
+<tr><td>RACI</td><td>Responsible, Accountable, Consulted, Informed</td></tr>
+<tr><td>PM (in this document)</td><td>Property Management, the on-site operational tier of the hierarchy (not "Project Manager")</td></tr>
+<tr><td>ANPR</td><td>Automatic Number Plate Recognition</td></tr>
+<tr><td>SLA</td><td>Service Level Agreement</td></tr>
+<tr><td>UAT</td><td>User Acceptance Testing</td></tr>
+<tr><td>CI/CD</td><td>Continuous Integration / Continuous Delivery</td></tr>
+<tr><td>E2E</td><td>End-to-End (testing performed across the full user journey)</td></tr>
+</table>
+
+<!-- ===================== 11. TEST OBJECTIVES ===================== -->
+<h1 class="section-title" id="s11">11. Test Objectives</h1>
+<div class="objective"><strong>Objective:</strong> Articulate the measurable goals testing must achieve for the program to be considered successful.</div>
+<ul>
+<li>Verify that hierarchy-based module enablement and permission inheritance behave correctly across all five organisational tiers.</li>
+<li>Confirm that RBAC enforcement is consistent across the Installer Portal, Condo Management Portal, and Mobile Application, with no privilege-escalation paths.</li>
+<li>Validate the functional correctness of all in-scope business modules listed in Section 9 of the Business Overview (Property &amp; Estate Operations, Security &amp; Access, Facility &amp; Community, Resident Services, Smart Property, Payment, Governance, and i+Living ecosystem modules).</li>
+<li>Establish confidence in third-party integration reliability (intercom, facial recognition, ANPR, payment gateways, smart-device gateways) through contract and resilience testing.</li>
+<li>Ensure non-functional quality — performance, security, accessibility, and cross-device compatibility — meets enterprise and regulatory expectations prior to release.</li>
+<li>Provide objective, metrics-based evidence of release readiness to support Go/No-Go decisions.</li>
+</ul>
+
+<!-- ===================== 12. QUALITY OBJECTIVES ===================== -->
+<h1 class="section-title" id="s12">12. Quality Objectives</h1>
+<div class="objective"><strong>Objective:</strong> Translate test objectives into target quality characteristics, drawing on standard software quality attributes (functionality, reliability, usability, efficiency, maintainability, portability, security) without reproducing any external standard's text.</div>
+<table>
+<tr><th>Quality Attribute</th><th>Genio360 Target</th></tr>
+<tr><td>Functional Correctness</td><td>Zero Critical/High severity defects open at release; all acceptance criteria traced and verified</td></tr>
+<tr><td>Security</td><td>No exploitable authentication, authorisation, or data-exposure vulnerabilities at OWASP Top 10 level</td></tr>
+<tr><td>Performance</td><td>API P95 response time under 800ms for standard CRUD operations; portal page load under 3 seconds on target network profile</td></tr>
+<tr><td>Reliability</td><td>Core access-control flows (visitor entry, QR/PIN verification) tested to fail safely, never fail open</td></tr>
+<tr><td>Usability/Accessibility</td><td>WCAG 2.1 AA conformance on resident- and guard-facing surfaces</td></tr>
+<tr><td>Compatibility</td><td>Full support across defined browser matrix (Section 58) and device matrix (Section 59)</td></tr>
+<tr><td>Maintainability of Test Assets</td><td>Automation suite maintains greater than 90% pass-rate stability (non-flaky) across consecutive CI runs</td></tr>
+</table>
+
+<!-- ===================== 13. TEST GOVERNANCE ===================== -->
+<h1 class="section-title" id="s13">13. Test Governance</h1>
+<div class="objective"><strong>Objective:</strong> Define the decision-making structure and oversight cadence for quality on this program.</div>
+<p>Test governance for Genio360 operates at three levels. At the <strong>strategic level</strong>, the Test Manager/QA Architect owns this document and reports release-readiness status to the Delivery Manager and Product Owner at each sprint review and release checkpoint. At the <strong>tactical level</strong>, sprint-level Test Plans are reviewed and approved within sprint planning, with entry/exit criteria enforced by the QA Lead embedded in each squad. At the <strong>operational level</strong>, daily test execution, defect triage, and automation maintenance are managed by QA Engineers against Jira-tracked work items.</p>
+<p>Given the hierarchical nature of the product itself, governance mirrors the platform's own structure: a centralised QA policy (this document) is applied locally per squad/module, analogous to how Global Admin policy cascades through Distributor and Installer tiers. Local teams may not weaken entry/exit criteria without QA Architect sign-off, preserving consistency across the program.</p>
+
+<!-- ===================== 14. TESTING PRINCIPLES ===================== -->
+<h1 class="section-title" id="s14">14. Testing Principles</h1>
+<div class="objective"><strong>Objective:</strong> State the working principles that guide day-to-day testing decisions on this program.</div>
+<ul>
+<li><strong>Shift-left by default:</strong> unit and component-level testing is a developer responsibility, validated through CI gates before QA engagement begins.</li>
+<li><strong>Risk informs effort:</strong> test depth and frequency are proportional to business and safety risk, not module size (see Section 15).</li>
+<li><strong>Automate the regression baseline:</strong> any scenario executed more than twice is a candidate for automation; manual testing is reserved for exploratory, usability, and first-time-feature validation.</li>
+<li><strong>Test the hierarchy, not just the screen:</strong> every functional test case for a module must be evaluated against at least two hierarchy tiers to confirm permission boundaries hold.</li>
+<li><strong>Defects are data:</strong> root-cause patterns are reviewed each sprint to feed back into both test design and development practice, not just counted.</li>
+<li><strong>Testing is a team activity:</strong> developers, QA, and Product Owners share accountability for quality; QA is the facilitator and gatekeeper, not the sole owner.</li>
+</ul>
+
+<!-- ===================== 15. RISK-BASED TESTING APPROACH ===================== -->
+<h1 class="section-title" id="s15">15. Risk-Based Testing Approach</h1>
+<div class="objective"><strong>Objective:</strong> Define how risk likelihood and impact determine test prioritisation and depth.</div>
+<p>Test effort is allocated using a likelihood × impact model, scored per module/feature. Impact is assessed against three lenses specific to Genio360: <em>business impact</em> (does this affect revenue, onboarding, or governance?), <em>safety impact</em> (does this affect physical access control or resident safety?), and <em>blast radius</em> (does a defect here affect one property or cascade across the hierarchy due to the Funnel Model?).</p>
+<table>
+<tr><th>Risk Tier</th><th>Example Genio360 Modules</th><th>Test Depth</th></tr>
+<tr><td><span class="badge b-crit">Critical</span></td><td>Access Control (QR/PIN/Facial Recognition), RBAC/Hierarchy Enforcement, Payment Processing</td><td>Full functional + security + automated regression every build</td></tr>
+<tr><td><span class="badge b-high">High</span></td><td>Visitor Management, Facility Booking, Vehicle Management, Module Enablement (Funnel Model)</td><td>Functional + integration + automated regression every sprint</td></tr>
+<tr><td><span class="badge b-med">Medium</span></td><td>Resident Communication, Service Requests, Notifications, Reporting</td><td>Functional + targeted regression, automation prioritised opportunistically</td></tr>
+<tr><td><span class="badge b-low">Low</span></td><td>Wall/Notices, Favourites, Multi-Language Display, Buy &amp; Sell Marketplace</td><td>Smoke-level coverage, manual exploratory pass per release</td></tr>
+</table>
+<div class="callout-risk"><strong>Risk:</strong> Treating all modules with equal test depth dilutes coverage of high-consequence access-control flows. <strong>Mitigation:</strong> Risk tiering is formally reviewed at each PI boundary, not just at project kickoff, as new integrations are added.</div>
+
+<h2 class="sub">15.1 Module Priority Baseline (iPlus Living Documentation Inheritance)</h2>
+<p>Rather than re-deriving priority from first principles for all 63 modules inherited from iPlus Living, this strategy adopts the priority classification already established in the iPlus Living developer documentation (P1–P4) as the starting baseline, then re-validates each module's tier against the Critical/High/Medium/Low risk model in the table above as Genio360-specific BRDs are issued. This avoids re-litigating module priority for functionality that is structurally unchanged by the re-platforming effort, while still allowing tiers to move where the new hierarchy/Funnel Model introduces new risk.</p>
+<table>
+<tr><th>Legacy Priority</th><th>Module Count</th><th>Mapped Genio360 Risk Tier</th><th>Test Strategy Implication</th></tr>
+<tr><td>P1 — Critical</td><td>32 modules</td><td><span class="badge b-crit">Critical</span> / <span class="badge b-high">High</span></td><td>Full functional, security, and automated regression coverage; first in automation backlog</td></tr>
+<tr><td>P2 — High</td><td>6 modules</td><td><span class="badge b-high">High</span></td><td>Functional + integration + automated regression every sprint</td></tr>
+<tr><td>P3 — Medium</td><td>7 modules</td><td><span class="badge b-med">Medium</span></td><td>Functional + targeted regression, automation opportunistic</td></tr>
+<tr><td>P4 — Low</td><td>18 modules</td><td><span class="badge b-low">Low</span></td><td>Smoke-level coverage, manual exploratory pass per release</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>63 modules</strong></td><td colspan="2">Re-validated per module against Genio360 BRDs as they are issued (Section 21, Dependencies)</td></tr>
+</table>
+<div class="callout-best"><strong>Best Practice:</strong> Of the 63 inherited modules, the 32 classified P1-Critical in the legacy documentation receive automation priority regardless of their re-platforming complexity, since their criticality reflects business/safety impact (e.g., access control, payments) rather than implementation effort.</div>
+
+<!-- ===================== 16-21 SCOPE DEFINITION ===================== -->
+<h1 class="section-title" id="s16">16. Test Scope</h1>
+<div class="objective"><strong>Objective:</strong> Precisely bound the system under test for this strategy's lifetime.</div>
+<p>The scope of testing covers the three Genio360 access channels (Installer Portal, Condo Management Portal, Mobile Application), the underlying REST API layer, the PostgreSQL data layer to the extent it affects functional and data-integrity outcomes, and the defined set of third-party integrations listed in Section 10 of the Business Overview document. Infrastructure-layer testing (Docker, Nginx, Azure configuration) is included where it affects application behaviour (e.g., TLS termination, routing) but excludes general cloud-platform certification, which is the responsibility of the Infrastructure/DevOps function.</p>
+
+<h1 class="section-title" id="s17">17. Features Included</h1>
+<table>
+<tr><th>Module Group</th><th>Representative Features In Scope</th></tr>
+<tr><td>Property &amp; Estate Operations</td><td>Data Setup, Units, Documents, Directory, Dashboard, Reports, Approvals, Multi-Language Support</td></tr>
+<tr><td>Security &amp; Access Management</td><td>Intercom (MEETMe), Digital QR Access, Visitor QR/PIN, Card Management, Facial Recognition, ANPR, Visitor Management</td></tr>
+<tr><td>Facility &amp; Community</td><td>Facility Management/Booking, Bicycle Management, Packages, Key Collection, Emergency Contacts</td></tr>
+<tr><td>Resident Services</td><td>Service Requests, Notifications, Wall/Notices, Neighbourhood Chat, Surveys, Online Forms</td></tr>
+<tr><td>Smart Property</td><td>Smart Home Integration, Energy Monitoring</td></tr>
+<tr><td>Payment &amp; Financial</td><td>Wallet, Stripe, PayNow, PayLah</td></tr>
+<tr><td>Governance</td><td>Electronic AGM (eAGM)</td></tr>
+<tr><td>Hierarchy &amp; Access Control (Platform)</td><td>Global Admin, Distributor, Installer, Property Management, RBAC, Module Enablement (Funnel Model)</td></tr>
+</table>
+<p>In aggregate, the in-scope catalogue inherited from the iPlus Living documentation spans <strong>63 modules</strong> and <strong>17 third-party integrations</strong>; the representative groupings above map each iPlus Living module group onto its Genio360 equivalent. The full per-module list (with legacy P1–P4 priority) is maintained in Jira as the working scope tracker rather than reproduced in full here, to avoid this strategy document going stale as modules are re-platformed.</p>
+
+<h1 class="section-title" id="s18">18. Features Excluded</h1>
+<ul>
+<li>Legacy iPlusLiving codebase regression — covered under a separate decommissioning validation track, not this strategy.</li>
+<li>Third-party vendor internal system testing (e.g., internal certification of Hikvision or VIDA Quantum hardware) — limited to interface/contract-level validation only.</li>
+<li>Marketing/content modules under the i+Living ecosystem (Buy &amp; Sell, Health Reads, Home Services) beyond smoke-level validation, pending confirmation of business priority.</li>
+<li>Load testing of third-party payment gateway infrastructure itself (Stripe/PayNow/PayLah) — limited to Genio360's integration layer.</li>
+</ul>
+
+<h1 class="section-title" id="s19">19. Assumptions</h1>
+<ul>
+<li>Module-specific BRDs will be made available progressively and reviewed by QA prior to each sprint's test design.</li>
+<li>Test environments will have representative third-party integration sandboxes (e.g., Stripe test mode, intercom simulators) available before integration testing begins.</li>
+<li>API contracts (OpenAPI/Swagger) will be maintained and kept current as the source of truth for backend test design.</li>
+<li>Test data will be synthetic and will not contain production PII at any stage.</li>
+</ul>
+
+<h1 class="section-title" id="s20">20. Constraints</h1>
+<ul>
+<li>Two-week sprint cadence limits the depth of exploratory testing per cycle; risk-based prioritisation (Section 15) is therefore mandatory, not optional.</li>
+<li>Hardware-dependent integrations (facial recognition cameras, ANPR cameras, physical card readers) cannot be fully exercised in lower environments and require scheduled access to a staging environment with physical hardware.</li>
+<li>Mobile application testing is constrained by available device lab coverage; a defined device matrix (Section 59) is used to manage this constraint pragmatically.</li>
+</ul>
+
+<h1 class="section-title" id="s21">21. Dependencies</h1>
+<table>
+<tr><th>Dependency</th><th>Owner</th><th>Impact if Delayed</th></tr>
+<tr><td>Module-specific BRDs</td><td>Business Analysis Team</td><td>Test design cannot begin for affected module; sprint scope at risk</td></tr>
+<tr><td>API contract availability</td><td>Backend Engineering</td><td>API and automation test design blocked</td></tr>
+<tr><td>Third-party sandbox credentials</td><td>DevOps / Vendor Management</td><td>Integration testing deferred to later sprint, increasing late-cycle risk</td></tr>
+<tr><td>Hardware-equipped staging environment</td><td>Infrastructure/DevOps</td><td>Access-control module testing limited to simulated/mocked verification only</td></tr>
+</table>
+
+<!-- ===================== 22. TEST PROCESS ===================== -->
+<div class="page-break"></div>
+<h1 class="section-title" id="s22">22. Test Process</h1>
+<div class="objective"><strong>Objective:</strong> Describe the repeatable process by which testing is planned and executed within each sprint.</div>
+<div class="flow">
+<div class="step">Sprint Planning &amp; Test Analysis</div><div class="arrow">→</div>
+<div class="step">Test Design &amp; Case Authoring</div><div class="arrow">→</div>
+<div class="step">Environment &amp; Data Readiness</div><div class="arrow">→</div>
+<div class="step">Test Execution (Manual + Automated)</div><div class="arrow">→</div>
+<div class="step">Defect Management</div><div class="arrow">→</div>
+<div class="step">Regression &amp; Sign-off</div><div class="arrow">→</div>
+<div class="step">Reporting &amp; Retrospective</div>
+</div>
+<p>Each stage maps to Jira workflow states, with test cases linked to user stories for traceability (see Section 50). The process is intentionally lightweight at the documentation level and heavyweight at the automation level, reflecting the program's CI/CD-driven delivery model.</p>
+
+<!-- ===================== 23. TEST LIFECYCLE (STLC) ===================== -->
+<h1 class="section-title" id="s23">23. Test Lifecycle</h1>
+<div class="objective"><strong>Objective:</strong> Define the Software Testing Life Cycle phases applied per release increment.</div>
+<table>
+<tr><th>Phase</th><th>Key Activity</th><th>Primary Output</th></tr>
+<tr><td>Requirement Analysis</td><td>Review BRDs and stories for testability; raise ambiguities</td><td>Test Analysis Notes / Clarification Log</td></tr>
+<tr><td>Test Planning</td><td>Define sprint scope, risk tier, entry/exit criteria</td><td>Sprint Test Plan</td></tr>
+<tr><td>Test Case Design</td><td>Author cases using techniques in Section 26</td><td>Test Cases (Jira/Xray or equivalent)</td></tr>
+<tr><td>Environment Setup</td><td>Validate build deployment, data seeding, integration sandboxes</td><td>Environment Readiness Checklist</td></tr>
+<tr><td>Test Execution</td><td>Execute manual and automated suites</td><td>Execution Logs, Defect Reports</td></tr>
+<tr><td>Test Closure</td><td>Verify exit criteria, produce summary</td><td>Test Summary / Exit Report</td></tr>
+</table>
+
+<!-- ===================== 24. TEST LEVELS ===================== -->
+<h1 class="section-title" id="s24">24. Test Levels</h1>
+<div class="pyramid">
+<div class="layer l1">E2E / UI Tests (Playwright) — Critical User Journeys</div>
+<div class="layer l2">Integration &amp; API Tests — REST Contracts, Module Interactions</div>
+<div class="layer l3">Component Tests — React Components, Express Route Handlers</div>
+<div class="layer l4">Unit Tests — Functions, Services, Business Logic</div>
+</div>
+<p>The Genio360 automation strategy follows the test pyramid: the broad unit/component base is owned by engineering, with QA concentrating Playwright effort on the narrower E2E layer where business-critical, cross-hierarchy journeys are validated. This avoids the common anti-pattern of an "ice-cream cone" suite dominated by slow, brittle UI tests.</p>
+
+<!-- ===================== 25. TEST TYPES ===================== -->
+<h1 class="section-title" id="s25">25. Test Types</h1>
+<table>
+<tr><th>Test Type</th><th>Applied To</th><th>Owner</th></tr>
+<tr><td>Functional Testing</td><td>All in-scope modules</td><td>QA Team</td></tr>
+<tr><td>API Testing</td><td>Express REST endpoints</td><td>QA Team (automated)</td></tr>
+<tr><td>Integration Testing</td><td>Module-to-module, third-party integrations</td><td>QA Team</td></tr>
+<tr><td>Regression Testing</td><td>Full platform, automated per release</td><td>QA Automation</td></tr>
+<tr><td>Security Testing</td><td>Auth, RBAC, API, data handling</td><td>QA + Security SME</td></tr>
+<tr><td>Performance Testing</td><td>API and key UI flows</td><td>QA Performance Specialist</td></tr>
+<tr><td>Accessibility Testing</td><td>Resident- and guard-facing surfaces</td><td>QA Team</td></tr>
+<tr><td>Compatibility Testing</td><td>Browser/device matrix</td><td>QA Team</td></tr>
+<tr><td>Usability Testing</td><td>New feature releases</td><td>QA + UX</td></tr>
+<tr><td>UAT Support</td><td>Client-facing acceptance cycles</td><td>QA + Business Analysts</td></tr>
+</table>
+
+<!-- ===================== 26. TEST DESIGN TECHNIQUES ===================== -->
+<h1 class="section-title" id="s26">26. Test Design Techniques</h1>
+<div class="objective"><strong>Objective:</strong> Define the analytical techniques used to derive test conditions and cases, ensuring systematic rather than ad hoc coverage.</div>
+<ul>
+<li><strong>Equivalence Partitioning &amp; Boundary Value Analysis</strong> — applied to input validation (e.g., unit numbers, visitor PIN length, payment amounts).</li>
+<li><strong>Decision Table Testing</strong> — applied to RBAC and Funnel Model logic, where outcomes depend on combinations of hierarchy tier and module-enablement flags.</li>
+<li><strong>State Transition Testing</strong> — applied to defect workflow, visitor approval workflow, and facility booking lifecycle.</li>
+<li><strong>Pairwise/Combinatorial Testing</strong> — applied to browser/device/role combinations to manage matrix explosion pragmatically.</li>
+<li><strong>Exploratory Testing</strong> — applied to new UI features and usability evaluation, time-boxed and session-chartered.</li>
+<li><strong>Scenario/Use-Case Based Testing</strong> — applied to end-to-end business flows described in Section 8 of the Business Overview (e.g., Distributor onboarding through Resident activation).</li>
+</ul>
+
+<!-- ===================== 27. TEST ENVIRONMENT STRATEGY ===================== -->
+<h1 class="section-title" id="s27">27. Test Environment Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Define the environment topology supporting test execution from development through production validation.</div>
+<table>
+<tr><th>Environment</th><th>Purpose</th><th>Data</th><th>Integration Mode</th></tr>
+<tr><td>Local/Dev</td><td>Unit &amp; component testing during development</td><td>Synthetic, minimal</td><td>Mocked integrations</td></tr>
+<tr><td>CI (Ephemeral)</td><td>Automated test execution on every pull request</td><td>Seeded fixtures</td><td>Mocked/stubbed third parties</td></tr>
+<tr><td>QA/Staging</td><td>Manual + automated functional, integration, regression testing</td><td>Synthetic, representative volume</td><td>Sandbox third-party integrations (Stripe test mode, intercom simulator)</td></tr>
+<tr><td>Hardware Staging</td><td>Physical access-control device validation</td><td>Synthetic</td><td>Real hardware (cameras, readers), sandbox backend</td></tr>
+<tr><td>UAT</td><td>Client business acceptance</td><td>Curated, business-representative</td><td>Sandbox/limited live integrations</td></tr>
+<tr><td>Production</td><td>Smoke and production validation only</td><td>Live</td><td>Live integrations</td></tr>
+</table>
+<div class="flow">
+<div class="step">Local/Dev</div><div class="arrow">→</div>
+<div class="step">CI Ephemeral</div><div class="arrow">→</div>
+<div class="step">QA/Staging</div><div class="arrow">→</div>
+<div class="step">Hardware Staging</div><div class="arrow">→</div>
+<div class="step">UAT</div><div class="arrow">→</div>
+<div class="step">Production</div>
+</div>
+
+<!-- ===================== 28. TEST DATA MANAGEMENT ===================== -->
+<h1 class="section-title" id="s28">28. Test Data Management</h1>
+<div class="objective"><strong>Objective:</strong> Ensure test data is available, representative, compliant, and repeatable.</div>
+<ul>
+<li>All non-production environments use synthetic data generated via seed scripts; no production PII is copied downward at any stage.</li>
+<li>Data sets are structured to represent the full hierarchy (sample Global Admin, Distributor, Installer, Property, Resident, and Guard records) so that permission-boundary tests are always executable.</li>
+<li>Data refresh is automated as part of environment provisioning in CI/CD, ensuring tests run against a known, version-controlled baseline.</li>
+<li>Sensitive integration credentials (payment gateway keys, intercom API keys) are managed via secrets storage, never embedded in test data or source control.</li>
+</ul>
+<div class="callout-risk"><strong>Risk:</strong> Inconsistent or stale seed data is a common source of false-positive/false-negative automation results. <strong>Mitigation:</strong> Seed scripts are version-controlled alongside the automation suite and validated as part of the environment-readiness checklist (Section 32).</div>
+
+<!-- ===================== 29-31 CM/BUILD/RELEASE ===================== -->
+<h1 class="section-title" id="s29">29. Configuration Management</h1>
+<p>Test artifacts (test cases, automation scripts, environment configuration) are version-controlled in GitHub alongside application code, ensuring that test suite versions remain traceable to the application version they validate. Branching strategy mirrors the application repository's trunk-based development model, with automation changes reviewed via pull request like any other code change.</p>
+
+<h1 class="section-title" id="s30">30. Build Management</h1>
+<p>GitHub Actions triggers an automated pipeline on every pull request and merge to main: linting and unit tests run first, followed by component tests, followed by a deployment to the CI ephemeral environment where the Playwright smoke suite executes as a merge gate. Builds that fail any gate are blocked from progressing, enforcing the shift-left principle described in Section 14.</p>
+
+<h1 class="section-title" id="s31">31. Release Management</h1>
+<p>Releases follow the 2-week sprint cadence, with a release candidate cut at sprint end, deployed to Staging for full regression, then to UAT for business sign-off, before production deployment. Release readiness is formally assessed against the Exit Criteria in Section 33 and the Release Readiness Checklist in Section 71.</p>
+
+<!-- ===================== 32-35 CRITERIA ===================== -->
+<div class="page-break"></div>
+<h1 class="section-title" id="s32">32. Entry Criteria</h1>
+<ul class="checklist">
+<li>Build successfully deployed to the target test environment</li>
+<li>Smoke test suite passes with zero Critical/High failures</li>
+<li>Relevant BRD/story acceptance criteria reviewed and understood by QA</li>
+<li>Test data and environment configuration validated as ready</li>
+<li>Required third-party sandbox integrations are reachable and authenticated</li>
+</ul>
+
+<h1 class="section-title" id="s33">33. Exit Criteria</h1>
+<ul class="checklist">
+<li>100% of planned test cases executed (or formally deferred with risk sign-off)</li>
+<li>Zero open Critical defects; High-severity defects have an agreed mitigation or fix plan</li>
+<li>Automated regression suite passes at or above the agreed stability threshold (Section 12)</li>
+<li>Traceability confirms all in-scope acceptance criteria are covered by at least one test case</li>
+<li>Test Summary/Exit Report (Section 67) completed and reviewed</li>
+</ul>
+
+<h1 class="section-title" id="s34">34. Suspension Criteria</h1>
+<ul>
+<li>A Critical defect blocks execution of more than 30% of the planned test suite.</li>
+<li>The test environment becomes unavailable or unstable for more than 4 working hours.</li>
+<li>A required third-party integration sandbox is unreachable, blocking dependent test cases.</li>
+<li>Test data corruption is detected that invalidates prior execution results.</li>
+</ul>
+
+<h1 class="section-title" id="s35">35. Resumption Criteria</h1>
+<ul>
+<li>The blocking defect is resolved and verified in a new build, or a viable workaround is agreed and documented.</li>
+<li>Environment stability is restored and confirmed via a re-run smoke check.</li>
+<li>Test data integrity is re-validated against the version-controlled baseline.</li>
+</ul>
+
+<!-- ===================== 36-40 DEFECT MGMT ===================== -->
+<h1 class="section-title" id="s36">36. Defect Management Process</h1>
+<div class="objective"><strong>Objective:</strong> Define how defects are identified, triaged, tracked, and closed within Jira.</div>
+<p>Defects are logged directly in Jira against the GEN360 project, linked to the originating test case and user story. Every defect is triaged within one business day by the QA Lead and Engineering Lead jointly, assigned a Severity (Section 37) and Priority (Section 38), and routed through the workflow described in Section 39.</p>
+
+<h1 class="section-title" id="s37">37. Severity Classification</h1>
+<table>
+<tr><th>Severity</th><th>Definition</th><th>Genio360 Example</th></tr>
+<tr><td><span class="badge b-crit">Critical</span></td><td>System unusable, data loss, or safety/security breach</td><td>Unauthorised resident gains access via a forged QR code</td></tr>
+<tr><td><span class="badge b-high">High</span></td><td>Major function broken, no workaround</td><td>Distributor cannot enable a module for an Installer</td></tr>
+<tr><td><span class="badge b-med">Medium</span></td><td>Function impaired, workaround exists</td><td>Facility booking confirmation email delayed but bookable manually</td></tr>
+<tr><td><span class="badge b-low">Low</span></td><td>Cosmetic or minor inconvenience</td><td>Misaligned icon in the resident dashboard</td></tr>
+</table>
+
+<h1 class="section-title" id="s38">38. Priority Classification</h1>
+<table>
+<tr><th>Priority</th><th>Definition</th></tr>
+<tr><td>P1</td><td>Fix immediately; blocks release or current sprint goal</td></tr>
+<tr><td>P2</td><td>Fix within the current sprint</td></tr>
+<tr><td>P3</td><td>Fix within the next 1–2 sprints</td></tr>
+<tr><td>P4</td><td>Backlog; fix opportunistically</td></tr>
+</table>
+<div class="callout-best"><strong>Best Practice:</strong> Severity and Priority are assessed independently — a Low-severity defect can still be P1 if it affects a high-visibility client demo, and a Critical-severity defect found in a deprecated feature path may be P3.</div>
+
+<h1 class="section-title" id="s39">39. Defect Workflow</h1>
+<div class="flow">
+<div class="step">New</div><div class="arrow">→</div>
+<div class="step">Triaged</div><div class="arrow">→</div>
+<div class="step">In Progress</div><div class="arrow">→</div>
+<div class="step">Fixed / Ready for Retest</div><div class="arrow">→</div>
+<div class="step">Retest</div><div class="arrow">→</div>
+<div class="step">Closed</div>
+</div>
+<p>A defect that fails retest returns to "In Progress" rather than "New," preserving the investigation history. Defects deferred by mutual agreement move to "Deferred" with a linked justification and target release.</p>
+
+<h1 class="section-title" id="s40">40. Defect SLA</h1>
+<table>
+<tr><th>Severity</th><th>Triage SLA</th><th>Resolution Target</th></tr>
+<tr><td>Critical</td><td>Within 2 hours</td><td>Same working day</td></tr>
+<tr><td>High</td><td>Within 4 hours</td><td>Within 2 working days</td></tr>
+<tr><td>Medium</td><td>Within 1 working day</td><td>Within the current sprint</td></tr>
+<tr><td>Low</td><td>Within 2 working days</td><td>Best effort / backlog</td></tr>
+</table>
+
+<!-- ===================== 41-44 RISK ===================== -->
+<div class="page-break"></div>
+<h1 class="section-title" id="s41">41. Risk Assessment</h1>
+<p>Risk assessment is performed jointly by the Test Manager, Engineering Lead, and Product Owner at sprint planning and PI boundaries, using the likelihood × impact model introduced in Section 15. Assessment explicitly accounts for the hierarchy blast-radius factor unique to Genio360: a defect in a Global Admin or Distributor-level configuration screen is rated higher than its UI complexity alone would suggest, because of downstream cascade effects through the Funnel Model.</p>
+
+<h1 class="section-title" id="s42">42. Risk Register</h1>
+<table>
+<tr><th>ID</th><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Owner</th></tr>
+<tr><td>R-01</td><td>RBAC misconfiguration allows privilege escalation across hierarchy tiers</td><td>Medium</td><td>Critical</td><td>QA Architect / Security SME</td></tr>
+<tr><td>R-02</td><td>Third-party access-control hardware unavailable in staging, deferring validation to late cycle</td><td>High</td><td>High</td><td>DevOps / Test Manager</td></tr>
+<tr><td>R-03</td><td>Payment gateway integration defects affecting wallet/transaction integrity</td><td>Low</td><td>Critical</td><td>QA Lead / Backend Lead</td></tr>
+<tr><td>R-04</td><td>Automation suite flakiness erodes trust, leading to manual re-verification overhead</td><td>Medium</td><td>Medium</td><td>QA Automation Lead</td></tr>
+<tr><td>R-05</td><td>Incomplete BRDs delay test design for newly added modules</td><td>Medium</td><td>High</td><td>Business Analysis Lead</td></tr>
+</table>
+
+<h1 class="section-title" id="s43">43. Risk Matrix</h1>
+<table>
+<tr><th></th><th>Low Impact</th><th>Medium Impact</th><th>High Impact</th><th>Critical Impact</th></tr>
+<tr><td><strong>High Likelihood</strong></td><td class="matrix-cell-m">Medium</td><td class="matrix-cell-h">High</td><td class="matrix-cell-h">High</td><td class="matrix-cell-h">Critical</td></tr>
+<tr><td><strong>Medium Likelihood</strong></td><td class="matrix-cell-l">Low</td><td class="matrix-cell-m">Medium</td><td class="matrix-cell-h">High</td><td class="matrix-cell-h">Critical</td></tr>
+<tr><td><strong>Low Likelihood</strong></td><td class="matrix-cell-l">Low</td><td class="matrix-cell-l">Low</td><td class="matrix-cell-m">Medium</td><td class="matrix-cell-h">High</td></tr>
+</table>
+
+<h1 class="section-title" id="s44">44. Mitigation Strategy</h1>
+<ul>
+<li><strong>R-01 (RBAC escalation):</strong> Dedicated permission-matrix test suite executed on every release; automated negative-path tests asserting denied access for every role/module combination.</li>
+<li><strong>R-02 (Hardware availability):</strong> Scheduled hardware-staging windows booked at sprint start; mocked hardware simulators used for interim coverage.</li>
+<li><strong>R-03 (Payment integrity):</strong> Reconciliation testing against gateway sandbox transaction logs; idempotency and retry-path testing for payment API calls.</li>
+<li><strong>R-04 (Automation flakiness):</strong> Flaky-test quarantine process with weekly triage; retry-with-evidence policy in CI (see Section 51).</li>
+<li><strong>R-05 (BRD delay):</strong> QA participates in backlog refinement to flag testability gaps before sprint commitment.</li>
+</ul>
+
+<!-- ===================== 45-50 PEOPLE & GOVERNANCE ===================== -->
+<h1 class="section-title" id="s45">45. Resource Planning</h1>
+<div class="objective"><strong>Objective:</strong> Define the QA staffing model required to deliver this strategy.</div>
+<table>
+<tr><th>Role</th><th>Allocation</th><th>Primary Focus</th></tr>
+<tr><td>Test Manager / QA Architect</td><td>1 (program-level)</td><td>Strategy, governance, reporting</td></tr>
+<tr><td>QA Lead (per squad)</td><td>1 per squad</td><td>Sprint test planning, defect triage</td></tr>
+<tr><td>QA Engineers (Manual + Automation)</td><td>2–3 per squad</td><td>Test design, execution, Playwright automation</td></tr>
+<tr><td>Performance Test Specialist</td><td>Shared resource, part-time</td><td>Section 56 activities</td></tr>
+<tr><td>Security Test SME</td><td>Shared resource, part-time</td><td>Section 55 activities</td></tr>
+</table>
+
+<h1 class="section-title" id="s46">46. Roles and Responsibilities</h1>
+<table>
+<tr><th>Role</th><th>Key Responsibilities</th></tr>
+<tr><td>Test Manager / QA Architect</td><td>Owns strategy, governance, risk register, stakeholder reporting</td></tr>
+<tr><td>QA Lead</td><td>Sprint test planning, entry/exit criteria enforcement, defect triage facilitation</td></tr>
+<tr><td>QA Engineer</td><td>Test design and execution, automation script authoring/maintenance</td></tr>
+<tr><td>Developers</td><td>Unit/component testing, defect remediation, CI gate compliance</td></tr>
+<tr><td>Product Owner</td><td>Acceptance criteria clarity, UAT coordination, release sign-off</td></tr>
+<tr><td>DevOps Engineer</td><td>Environment provisioning, CI/CD pipeline health, integration sandbox availability</td></tr>
+</table>
+
+<h1 class="section-title" id="s47">47. RACI Matrix</h1>
+<table>
+<tr><th>Activity</th><th>Test Manager</th><th>QA Engineer</th><th>Developer</th><th>Product Owner</th><th>DevOps</th></tr>
+<tr><td>Test Strategy Definition</td><td>A/R</td><td>C</td><td>C</td><td>C</td><td>I</td></tr>
+<tr><td>Test Case Design</td><td>I</td><td>R</td><td>C</td><td>C</td><td>I</td></tr>
+<tr><td>Unit Testing</td><td>I</td><td>I</td><td>A/R</td><td>I</td><td>I</td></tr>
+<tr><td>Automation Development</td><td>A</td><td>R</td><td>C</td><td>I</td><td>C</td></tr>
+<tr><td>Defect Triage</td><td>A</td><td>R</td><td>R</td><td>C</td><td>I</td></tr>
+<tr><td>Environment Provisioning</td><td>I</td><td>C</td><td>I</td><td>I</td><td>A/R</td></tr>
+<tr><td>Release Sign-off</td><td>R</td><td>C</td><td>I</td><td>A</td><td>C</td></tr>
+</table>
+
+<h1 class="section-title" id="s48">48. Communication Plan</h1>
+<table>
+<tr><th>Forum</th><th>Frequency</th><th>Audience</th><th>Purpose</th></tr>
+<tr><td>Daily Standup</td><td>Daily</td><td>Squad</td><td>Test progress and blocker visibility</td></tr>
+<tr><td>Defect Triage</td><td>Daily</td><td>QA Lead + Engineering Lead</td><td>Severity/priority alignment</td></tr>
+<tr><td>Sprint Review</td><td>Bi-weekly</td><td>Squad + Product Owner</td><td>Demo, acceptance review</td></tr>
+<tr><td>QA Status Report</td><td>Bi-weekly</td><td>Delivery Manager, Product Owner</td><td>Quality metrics, risk status</td></tr>
+<tr><td>Release Readiness Review</td><td>Per release</td><td>All stakeholders</td><td>Go/No-Go decision</td></tr>
+</table>
+
+<h1 class="section-title" id="s49">49. Test Deliverables</h1>
+<ul>
+<li>Software Test Strategy (this document)</li>
+<li>Sprint Test Plans</li>
+<li>Test Cases and Test Scripts (Jira/Xray, Playwright repository)</li>
+<li>Requirement Traceability Matrix</li>
+<li>Defect Reports and Triage Logs</li>
+<li>Test Summary / Exit Reports</li>
+<li>Automation Execution Reports (CI-generated)</li>
+<li>Risk Register</li>
+</ul>
+
+<h1 class="section-title" id="s50">50. Traceability Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Ensure every requirement is demonstrably tested and every test case is demonstrably linked to a business need.</div>
+<p>Traceability is maintained natively in Jira: each user story carries linked test cases (via Xray or equivalent plugin), and each test case carries linked defects upon failure. A Requirement Traceability Matrix is generated at each release to confirm 100% coverage of in-scope acceptance criteria, with any gap requiring explicit sign-off before release.</p>
+<table>
+<tr><th>BRD Requirement ID</th><th>User Story</th><th>Test Case ID(s)</th><th>Automation Status</th><th>Defects Linked</th></tr>
+<tr><td>BRD-VM-014</td><td>GEN-1042</td><td>TC-VM-101..104</td><td>Automated</td><td>—</td></tr>
+<tr><td>BRD-RBAC-002</td><td>GEN-1108</td><td>TC-RBAC-010..022</td><td>Automated</td><td>GEN-DEF-87</td></tr>
+<tr><td>BRD-FAC-007</td><td>GEN-1190</td><td>TC-FAC-040..045</td><td>Manual (planned automation Sprint 9)</td><td>—</td></tr>
+</table>
+
+<!-- ===================== 51-59 TECHNICAL STRATEGY ===================== -->
+<div class="page-break"></div>
+<h1 class="section-title" id="s51">51. Automation Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Define what is automated, how, and to what standard, to maximise regression confidence within the 2-week sprint cadence.</div>
+<p>Automation is built using Playwright with TypeScript, integrated into GitHub Actions as both a pull-request gate (smoke subset) and a nightly/release regression run (full suite). Candidates for automation are selected using the risk tiers in Section 15: Critical and High-risk modules are automated first and maintained with highest priority.</p>
+<table>
+<tr><th>Layer</th><th>Tooling</th><th>Trigger</th></tr>
+<tr><td>API Tests</td><td>Playwright API testing / supertest</td><td>Every pull request</td></tr>
+<tr><td>UI E2E Tests (Smoke)</td><td>Playwright (TypeScript)</td><td>Every pull request</td></tr>
+<tr><td>UI E2E Tests (Full Regression)</td><td>Playwright (TypeScript)</td><td>Nightly + pre-release</td></tr>
+<tr><td>Cross-browser Regression</td><td>Playwright multi-browser projects</td><td>Pre-release</td></tr>
+</table>
+<div class="callout-rec"><strong>Recommendation:</strong> Maintain a defined "flaky test budget" — tests exceeding a 2% non-reproducible failure rate over a rolling 10-run window are quarantined and root-caused within the sprint, preventing automation distrust from accumulating.</div>
+
+<h1 class="section-title" id="s52">52. Playwright Framework Architecture</h1>
+<div class="objective"><strong>Objective:</strong> Define the structural conventions of the automation codebase for maintainability and scale.</div>
+<ul>
+<li><strong>Page Object Model (POM):</strong> each portal (Installer Portal, Condo Management Portal) and key mobile web view maintains its own page-object layer, isolating selectors from test logic.</li>
+<li><strong>Fixture-based test data:</strong> Playwright fixtures inject role-specific authenticated sessions (Global Admin, Distributor, Installer, Property Management, Guard, Resident), enabling rapid cross-role test composition.</li>
+<li><strong>API-first setup/teardown:</strong> test preconditions (e.g., creating a property, enabling a module) are established via direct API calls rather than UI navigation, reducing test runtime and flakiness.</li>
+<li><strong>Parallel execution &amp; sharding:</strong> the suite is sharded across CI runners by module risk tier, ensuring Critical-tier suites report first.</li>
+<li><strong>Reporting:</strong> Playwright's HTML reporter plus a custom CI summary step publishes results to the team's communication channel and Confluence dashboard.</li>
+</ul>
+<div class="flow">
+<div class="step">Fixtures (Role/Session)</div><div class="arrow">→</div>
+<div class="step">API Setup</div><div class="arrow">→</div>
+<div class="step">Page Objects</div><div class="arrow">→</div>
+<div class="step">Test Spec Execution</div><div class="arrow">→</div>
+<div class="step">Assertions &amp; Reporting</div>
+</div>
+
+<h1 class="section-title" id="s53">53. API Testing Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Validate the Express REST API independently of the UI to enable fast, reliable backend confidence.</div>
+<ul>
+<li>Contract testing against the OpenAPI specification to detect breaking changes before they reach the frontend team.</li>
+<li>Functional testing of CRUD operations across all hierarchy-scoped endpoints, verifying that responses are correctly scoped to the requesting user's tier (e.g., a Distributor cannot retrieve another Distributor's installer list).</li>
+<li>Negative testing of authentication and authorisation (expired JWT, missing refresh token, insufficient role) to confirm consistent 401/403 behaviour.</li>
+<li>Idempotency and error-handling testing for state-changing endpoints (module enablement, payment initiation).</li>
+<li><strong>API version migration coverage:</strong> the iPlus Living platform exposed 6 successive REST API versions across its Yii2 backend; as mobile and integration clients migrate onto the new Node.js/Express API, parallel-run testing compares legacy and new endpoint responses for functionally equivalent operations to catch silent behavioural drift during cutover.</li>
+<li><strong>Controller-to-route mapping audit:</strong> the legacy backend exposed 134 admin controllers; this inventory is used as a checklist during migration test planning to confirm no admin capability is silently dropped when re-platforming to the new Express route layer.</li>
+</ul>
+
+<h1 class="section-title" id="s54">54. Database Testing Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Confirm data integrity and correctness at the PostgreSQL persistence layer.</div>
+<ul>
+<li>Schema and migration validation as part of CI, ensuring migrations apply cleanly and are reversible.</li>
+<li>Referential integrity checks across hierarchy tables (Global Admin → Distributor → Installer → Property → Unit → Resident) to confirm cascading relationships behave as designed.</li>
+<li>Data-consistency verification between API responses and underlying records, particularly for module-enablement flags central to the Funnel Model.</li>
+<li>Transaction and rollback testing for multi-step operations (e.g., property onboarding involving multiple related inserts).</li>
+</ul>
+
+<h1 class="section-title" id="s55">55. Security Testing Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Provide assurance against the security risks most relevant to a multi-tenant, access-control-bearing platform.</div>
+<ul>
+<li>Authentication testing: JWT expiry handling, refresh-token rotation, session fixation resistance.</li>
+<li>Authorisation/RBAC testing: systematic verification that every role can access only its permitted modules and data scope, including boundary tests at each hierarchy transition.</li>
+<li>Input validation and injection testing (SQL injection, XSS) on all user-facing forms, particularly visitor registration and resident profile fields.</li>
+<li>Sensitive data handling review: PII storage, transmission encryption (TLS), and payment data handling (PCI-relevant flows isolated to gateway tokens, never stored raw).</li>
+<li>Dependency and container vulnerability scanning integrated into the CI/CD pipeline (Docker image scanning).</li>
+</ul>
+<div class="callout-risk"><strong>Risk:</strong> Access-control modules carry physical-security consequences beyond typical application risk. <strong>Mitigation:</strong> Security testing for these modules is escalated to include a dedicated penetration-test cycle prior to major releases, not just automated scanning.</div>
+
+<h1 class="section-title" id="s56">56. Performance Testing Strategy</h1>
+<div class="objective"><strong>Objective:</strong> Validate the platform performs acceptably under expected and peak load, particularly during high-concurrency events such as visitor surges or eAGM sessions.</div>
+<table>
+<tr><th>Test Type</th><th>Purpose</th><th>Target Scenario</th></tr>
+<tr><td>Load Testing</td><td>Validate behaviour under expected concurrent usage</td><td>Concurrent visitor check-ins during peak hours</td></tr>
+<tr><td>Stress Testing</td><td>Identify breaking points and failure behaviour</td><td>Simultaneous facility booking submissions</td></tr>
+<tr><td>Soak Testing</td><td>Detect memory leaks/degradation over time</td><td>24-hour sustained API traffic simulation</td></tr>
+<tr><td>Spike Testing</td><td>Validate resilience to sudden load increases</td><td>eAGM video conferencing session start</td></tr>
+</table>
+
+<h1 class="section-title" id="s57">57. Accessibility Testing Strategy</h1>
+<p>Resident- and guard-facing surfaces are tested against WCAG 2.1 AA, combining automated scanning (axe-core integrated into Playwright runs) with manual keyboard-navigation and screen-reader spot checks each release. Administrative portals (Installer Portal, Condo Management Portal) are held to a best-effort accessibility standard given their professional, trained-user audience, but automated scanning is still applied to catch egregious issues.</p>
+
+<h1 class="section-title" id="s58">58. Browser Compatibility Strategy</h1>
+<table>
+<tr><th>Browser</th><th>Versions Supported</th><th>Coverage Tier</th></tr>
+<tr><td>Chrome</td><td>Latest 2 versions</td><td>Full automated regression</td></tr>
+<tr><td>Edge</td><td>Latest 2 versions</td><td>Full automated regression</td></tr>
+<tr><td>Safari</td><td>Latest 2 versions</td><td>Smoke + manual spot check</td></tr>
+<tr><td>Firefox</td><td>Latest version</td><td>Smoke + manual spot check</td></tr>
+</table>
+<p>Playwright's multi-browser project configuration executes the smoke suite across all four browsers on every release; full regression runs against Chrome and Edge as the primary enterprise-user browsers, given that the Installer and Condo Management portals are professional, desktop-first surfaces.</p>
+
+<h1 class="section-title" id="s59">59. Mobile Responsiveness Strategy</h1>
+<table>
+<tr><th>Device Class</th><th>Representative Devices</th><th>Coverage</th></tr>
+<tr><td>Mid-range Android</td><td>Samsung Galaxy A-series equivalent</td><td>Full functional + automated smoke</td></tr>
+<tr><td>Flagship Android</td><td>Samsung Galaxy S-series equivalent</td><td>Automated smoke</td></tr>
+<tr><td>iOS</td><td>Recent iPhone models, latest 2 iOS versions</td><td>Full functional + automated smoke</td></tr>
+<tr><td>Tablet (responsive web)</td><td>Standard tablet viewport</td><td>Manual spot check</td></tr>
+</table>
+<p>Mobile testing covers both native-equivalent responsiveness of the resident/guard mobile application and the underlying responsive web behaviour where relevant, using Playwright's device emulation for automated coverage supplemented by physical device testing for camera-dependent flows (QR scanning, facial recognition capture).</p>
+
+<!-- ===================== 60-64 EXECUTION STRATEGIES ===================== -->
+<div class="page-break"></div>
+<h1 class="section-title" id="s60">60. Regression Strategy</h1>
+<p>A full automated regression suite executes nightly against Staging and as a mandatory gate before any production release. Regression scope is risk-weighted: Critical and High-tier modules (Section 15) are regression-tested on every build; Medium and Low-tier modules are regression-tested on a rolling basis to manage execution time within the sprint window.</p>
+
+<h1 class="section-title" id="s61">61. Smoke Testing Strategy</h1>
+<p>A lightweight smoke suite (typically under 15 minutes execution time) validates core login, navigation, and Critical-tier module availability across all three channels. It runs automatically as a pull-request gate and as the first check after every deployment, providing rapid go/no-go feedback before deeper testing begins.</p>
+
+<h1 class="section-title" id="s62">62. Sanity Testing Strategy</h1>
+<p>Following a defect fix or minor configuration change, a focused sanity check is performed against the specific affected functionality and its immediate dependencies, rather than the full regression suite. This is typically manual and scoped by the QA Lead based on the defect's affected component, with automation re-run as a follow-up confirmation.</p>
+
+<h1 class="section-title" id="s63">63. UAT Support Strategy</h1>
+<p>QA supports FAP business stakeholders during UAT by preparing curated, business-representative test data, providing a guided test script aligned to the end-to-end business flows in Section 8 of the Business Overview, and triaging UAT-raised defects alongside the standard defect workflow (Section 39). QA does not execute UAT on the business's behalf but facilitates and observes to capture environment or data issues quickly.</p>
+
+<h1 class="section-title" id="s64">64. Production Validation Strategy</h1>
+<p>Immediately following production deployment, a restricted smoke suite validates core availability across all three channels without generating production-impacting test data. This is followed by a manual spot-check of the specific features released in that cycle, with rollback criteria pre-agreed as part of the release plan (Section 31).</p>
+
+<!-- ===================== 65-71 CLOSURE ===================== -->
+<h1 class="section-title" id="s65">65. Metrics and KPIs</h1>
+<div class="objective"><strong>Objective:</strong> Define the quantitative indicators used to track quality and testing effectiveness over time.</div>
+<div class="kpi-grid">
+<div class="kpi"><div class="num">≥ 95%</div><div class="lbl">Requirement Traceability Coverage</div></div>
+<div class="kpi"><div class="num">≤ 5%</div><div class="lbl">Defect Leakage to Production</div></div>
+<div class="kpi"><div class="num">≥ 90%</div><div class="lbl">Automation Pass-Rate Stability</div></div>
+<div class="kpi"><div class="num">&lt; 2 days</div><div class="lbl">Avg. High-Severity Defect Resolution</div></div>
+<div class="kpi"><div class="num">≥ 80%</div><div class="lbl">Critical/High Module Automation Coverage</div></div>
+<div class="kpi"><div class="num">100%</div><div class="lbl">Entry/Exit Criteria Compliance per Release</div></div>
+</div>
+
+<h1 class="section-title" id="s66">66. Reporting Dashboard</h1>
+<p>A Confluence-embedded dashboard (sourced from Jira and CI reporting) presents the metrics in Section 65 alongside open-defect ageing, automation trend, and risk-register status, refreshed at minimum bi-weekly aligned to sprint review. The dashboard is the primary artifact reviewed at the Release Readiness Review (Section 48).</p>
+<table>
+<tr><th>Dashboard Widget</th><th>Data Source</th><th>Refresh</th></tr>
+<tr><td>Defect Burndown by Severity</td><td>Jira</td><td>Real-time</td></tr>
+<tr><td>Automation Pass-Rate Trend</td><td>GitHub Actions / Playwright reports</td><td>Per CI run</td></tr>
+<tr><td>Traceability Coverage</td><td>Jira/Xray</td><td>Per release</td></tr>
+<tr><td>Risk Register Status</td><td>Confluence</td><td>Bi-weekly</td></tr>
+</table>
+
+<h1 class="section-title" id="s67">67. Test Exit Report</h1>
+<p>Each release closes with a Test Exit Report summarising: test cases planned vs. executed, defect summary by severity, exit-criteria compliance status, residual risk, and a clear recommendation (Go / Go with caveats / No-Go) to the Release Readiness Review.</p>
+<table>
+<tr><th>Element</th><th>Content</th></tr>
+<tr><td>Coverage Summary</td><td>Planned vs. executed test cases, by module and risk tier</td></tr>
+<tr><td>Defect Summary</td><td>Open/closed counts by severity, trend vs. prior release</td></tr>
+<tr><td>Exit Criteria Status</td><td>Pass/fail against Section 33</td></tr>
+<tr><td>Residual Risk</td><td>Any deferred defects or untested scope, with business sign-off reference</td></tr>
+<tr><td>Recommendation</td><td>Go / Go with caveats / No-Go</td></tr>
+</table>
+
+<h1 class="section-title" id="s68">68. Lessons Learned</h1>
+<p>A structured retrospective is held at the close of each release, capturing what worked, what didn't, and specific process adjustments. For Genio360 specifically, early releases identified that hierarchy/permission test cases were under-represented relative to UI test cases; this strategy's risk-tiering approach (Section 15) was introduced as a direct response and should itself be revisited if new patterns of escaped defects emerge.</p>
+
+<h1 class="section-title" id="s69">69. Continuous Improvement</h1>
+<ul>
+<li>Quarterly review of the risk register and risk-tier assignments against actual defect-leakage data.</li>
+<li>Ongoing automation suite health review, retiring obsolete tests and expanding coverage into Medium-tier modules as capacity allows.</li>
+<li>Periodic test-technique calibration sessions to ensure new QA team members apply the design techniques in Section 26 consistently.</li>
+<li>Feedback loop from production incidents directly into regression suite additions, closing the gap identified in each Lessons Learned cycle.</li>
+</ul>
+
+<h1 class="section-title" id="s70">70. Sign-off</h1>
+<div class="objective"><strong>Objective:</strong> Formal acknowledgement that this strategy is approved for execution.</div>
+<div class="sig-grid">
+<div><div class="sig-box">Test Manager / QA Architect — Name &amp; Date</div></div>
+<div><div class="sig-box">Delivery Manager — Name &amp; Date</div></div>
+<div><div class="sig-box">Product Owner (Fermax Asia Pacific) — Name &amp; Date</div></div>
+<div><div class="sig-box">Engineering Lead — Name &amp; Date</div></div>
+</div>
+
+<h1 class="section-title" id="s71">71. Appendix</h1>
+<h2 class="sub">A. Defect Life Cycle (Reference Diagram)</h2>
+<div class="flow">
+<div class="step">New</div><div class="arrow">→</div><div class="step">Triaged</div><div class="arrow">→</div><div class="step">In Progress</div><div class="arrow">→</div><div class="step">Retest</div><div class="arrow">→</div><div class="step">Closed / Deferred</div>
+</div>
+<h2 class="sub">B. Entry/Exit Checklist (Consolidated)</h2>
+<ul class="checklist">
+<li>Build deployed and smoke-validated</li>
+<li>Test data and environment confirmed ready</li>
+<li>Traceability matrix updated and reviewed</li>
+<li>Zero open Critical defects at exit</li>
+<li>Automation suite green at agreed stability threshold</li>
+</ul>
+<h2 class="sub">C. Release Readiness Checklist</h2>
+<ul class="checklist">
+<li>Test Exit Report published and reviewed</li>
+<li>Risk register reviewed with no unmitigated Critical risks</li>
+<li>Security and performance sign-off obtained for in-scope changes</li>
+<li>UAT sign-off obtained from Fermax Asia Pacific</li>
+<li>Rollback plan confirmed with DevOps</li>
+</ul>
+<h2 class="sub">D. RTM Template Reference</h2>
+<p>See Section 50 for the live Requirement Traceability Matrix structure, maintained per release in Jira/Xray.</p>
+
+<footer class="doc-footer">
+  <span>GEN360-QA-STS-002 — v3.0 — Confidential</span>
+  <span>Fermax Asia Pacific — Genio360 Platform Revamp</span>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
