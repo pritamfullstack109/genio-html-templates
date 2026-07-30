@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Genio360 — Dual-Monolith Architecture &amp; Sprint-Wise Development Roadmap (Aug 2026 – May 2027)</title>
+<style>
+  :root{
+    --navy:#0b2440; --blue:#1d5fae; --blue-light:#e8f1fb; --core:#1d7a46; --core-light:#e6f6ec;
+    --hw:#b3541e; --hw-light:#fdefe3; --grey:#5b6572; --border:#d8dee6; --danger:#c0392b;
+    --bg:#f6f8fa;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:#1c2733;margin:0;padding:0 0 60px;}
+  header{background:linear-gradient(135deg,var(--navy),#173a63);color:#fff;padding:36px 48px;}
+  header h1{margin:0 0 6px;font-size:26px;}
+  header p{margin:2px 0;color:#cfe0f5;font-size:14px;}
+  .meta-bar{display:flex;flex-wrap:wrap;gap:24px;margin-top:16px;font-size:13px;}
+  .meta-bar div{background:rgba(255,255,255,.08);padding:6px 14px;border-radius:6px;}
+  .container{max-width:1180px;margin:0 auto;padding:0 32px;}
+  section{margin-top:42px;}
+  h2{color:var(--navy);font-size:20px;border-bottom:3px solid var(--blue);padding-bottom:8px;margin-bottom:18px;}
+  h3{color:var(--navy);font-size:16px;margin:24px 0 10px;}
+  p{line-height:1.6;font-size:14.5px;}
+  table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:13.5px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--navy);color:#fff;font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  .tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11.5px;font-weight:600;}
+  .tag-core{background:var(--core-light);color:var(--core);}
+  .tag-hw{background:var(--hw-light);color:var(--hw);}
+  .tag-shared{background:#eef1f4;color:var(--grey);}
+  .callout{background:var(--blue-light);border-left:4px solid var(--blue);padding:14px 18px;border-radius:4px;margin:16px 0;font-size:14px;}
+  .callout.warn{background:#fff4e5;border-left-color:#d98324;}
+  .callout.risk{background:#fdeceb;border-left-color:var(--danger);}
+  .arch-diagram{background:#0d1b2a;color:#d7e6f5;border-radius:10px;padding:24px;font-family:'Consolas',monospace;font-size:12.5px;overflow-x:auto;line-height:1.5;white-space:pre;}
+  .split-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:18px 0;}
+  .split-card{border-radius:10px;padding:18px 20px;border:1px solid var(--border);}
+  .split-card.core{background:var(--core-light);border-color:var(--core);}
+  .split-card.hw{background:var(--hw-light);border-color:var(--hw);}
+  .split-card h4{margin:0 0 10px;font-size:15px;}
+  .split-card.core h4{color:var(--core);}
+  .split-card.hw h4{color:var(--hw);}
+  .split-card ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;}
+  .cost-total{font-weight:700;color:var(--navy);}
+  /* Roadmap / gantt */
+  .roadmap{margin-top:10px;}
+  .month-header{display:grid;grid-template-columns:220px repeat(3,1fr);gap:0;font-size:12px;font-weight:700;color:#fff;background:var(--navy);border-radius:6px 6px 0 0;overflow:hidden;}
+  .month-header div{padding:10px 12px;text-align:center;}
+  .month-header div:first-child{text-align:left;}
+  .gantt-row{display:grid;grid-template-columns:220px repeat(3,1fr);align-items:center;border-bottom:1px solid var(--border);background:#fff;}
+  .gantt-row:nth-child(even){background:#fafbfc;}
+  .gantt-label{padding:10px 12px;font-size:13px;font-weight:600;color:var(--navy);}
+  .gantt-track{position:relative;height:38px;border-left:1px solid var(--border);}
+  .bar{position:absolute;top:8px;height:22px;border-radius:5px;font-size:11px;color:#fff;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;font-weight:600;}
+  .bar.core{background:var(--core);}
+  .bar.hw{background:var(--hw);}
+  .bar.shared{background:var(--blue);}
+  .bar.web{background:#7a4fc0;}
+  .bar.mobile{background:#2a9d8f;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:14px 0 4px;font-size:12.5px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  .status-approved{color:var(--core);font-weight:700;}
+  .status-review{color:#d98324;font-weight:700;}
+  .status-blocked{color:var(--danger);font-weight:700;}
+  .status-done{color:var(--core);font-weight:700;}
+  .status-started{color:var(--blue);font-weight:700;}
+  .status-notstarted{color:var(--grey);font-weight:700;}
+  .footer-note{margin-top:50px;padding:18px 20px;background:#eef1f4;border-radius:8px;font-size:12.5px;color:var(--grey);}
+  .badge-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:700;margin-right:8px;}
+  @media print{ .arch-diagram{white-space:pre-wrap;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container" style="padding:0;">
+    <h1>Genio360 — Dual-Monolith Architecture Approach</h1>
+    <p>Sprint-Wise Development Roadmap · August 2026 – February 2027 (Full Module Coverage → Azure Go-Live)</p>
+    <div class="meta-bar">
+      <div><strong>Project:</strong> Genio360 Platform Revamp</div>
+      <div><strong>Client:</strong> Fermax Asia Pacific (FAP)</div>
+      <div><strong>Prepared By:</strong> DP (Vijay Parmar)</div>
+      <div><strong>Reviewers:</strong> Jasmine · Siva Subramanian R</div>
+      <div><strong>Task Due:</strong> 28-Jul-2026 → 10-Aug-2026 (10 days)</div>
+      <div><strong>Status:</strong> Roadmap for Sign-off</div>
+      <div><strong>Sprint Cadence:</strong> 2 weeks · 14 sprints total</div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<section>
+  <h2>1. Executive Summary</h2>
+  <p>
+    Genio360 backend will be implemented as a <strong>dual-monolith architecture</strong>: a <strong>Core Platform Monolith</strong>
+    handling business/identity/hierarchy/community modules, and a separate <strong>Hardware &amp; Access Control Monolith</strong>
+    handling device integration, MQTT, ANPR/vehicle access, and vendor SDK bridging. Both monoliths run inside the
+    <strong>same AKS cluster, per region</strong>, and share the same MySQL, Cosmos DB, Redis, Service Bus, and Blob Storage
+    instances. This is a <em>deployment-level separation, not an infrastructure-level one</em> — the cost increase is
+    minimal (~8–10%) while unlocking independent release cadence and blast-radius isolation for hardware-related changes.
+  </p>
+  <div class="callout">
+    <strong>Why dual monolith:</strong> Hardware/vendor SDK integrations (Hikvision, MQTT bridge, ANPR, BLE) have a different
+    release cadence, risk profile, and scaling pattern (spiky, event-driven) than core business modules (steady, HTTP-driven).
+    Splitting them prevents a hardware vendor SDK bug from taking down resident-facing APIs, and allows the hardware monolith
+    to scale-to-zero off-peak via KEDA — a saving not possible in a single monolith.
+  </div>
+  <div class="callout warn">
+    <strong>Timeline:</strong> Covering every module across the BRD set — the 19+ numbered business modules, the full
+    Genio360 Priority list (Data Setup, My Profile, the ME Access Control cluster, Facial Recognition, Security Guard,
+    Doorbell/IP Camera/VIDA Quantum, Directory, Dashboard, Switch Condo), the 24+ backend NestJS modules, both web apps,
+    and continued mobile build-out — does not fit inside a 3-month window. Aligning the plan to the client's stated
+    Genio360 Priority (Section 9) added roughly 15 modules that were not in the original module list, most of them
+    concentrated in the Hardware/Access Control monolith. We are planning for <strong>12 development sprints (Aug 2026
+    – 19 Jan 2027)</strong>, per a client-mandated hard deadline to complete all development by 19 Jan 2027, followed by
+    three post-development phases — UAT &amp; Acceptance (Lite), QA &amp; Stabilisation (Lite), and Pre-Prod Deployment
+    (Lite) — running through <strong>21 May 2027</strong> go-live. Effort is estimated from the deep-dive BRDs we've
+    already completed (Modules 12–18, ~25 user stories each on average) and scaled to the remaining modules by relative
+    complexity.
+  </div>
+</section>
+
+<section>
+  <h2>2. Target Architecture</h2>
+  <div class="arch-diagram">
+Clients (React Web — HQ/Distributor/Installer, React Web — Property Manager, Flutter Mobile)
+                          │
+                          ▼
+              ┌───────────────────────────┐
+              │   Azure API Management     │   ← Single ingress · JWT validation · path-based routing
+              │      (Premium, VNet)        │
+              └───────────────────────────┘
+                    │                │
+      ┌─────────────┘                └──────────────┐
+      ▼                                              ▼
+┌─────────────────────────────┐        ┌─────────────────────────────────┐
+│   MONOLITH 1 — CORE PLATFORM │        │  MONOLITH 2 — HARDWARE / ACCESS   │
+│   (NestJS · genio-core NS)   │        │  CONTROL (NestJS · genio-hw NS)   │
+│                              │        │                                   │
+│  IdentityModule  RbacModule  │        │  MqttBridgeModule                 │
+│  HierarchyModule PropertyM.  │        │  HardwareSyncModule               │
+│  UnitModule  ResidentModule  │        │  IntercomModule                   │
+│  ModuleConfigModule          │        │  VehicleModule (ANPR / access)    │
+│  FacilityModule VisitorModule│        │  Vendor SDK Adapters              │
+│  WalletModule FeedbackModule │        │  (Hikvision, VIDA Quantum, BOSMA) │
+│  NoticeModule FormModule     │        │                                   │
+│  ApprovalModule SurveyModule │        │  HPA: 2–4 pods                    │
+│  ReportModule PaymentModule  │        │  Scaling metric: SB queue depth   │
+│  NotificationModule          │        │  KEDA scale-to-zero (off-peak)    │
+│  AuditModule DataRetention   │        └─────────────────────────────────┘
+│  FileModule                  │                        │
+│  HPA: 3–8 pods                │                       │
+└─────────────────────────────┘                        │
+      │                                                 │
+      ▼                                                 ▼
+┌───────────────────────────────────────────────────────────────────┐
+│                     SHARED DATA / MESSAGING LAYER                  │
+│  MySQL Flexible Server (schema-per-module)  ·  Azure Cosmos DB      │
+│  Azure Cache for Redis (key-prefix isolation)  ·  Azure Service Bus │
+│  Azure Blob Storage                                                 │
+│                                                                      │
+│  Same AKS cluster · Same node pool (or dedicated node pool for HW)  │
+└───────────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>2.1 Client Platform Matrix</h3>
+  <table>
+    <tr><th>App</th><th>Users</th><th>Platform</th><th>Tech</th><th>Distribution</th></tr>
+    <tr><td>Web App 1 — Admin Console</td><td>HQ, Distributor, Installer</td><td>Browser (desktop-first, responsive)</td><td>React 19 + TypeScript</td><td>Internal URL, no store submission</td></tr>
+    <tr><td>Web App 2 — Property Console</td><td>Property Manager</td><td>Browser (desktop-first, responsive)</td><td>React 19 + TypeScript</td><td>Internal URL, no store submission</td></tr>
+    <tr><td>Mobile App — Resident</td><td>Resident</td><td>iOS + Android</td><td>Flutter (single codebase, build flavor: resident)</td><td>App Store + Play Store</td></tr>
+    <tr><td>Mobile App — Security Guard</td><td>Security Guard</td><td>Android</td><td>Flutter (same codebase, build flavor: security)</td><td>Play Store</td></tr>
+  </table>
+  <div class="callout">
+    Both mobile apps share one Flutter codebase (per the Mobile TDD's flavor-based architecture — lib/core, lib/features,
+    lib/brands). The Resident flavor ships as full iOS + Android builds; the Security Guard flavor ships Android-only.
+    Same 3-person Flutter team covers both flavors; no additional headcount or native development needed. Each flavor
+    still needs its own store listing and review cycle — Resident on both App Store + Play Internal, Security Guard on
+    Play Internal only — during the UAT &amp; Acceptance and Pre-Prod Deployment phases.
+  </div>
+</section>
+
+<section>
+  <h2>3. Module Split Between the Two Monoliths</h2>
+  <div class="split-grid">
+    <div class="split-card core">
+      <h4>Monolith 1 — Core Platform (genio-core)</h4>
+      <ul>
+        <li>IdentityModule, RbacModule, ProfileModule (My Profile) <span class="tag tag-core">IAM</span></li>
+        <li>DataSetupModule (condo/company config engine — backend), SwitchCondoModule <span class="tag tag-core">Config</span></li>
+        <li>HierarchyModule, PropertyModule, UnitModule, ResidentModule, ModuleConfigModule <span class="tag tag-core">Hierarchy</span></li>
+        <li>FacilityModule, VisitorModule, WalletModule, FeedbackModule, NoticeModule, FormModule, ApprovalModule, SurveyModule <span class="tag tag-core">Community</span></li>
+        <li>PaymentModule (Stripe, PayNow/OCBC, PayLah/DBS gateways), NotificationModule <span class="tag tag-core">Platform</span></li>
+        <li>AuditModule, DataRetentionModule, FileModule, ReportModule, DirectoryModule, DashboardModule <span class="tag tag-core">Platform</span></li>
+        <li>SecurityGuardModule (guard console workflows: patrol, visitor check-in, incident log) <span class="tag tag-core">Community</span></li>
+      </ul>
+      <p style="margin-top:10px;font-size:12.5px;color:var(--core);"><strong>MySQL schemas:</strong> genio_identity, genio_hierarchy, genio_facility, genio_visitor, genio_wallet, genio_feedback, genio_notice, genio_form, genio_eagm, genio_governance, + new: dlp, helpdesk, community, handover, documents</p>
+      <p style="font-size:12.5px;color:var(--core);"><strong>Cosmos containers:</strong> audit_logs, notifications, forms, surveys, eAGM polls</p>
+      <p style="font-size:12.5px;color:var(--core);"><strong>Steady-state pods:</strong> 3–8 (HPA on HTTP RPS + CPU)</p>
+    </div>
+    <div class="split-card hw">
+      <h4>Monolith 2 — Hardware &amp; Access Control (genio-hw)</h4>
+      <ul>
+        <li>MqttBridgeModule <span class="tag tag-hw">MQTT ingestion / command dispatch</span></li>
+        <li>HardwareSyncModule <span class="tag tag-hw">Device state sync</span></li>
+        <li>IntercomModule <span class="tag tag-hw">Intercom call routing</span></li>
+        <li>AccessControlModule (ME) — Facilities Integration, Virtual Buttons, Digital QR + logs, Card Management, Visitor QR Integration, EPS Season Parking <span class="tag tag-hw">MicroEngine</span></li>
+        <li>FacialRecognitionModule (MEET FR panels) <span class="tag tag-hw">Biometric</span></li>
+        <li>VehicleModule <span class="tag tag-hw">ANPR / vehicle access logs</span></li>
+        <li>Vendor SDK Adapters: Hikvision (ANPR + IP Camera + Doorbell), VIDA Quantum, BOSMA, BLE <span class="tag tag-hw">Integration</span></li>
+      </ul>
+      <p style="margin-top:10px;font-size:12.5px;color:var(--hw);"><strong>MySQL schemas:</strong> genio_me (MicroEngine), vendor integration schemas</p>
+      <p style="font-size:12.5px;color:var(--hw);"><strong>Cosmos containers:</strong> access_events, mqtt_events, device_state</p>
+      <p style="font-size:12.5px;color:var(--hw);"><strong>Steady-state pods:</strong> 2–4 (HPA on Service Bus queue depth + CPU); KEDA scale-to-zero 2AM–6AM</p>
+    </div>
+  </div>
+  <div class="callout warn">
+    <strong>Confirm before build:</strong> VehicleModule sits at the boundary — it is resident-facing (season vehicle
+    registration, wallet-linked parking) but also hardware-facing (ANPR gate events). Recommendation: keep the
+    <em>CRUD/registration</em> half in Core Platform and the <em>ANPR/access-log ingestion</em> half in the Hardware
+    monolith, communicating via Service Bus <code>vehicle.events</code>. This split needs explicit sign-off from
+    Jasmine/Siva before Sprint 1.
+  </div>
+</section>
+
+<section>
+  <h2>4. Cost Impact Summary (Per Region / Month)</h2>
+  <table>
+    <tr><th>Component</th><th>Single Monolith</th><th>Dual Monolith</th><th>Delta</th><th>Notes</th></tr>
+    <tr><td>AKS nodes</td><td>~$800 (3–4 nodes)</td><td>~$950 (4–5 nodes)</td><td>+$150</td><td>1 additional node for hardware monolith HPA range</td></tr>
+    <tr><td>Cosmos DB</td><td>~$600</td><td>~$600</td><td>$0</td><td>Same account, different containers</td></tr>
+    <tr><td>Redis</td><td>~$200</td><td>~$200</td><td>$0</td><td>Same Premium P1 instance, key-prefix isolation</td></tr>
+    <tr><td>MySQL</td><td>~$400</td><td>~$400</td><td>$0</td><td>Same Flexible Server, schema-per-module</td></tr>
+    <tr><td>Blob Storage</td><td>~$200</td><td>~$200</td><td>$0</td><td>Same storage account</td></tr>
+    <tr><td>APIM + Front Door + Other</td><td>~$600</td><td>~$650</td><td>+$50</td><td>Path-based routing to 2 backends</td></tr>
+    <tr><td class="cost-total">Total / region / month</td><td class="cost-total">~$3,000</td><td class="cost-total">~$3,300</td><td class="cost-total">+$300 (10%)</td><td>~$250 net with KEDA scale-to-zero savings</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--grey);">3-region annual impact: <strong>~$9,000/year</strong> additional (~8.3% over existing $108,000/year budget) — justified by release-cadence isolation and blast-radius reduction. Full detail in <em>Genio360-Cost-Impact-Analysis-Single-vs-Dual-Monolith.md</em>.</p>
+</section>
+
+<section>
+  <h2>5. Infrastructure &amp; Boilerplate Setup — S1 (3–14 Aug 2026)</h2>
+  <p>Before feature code lands, the following must exist. Rather than a separate pre-sprint (Sprint 0), this
+  "boilerplate to infra" layer that every subsequent sprint depends on is delivered <strong>within S1</strong>,
+  in parallel with the S1 feature-track work shown in Section 7. Owned jointly by DevOps Engineer, Database Engineer,
+  and Solution Architect, with the Senior NestJS Developer validating the application skeleton.</p>
+
+  <h3>5.1 Azure Infrastructure (IaC)</h3>
+  <table>
+    <tr><th>Component</th><th>Setup Task</th><th>Owner</th></tr>
+    <tr><td>Infrastructure as Code</td><td>Terraform/Bicep repo created; modules for AKS, MySQL, Cosmos DB, Redis, Service Bus, Blob Storage, APIM, Key Vault</td><td>DevOps</td></tr>
+    <tr><td>AKS Cluster (per region, starting with dev/Asia)</td><td>Cluster provisioned; 2 node pools (system + burstable-worker); namespaces <code>genio-core</code> and <code>genio-hw</code> created</td><td>DevOps</td></tr>
+    <tr><td>Azure Database for MySQL Flexible Server</td><td>Instance provisioned; schema-per-module databases created empty (genio_identity, genio_hierarchy, etc. per SDD-01 §3.3)</td><td>Database Engineer</td></tr>
+    <tr><td>Azure Cosmos DB</td><td>Account provisioned; containers created (audit_logs, notifications, access_events, mqtt_events, device_state) partitioned by property_id</td><td>Database Engineer</td></tr>
+    <tr><td>Azure Cache for Redis</td><td>Premium P1 instance provisioned; key-namespace convention documented (identity:, facility:, vehicle:)</td><td>DevOps</td></tr>
+    <tr><td>Azure Service Bus</td><td>Namespace + topics created per SDD-02 event catalogue (identity.events, facility.events, vehicle.events, mqtt.events, etc.)</td><td>DevOps</td></tr>
+    <tr><td>Azure Blob Storage</td><td>Storage account + containers for media/documents/exports with lifecycle rules</td><td>DevOps</td></tr>
+    <tr><td>Azure API Management</td><td>Premium tier instance; VNet integration; placeholder policies for JWT validation and path-based routing to genio-core/genio-hw backends</td><td>DevOps + Solution Architect</td></tr>
+    <tr><td>Azure Key Vault</td><td>Vault provisioned; secret rotation policy configured per Backend TDD (DB passwords 90d, JWT keys 180d, etc.)</td><td>DevOps</td></tr>
+    <tr><td>Environments</td><td>dev, sit, uat, preprod, prod resource groups scaffolded (prod deferred until the Pre-Prod Deployment phase)</td><td>DevOps</td></tr>
+  </table>
+
+  <h3>5.2 Backend Boilerplate (NestJS × 2 repos)</h3>
+  <table>
+    <tr><th>Repo</th><th>Setup Task</th></tr>
+    <tr><td><code>genio-core</code></td><td>NestJS 11 + TypeScript 5 project init; folder structure per SDD-02 §2.2 (src/core, src/property, src/operations, src/integration, src/platform); Prisma/TypeORM configured against dev MySQL; Swagger/OpenAPI bootstrap; Helmet + CSP baseline; class-validator/class-transformer global pipes; Jest + Supertest configured; ESLint/Prettier/Husky pre-commit hooks</td></tr>
+    <tr><td><code>genio-hw</code></td><td>NestJS 11 + TypeScript 5 project init; folder structure (src/integration for Mqtt/HardwareSync/Intercom/Vehicle-HW); Service Bus SDK wired; MQTT client library integrated; same lint/test/hook baseline as genio-core</td></tr>
+    <tr><td>Both repos</td><td>Dockerfile + Helm chart (or Kustomize) for AKS deployment; health check + readiness probe endpoints; OpenTelemetry instrumentation; Application Insights SDK wired</td></tr>
+  </table>
+
+  <h3>5.3 Frontend Boilerplate</h3>
+  <table>
+    <tr><th>App</th><th>Setup Task</th></tr>
+    <tr><td>Web (2 apps)</td><td>Vite + React 19 + TypeScript 6 scaffold; Tailwind CSS 4 configured; TanStack Router/Query/DB wired; Redux Toolkit store skeleton; Axios instance with interceptors; i18next configured with English fallback; Jest + React Testing Library + Playwright configured; ESLint/Prettier/Husky hooks</td></tr>
+    <tr><td>Mobile (Flutter)</td><td>Already running on Azure — confirm folder structure matches Mobile TDD (lib/core, lib/features, lib/brands) for the modules planned in Section 7; verify the two build flavours (resident, security) are configured per Section 2.1's Client Platform Matrix, each targeting iOS + Android</td></tr>
+  </table>
+
+  <h3>5.4 CI/CD &amp; Quality Gates</h3>
+  <table>
+    <tr><th>Pipeline Stage</th><th>Tooling</th></tr>
+    <tr><td>Source control &amp; branching</td><td>Gitflow across all 4 repos: main / develop / feature / bugfix / release / hotfix (per Backend &amp; Web TDDs)</td></tr>
+    <tr><td>PR quality gates</td><td>SonarCloud (code quality/coverage) + Snyk (dependency vulnerabilities) — mandatory, blocking merge</td></tr>
+    <tr><td>Build &amp; test</td><td>Lint → unit tests → build → containerize (backend) / bundle (web) → deploy to dev</td></tr>
+    <tr><td>Environment promotion</td><td>dev → sit → uat → preprod → prod, gated by manual approval from S12 onward</td></tr>
+    <tr><td>Observability baseline</td><td>Prometheus + Grafana dashboards; Application Insights alerts; Sentry (web) and Firebase Crashlytics (mobile) wired from day 1</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>Exit criteria for S1 infra/boilerplate:</strong> a developer can clone any of the 4 repos, run one command to
+    start the app against dev Azure resources, hit a health-check endpoint, and see a green CI pipeline on first commit —
+    delivered alongside S1's feature-track work (Section 7), not as a blocking prerequisite sprint.
+  </div>
+
+  <h3>5.5 Definition of Done (applies to every module, every sprint)</h3>
+  <table>
+    <tr><th>Gate</th><th>Threshold</th></tr>
+    <tr><td>Unit test coverage</td><td>≥80% line coverage on new code (SonarCloud quality gate, blocking)</td></tr>
+    <tr><td>API contract</td><td>OpenAPI/Swagger spec updated and published; breaking changes flagged and versioned</td></tr>
+    <tr><td>Integration tests</td><td>Supertest suite covers all controller endpoints touched in the sprint; Pact contract updated for any cross-monolith event</td></tr>
+    <tr><td>Security</td><td>Snyk scan clean (no High/Critical); auth/authz checked against RBAC matrix for the module</td></tr>
+    <tr><td>Code review</td><td>Minimum 1 approving review; Senior NestJS Developer required for modules touching Identity, Payment, or Wallet</td></tr>
+    <tr><td>Documentation</td><td>Module README + Confluence page updated; DB migration scripts checked in and reversible</td></tr>
+    <tr><td>QA sign-off</td><td>Test cases from the module's BRD (Happy Path, Alternate, Exception, Validation, Permission, Notification) executed and passed in dev</td></tr>
+    <tr><td>Demo</td><td>Working demo in sprint review against the dev environment, not local/mocked data</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--grey);">A module is not counted as "complete" in Section 9's coverage matrix until all 8 gates pass — this is why several sprints in Section 7 show a module "starting" one sprint and "completing" the next: the extra time is UI polish + QA cycle, not just coding.</p>
+</section>
+
+<section>
+  <h2>6. Team Composition &amp; Estimation Methodology</h2>
+  <p>Current team roster and allocation across the four delivery tracks:</p>
+  <table>
+    <tr><th>Track</th><th>Role</th><th>Headcount</th><th>Allocation</th></tr>
+    <tr><td rowspan="2">Governance / Oversight</td><td>Solution Architect</td><td>1</td><td>Cross-track: dual-monolith split sign-off, ERD/schema/API-contract review, architecture escalations</td></tr>
+    <tr><td>Scrum Master / Project Manager</td><td>1</td><td>Facilitates all 4 delivery tracks; sprint ceremonies, cross-team dependency tracking</td></tr>
+    <tr><td rowspan="2"><span class="tag tag-core">Core BE</span></td><td>Senior NestJS Developer</td><td>1</td><td>Core Platform lead; floats into HW track during Intercom (S3–S5) and Vehicle ANPR (S6) for design/code review</td></tr>
+    <tr><td>NestJS Developer</td><td>2</td><td>Core Platform Monolith — Identity, Hierarchy, Facility, Wallet, Visitor, etc.</td></tr>
+    <tr><td><span class="tag tag-hw">HW BE</span></td><td>NestJS Developer</td><td>1</td><td>Hardware/Access Control Monolith — MQTT Bridge, Intercom, Hardware Sync, Vehicle ANPR half</td></tr>
+    <tr><td rowspan="2">Web</td><td>React JS Developer</td><td>3</td><td>Both web apps (HQ/Distributor/Installer + Property Manager)</td></tr>
+    <tr><td>UI/UX Designer</td><td>1</td><td>Design system, Figma specs for Web (and Figma reference source for Mobile screens)</td></tr>
+    <tr><td>Mobile</td><td>Flutter Developer</td><td>3</td><td>Continued feature build on the already-integrated Flutter app</td></tr>
+    <tr><td rowspan="2">Data / Platform</td><td>Database Engineer</td><td>1</td><td>Leads SDD-03/04/05 (ERD, schema, migration) authoring in S1; ongoing schema evolution support for both monoliths</td></tr>
+    <tr><td>DevOps Engineer</td><td>1</td><td>CI/CD pipelines (4 repos), AKS namespaces, environment provisioning, cutover execution</td></tr>
+    <tr><td>QA</td><td>QA Engineer</td><td>2</td><td>Test case authoring, automation (Jest/Playwright/flutter_test), SIT/UAT execution</td></tr>
+  </table>
+  <div class="callout risk">
+    <strong>Capacity risk — Hardware monolith:</strong> Only <strong>1 NestJS developer</strong> is dedicated to the
+    Hardware/Access Control monolith, and that track now carries the majority of the Priority-1 scope: Intercom
+    relay/hardware logic, the MQTT bridge, the full ME Access Control cluster (Facilities Integration, Virtual Buttons,
+    Digital QR + logs, EPS Season Parking), Facial Recognition, ANPR, and five vendor SDK adapters (Hikvision, VIDA
+    Quantum, BOSMA, BLE). Our mitigation is to have the <strong>Senior NestJS Developer split time</strong> into the HW
+    track during S3–S4 (Intercom), S5–S6 (ME Access Control), and S8 (Vehicle ANPR). Because the 19 Jan 2027
+    development deadline is fixed, if that's not enough, HW deliverables must either be descoped/deferred to the
+    post-development phases or absorbed by descoping something else in S9–S12 — there is no sprint slack left to slip
+    into.
+  </div>
+  <div class="callout">
+    <strong>Headcount:</strong> 16 people total — 2 governance, 4 backend (1 Senior + 3 NestJS), 4 web (3 dev + 1 designer), 3 mobile, 2 data/platform, 2 QA.
+  </div>
+  <h3>Estimation Methodology</h3>
+  <p>Effort per business module is derived from the <strong>already-audited BRDs</strong> (Modules 12–18), which average
+  <strong>~25 user stories</strong> each across 7 categories (Happy Path, Alternate, Exception, Validation, Permission,
+  Notification, plus Business Scenarios). Modules are bucketed into three complexity tiers, calibrated against these audits:</p>
+  <table>
+    <tr><th>Tier</th><th>Story Count / Signal</th><th>Effort</th><th>Example Modules</th></tr>
+    <tr><td><strong>Simple</strong></td><td>&lt;15 user stories, single controller, no hardware/payment dependency</td><td>1 sprint (2 weeks), 1 engineer</td><td>Notice/Wall, Feedback, Help &amp; Support</td></tr>
+    <tr><td><strong>Medium</strong></td><td>15–25 stories, 1–2 external integrations</td><td>1.5–2 sprints, 1–2 engineers</td><td>Units, Documents, Service Request, Survey/eAGM, Home Services</td></tr>
+    <tr><td><strong>Complex</strong></td><td>25+ stories, payment/hardware/concurrency logic (per Code Analysis findings in audited BRDs)</td><td>2–3 sprints, 2 engineers</td><td>Facility (slot locking), Wallet (concurrency), Vehicle (ANPR), Visitor, Intercom (relay/hardware logic)</td></tr>
+  </table>
+  <div class="callout warn">
+    <strong>Caveat:</strong> Modules without a completed Deep Dive BRD (Home Services, Survey/eAGM, Help &amp; Support already
+    reviewed; several others still at v1.0) carry higher estimation uncertainty. Sprint allocations below should be treated
+    as <strong>±1 sprint per module</strong> until each module's BRD reaches the same "Development Ready" depth as Modules 12–18.
+  </div>
+
+  <h3>Velocity &amp; Capacity Model</h3>
+  <p>Story points use the standard Fibonacci scale (1, 2, 3, 5, 8, 13). Average is ~3 points per user story once a story is
+  broken down to controller/service/DTO/test granularity — a Simple module's ~15 stories work out to roughly 35–45 points,
+  Medium to 55–70, Complex to 80–100+ once payment/hardware edge cases are factored in.</p>
+  <table>
+    <tr><th>Track</th><th>Devs</th><th>Velocity Assumption</th><th>Sprint Capacity</th></tr>
+    <tr><td><span class="tag tag-core">Core BE</span></td><td>3 (1 Senior + 2)</td><td>~8 SP/dev/sprint (20% overhead for ceremonies, code review, PR rework)</td><td>~24 SP/sprint</td></tr>
+    <tr><td><span class="tag tag-hw">HW BE</span></td><td>1 (+ Senior float in S3–S6)</td><td>~8 SP/dev/sprint baseline; +6 SP in float sprints</td><td>8 SP/sprint (14 SP in S3–S6)</td></tr>
+    <tr><td>Web</td><td>3</td><td>~6 SP/dev/sprint (lower — design dependency, cross-browser QA)</td><td>~18 SP/sprint</td></tr>
+    <tr><td>Mobile</td><td>3</td><td>~7 SP/dev/sprint</td><td>~21 SP/sprint</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--grey);">Worked example: IdentityModule + RbacModule (S2) is a Complex pairing, roughly
+  90 SP combined. At 24 SP/sprint Core capacity, that's ~3.75 sprints of raw effort — the plan compresses it into 1 sprint
+  by having all 3 Core devs on it exclusively (no parallel module) and carrying JWT/MFA edge-case hardening into S3 as
+  technical debt cleanup rather than blocking S2's "done" declaration. This pattern repeats for every Complex module in
+  Section 7 — the listed sprint is when the module <em>starts and gets a usable version</em>, with the last ~15–20% of
+  edge cases absorbed into the following sprint's regression pass.</p>
+  <div class="callout warn">
+    <strong>Re-plan after S2:</strong> these velocity numbers are assumptions, not measured data. Run planning poker at the
+    end of S1 to size the S2 backlog, then use actual S1–S2 throughput to re-forecast S3 onward. If real velocity comes in
+    below ~20 SP/sprint for Core, scope — not the 19 Jan 2027 code-complete deadline (Section 9) — must be re-baselined
+    immediately; the deadline is fixed and there is no sprint buffer to absorb slippage into.
+  </div>
+</section>
+
+<section>
+  <h2>7. Sprint-Wise Execution Plan (12 Dev Sprints + 3 Post-Dev Phases · Aug 2026 – May 2027)</h2>
+  <div class="callout warn">
+    <strong>Hard development deadline — 19 Jan 2027:</strong> per client direction, all development must be complete by
+    <strong>19 Jan 2027</strong>. Every module below is ordered first by hard dependency (Section 8), then by the
+    client's stated Priority 1 vs. Priority 2 within what's unblocked in a given sprint. Priority 1 modules all land by
+    <strong>S11</strong>; Priority 2 modules (Backend condo set-up enhancements, Card Management, Visitor QR Integration
+    (ME), Directory, Dashboard, Switch Condo) are interleaved wherever they fit without displacing a Priority 1 item,
+    and finish by <strong>S12 (19 Jan 2027)</strong>. Development is followed by three post-development phases — UAT
+    &amp; Acceptance (Lite), QA &amp; Stabilisation (Lite), and Pre-Prod Deployment (Lite) — running through
+    <strong>21 May 2027</strong> go-live.
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--core)"></span> Core Platform Monolith</span>
+    <span><span class="dot" style="background:var(--hw)"></span> Hardware/Access Monolith</span>
+    <span><span class="dot" style="background:#7a4fc0"></span> Frontend Web</span>
+    <span><span class="dot" style="background:#2a9d8f"></span> Mobile</span>
+  </div>
+  <table>
+    <tr><th>Sprint</th><th>Dates</th><th>Core BE (1 Senior + 2 Dev)</th><th>HW BE (1 Dev + Senior float)</th><th>Web (3 Dev + 1 UI/UX)</th><th>Mobile (3 Dev)</th></tr>
+    <tr><td><strong>S1</strong></td><td>3–14 Aug</td>
+      <td>Confirm dual-monolith split; scaffold genio-core repo; Azure infra (IaC, AKS, MySQL, Cosmos, Redis, Service Bus, Blob, APIM, Key Vault per Section 5.1) provisioned in parallel</td>
+      <td>Scaffold genio-hw repo; Service Bus topic design</td>
+      <td>Repo scaffold (2 apps); UI/UX design system + Figma kickoff; shared component lib</td>
+      <td>Facility booking screens (start)</td></tr>
+    <tr><td><strong>S2</strong></td><td>17–28 Aug</td>
+      <td><strong>IdentityModule + RbacModule</strong> (JWT, hierarchical claims, MFA) + <strong>DataSetupModule</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> (condo/company config engine — foundational)</td>
+      <td>MqttBridgeModule skeleton; MQTT broker dev setup</td>
+      <td>Auth screens + route guards (mock API)</td>
+      <td>Facility booking screens (complete); Wallet screens (start)</td></tr>
+    <tr><td><strong>S3</strong></td><td>31 Aug–11 Sep</td>
+      <td><strong>HierarchyModule, PropertyModule, UnitModule, ResidentModule, ModuleConfigModule</strong> (4-tier cascade) + <strong>ProfileModule (My Profile)</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> + <strong>SwitchCondoModule</strong> <span class="tag" style="background:#eef1f4;color:var(--grey);">P2</span></td>
+      <td>IntercomModule — call routing, relay/door lookup logic (condo-scoped panel validation)</td>
+      <td>HQ/Distributor/Installer app — hierarchy CRUD, Data Setup admin screens</td>
+      <td>Wallet screens (complete); Visitor screens (start)</td></tr>
+    <tr><td><strong>S4</strong></td><td>14–25 Sep</td>
+      <td><strong>FacilityModule</strong> (Redis slot locking, booking, payment hook) + <strong>NoticeModule</strong></td>
+      <td>IntercomModule (continued); <strong>AccessControlModule (ME) — Facilities Integration</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> starts, tied to Facility landing this sprint</td>
+      <td>Property Manager app — Facility &amp; Wallet admin screens</td>
+      <td>Visitor screens (complete); Vehicle screens (start)</td></tr>
+    <tr><td><strong>S5</strong></td><td>28 Sep–9 Oct</td>
+      <td><strong>WalletModule</strong> (concurrency-safe transactions) + <strong>FeedbackModule</strong></td>
+      <td>HardwareSyncModule (device state sync); <strong>AccessControlModule (ME) — Virtual Buttons, Digital QR Access + logs</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span></td>
+      <td>Property Manager app — Visitor &amp; Vehicle admin screens</td>
+      <td>Vehicle screens (complete); Notifications screens (start)</td></tr>
+    <tr><td><strong>S6</strong></td><td>12–23 Oct</td>
+      <td><strong>VisitorModule</strong> + <strong>FormModule</strong> + <strong>ApprovalModule</strong></td>
+      <td><strong>AccessControlModule (ME) — EPS Season Parking</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> (wallet-linked); <strong>Card Management, Visitor QR Integration (ME)</strong> <span class="tag" style="background:#eef1f4;color:var(--grey);">P2</span></td>
+      <td>HQ app — Module Config cascade UI + reporting dashboards</td>
+      <td>Notifications (complete); Smart Home screens (start)</td></tr>
+    <tr><td><strong>S7</strong></td><td>26 Oct–6 Nov</td>
+      <td><strong>SurveyModule (eAGM)</strong> + <strong>ReportModule</strong> + <strong>DirectoryModule, DashboardModule</strong> <span class="tag" style="background:#eef1f4;color:var(--grey);">P2</span></td>
+      <td><strong>FacialRecognitionModule (MEET FR panels)</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> starts</td>
+      <td>Property Manager app — Units &amp; Documents admin screens; Directory/Dashboard screens</td>
+      <td>Smart Home (complete); Documents + Units screens (start)</td></tr>
+    <tr><td><strong>S8</strong></td><td>9–20 Nov</td>
+      <td><strong>PaymentModule</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> (Stripe, PayNow/OCBC, PayLah/DBS gateways) + <strong>NotificationModule</strong></td>
+      <td>VehicleModule (HW half) — ANPR ingestion, Redis blacklist cache; FacialRecognitionModule (continued)</td>
+      <td>Property Manager app — Help &amp; Support, Service Request screens</td>
+      <td>Documents/Units (complete); Help &amp; Support, Service Request (start)</td></tr>
+    <tr><td><strong>S9</strong></td><td>23 Nov–4 Dec</td>
+      <td><strong>Units, Documents, Help &amp; Support, Service Request</strong> business-logic modules (built on Facility/Wallet foundations)</td>
+      <td><strong>SecurityGuardModule</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span> backend workflows (patrol, visitor check-in, incident log); Vendor SDK — Hikvision, VIDA Quantum hardening</td>
+      <td>HQ/Distributor/Installer app — Notice/Wall, Feedback admin screens</td>
+      <td>Help &amp; Support/Service Request (complete); Security Guard app screens (start)</td></tr>
+    <tr><td><strong>S10</strong></td><td>7–18 Dec</td>
+      <td><strong>Home Services (Concierge)</strong> + <strong>AuditModule, DataRetentionModule, FileModule</strong> + <strong>Backend condo set-up enhancements</strong> <span class="tag" style="background:#eef1f4;color:var(--grey);">P2</span></td>
+      <td><strong>Doorbell, IP Camera (Hikvision)</strong> <span class="tag" style="background:#fdecea;color:var(--danger);">P1</span>; Vendor SDK — BOSMA, BLE hardening; dead-letter queue handling</td>
+      <td>Web — accessibility (WCAG 2.1 AA) pass, i18n, Playwright E2E suite buildout</td>
+      <td>Home Services, Survey (complete); Security Guard app (complete); white-label flavour builds (resident, security)</td></tr>
+    <tr><td><strong>S11</strong></td><td>21 Dec–1 Jan</td>
+      <td>P1/P2 spillover completion + bug-fix (reduced velocity — holidays)</td>
+      <td>P1/P2 spillover completion (ME cluster, FR, Doorbell/Camera hardening) + bug-fix (reduced velocity — holidays)</td>
+      <td>Hardening + bug-fix sprint (reduced velocity)</td>
+      <td>Offline-first sync hardening; battery/perf profiling</td></tr>
+    <tr><td><strong>S12</strong></td><td>4–19 Jan</td>
+      <td>Full regression pass #2; performance tuning (MySQL indices, Redis TTLs); final P2 polish (Directory, Dashboard, Switch Condo, Card Management, Visitor QR)</td>
+      <td>Integration hardening + cross-monolith Service Bus event testing with Core</td>
+      <td>SIT bug fixing; Sentry/analytics wiring</td>
+      <td>SIT bug fixing; App Store/Play Store submission prep</td></tr>
+  </table>
+  <div class="callout">
+    <strong>Development complete: 19 Jan 2027 (end of S12).</strong> All Priority 1 and Priority 2 modules (Section 9)
+    are code-complete in dev. What follows is not further sprint-based feature work — it's three overlapping
+    post-development phases, per the client's own phase plan:
+  </div>
+  <table>
+    <tr><th>Phase</th><th>Dates</th><th>Scope / Activities</th></tr>
+    <tr><td><strong>UAT &amp; Acceptance (Lite) — Staging</strong></td><td>19 Jan – 10 Mar</td>
+      <td>Client UAT execution against the staging environment; defect triage and fixes across both monoliths, both web apps, and mobile; UAT sign-off</td></tr>
+    <tr><td><strong>QA &amp; Stabilisation (Lite) — Staging</strong></td><td>19 Jan – 17 Mar</td>
+      <td>Full regression + security testing round 2 (OWASP ZAP) on staging; load testing (k6) for access-event/ANPR/FR spikes; Pact contract validation both monoliths; runs in parallel with UAT, finishing 1 week later to absorb UAT-raised defects</td></tr>
+    <tr><td><strong>Pre-Prod Deployment (Lite)</strong></td><td>11 Mar – 21 May</td>
+      <td>Pre-prod environment build and validation; DMS migration dry-run (per SDD-01 §5.2) and rehearsal; production cutover checklist; App Store/Play Store release-candidate builds and submission; production release and go-live smoke tests; hypercare activation</td></tr>
+  </table>
+
+
+</section>
+
+<section>
+  <h2>8. Module Dependency Matrix &amp; Critical Path</h2>
+  <p>Modules are not independent — several cannot start until a prerequisite module has a working (not necessarily
+  fully-hardened) version. This is what actually determines sprint sequencing in Section 7, more than tier/complexity alone.</p>
+  <table>
+    <tr><th>Module</th><th>Hard Dependency</th><th>Why</th></tr>
+    <tr><td>RbacModule</td><td>IdentityModule (same sprint, tightly coupled)</td><td>Role/permission checks need a resolved JWT identity first</td></tr>
+    <tr><td>Hierarchy/Property/Unit/Resident</td><td>Identity + Rbac</td><td>Every hierarchy write is scoped by the acting user's role and condo/tower assignment</td></tr>
+    <tr><td>FacilityModule</td><td>Hierarchy backbone</td><td>Bookable facilities belong to a property; slot rules cascade from Module Config</td></tr>
+    <tr><td>WalletModule</td><td>Hierarchy backbone + PaymentModule (stub acceptable initially)</td><td>Wallet top-ups need a payment gateway hook even if the full PaymentModule lands later in S8</td></tr>
+    <tr><td>VisitorModule</td><td>Hierarchy backbone + FormModule</td><td>Visitor pre-registration uses the generic form engine for custom fields per property</td></tr>
+    <tr><td>VehicleModule (Core half)</td><td>Hierarchy backbone + WalletModule</td><td>Season parking registration deducts from resident wallet balance</td></tr>
+    <tr><td>VehicleModule (HW half — ANPR)</td><td>MqttBridgeModule + VehicleModule (Core half)</td><td>ANPR events need the vehicle registry to resolve plate → resident before granting access</td></tr>
+    <tr><td>IntercomModule</td><td>Hierarchy backbone (condo/panel scoping) + MqttBridgeModule</td><td>Relay lookup is condo-scoped (see Intercom BRD §2.2) and depends on device state from MQTT</td></tr>
+    <tr><td>NotificationModule</td><td>Identity (device tokens) + Service Bus topics from S1</td><td>Push/SMS/email dispatch needs registered device tokens and a working event bus</td></tr>
+    <tr><td>PaymentModule</td><td>WalletModule (stub relationship, see above)</td><td>Full gateway integration (refunds, reconciliation) is more complex than the wallet top-up hook it unblocks early</td></tr>
+    <tr><td>Units, Documents, Help &amp; Support, Service Request</td><td>Hierarchy backbone + FormModule + ApprovalModule</td><td>All four are workflow-driven and reuse the same form/approval engine rather than building bespoke logic</td></tr>
+    <tr><td>Home Services (Concierge)</td><td>ServiceRequestModule + WalletModule</td><td>Concierge bookings are modeled as a specialized service request with a wallet-charged fee</td></tr>
+    <tr><td>Survey/eAGM</td><td>Hierarchy backbone + NotificationModule</td><td>Poll invitations and reminders go out via the notification pipeline</td></tr>
+    <tr><td>DataSetupModule</td><td>Identity (admin auth) only — precedes Hierarchy</td><td>It is the condo/company configuration engine that Hierarchy, Module Config, and every downstream module reads from</td></tr>
+    <tr><td>ProfileModule (My Profile)</td><td>Identity</td><td>Profile fields hang off the authenticated user record</td></tr>
+    <tr><td>SwitchCondoModule</td><td>Hierarchy backbone (user-condo assignments)</td><td>Switching requires knowing which condos the user is assigned to</td></tr>
+    <tr><td>AccessControlModule (ME) — Facilities Integration</td><td>FacilityModule + MqttBridgeModule</td><td>Door/lift access tied to a facility booking needs both the booking record and live device state</td></tr>
+    <tr><td>AccessControlModule (ME) — Virtual Buttons, Digital QR</td><td>AccessControlModule (Facilities Integration) + HardwareSyncModule</td><td>Virtual buttons and QR-based door release reuse the same ME device abstraction and need synced device state</td></tr>
+    <tr><td>AccessControlModule (ME) — EPS Season Parking</td><td>VehicleModule (Core half) + WalletModule</td><td>Season parking access is gated by an active, wallet-paid season registration</td></tr>
+    <tr><td>AccessControlModule (ME) — Card Management, Visitor QR Integration</td><td>AccessControlModule (Digital QR) + VisitorModule</td><td>Card credentials and visitor QR codes both resolve through the same ME credential engine</td></tr>
+    <tr><td>FacialRecognitionModule</td><td>AccessControlModule (ME) + Vendor SDK (Hikvision/MEET FR)</td><td>FR panels enroll against the same unit/resident mapping used by ME and need a working device sync layer</td></tr>
+    <tr><td>SecurityGuardModule</td><td>VisitorModule + AccessControlModule (ME) + FacialRecognitionModule</td><td>Guard workflows (check-in, patrol, incident log) operate on visitor records and trigger the same access/FR events guards need to see</td></tr>
+    <tr><td>Doorbell, IP Camera</td><td>Vendor SDK (Hikvision) + MqttBridgeModule</td><td>Both stream device state/events through the same Hikvision adapter and MQTT bridge as ANPR</td></tr>
+    <tr><td>Directory, Dashboard</td><td>Hierarchy backbone + Unit/Resident data</td><td>Directory lists residents by unit; Dashboard aggregates counts/status across already-built modules</td></tr>
+    <tr><td>Backend condo set-up enhancements</td><td>DataSetupModule + Hierarchy backbone</td><td>Enhancements extend the existing condo configuration engine, not a new one</td></tr>
+  </table>
+  <div class="callout risk">
+    <strong>Critical path:</strong> Identity → Hierarchy → Facility/Wallet/Form/Approval → everything else. A slip in
+    S2 (Identity) or S3 (Hierarchy) does not just delay those two sprints — it delays every downstream module and
+    compresses the whole S4–S10 sequence. These two sprints carry the highest schedule risk in the entire plan and are
+    the ones most worth protecting from scope creep.
+  </div>
+</section>
+
+<section>
+  <h2>9. Full Module Coverage Matrix — Aligned to Genio360 Priority</h2>
+  <p>Every module in the client's Genio360 Priority list, plus platform/hardware foundation modules not on that list,
+  mapped to owning track, tier, delivery sprint, and Priority (1 or 2). Ordering follows Section 8's dependency chain
+  first — a Priority 2 item that blocks nothing can still land earlier than a Priority 1 item that isn't unblocked yet
+  — but every Priority 1 module lands by <strong>S10</strong> and every Priority 2 module lands by <strong>S12</strong>.</p>
+  <table>
+    <tr><th>#</th><th>Module / Function</th><th>Priority</th><th>Track</th><th>Tier</th><th>Delivery Sprint</th></tr>
+    <tr><td>—</td><td>Identity / RBAC (foundation)</td><td>—</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S2</td></tr>
+    <tr><td>P1</td><td>Data Setup (Backend) / Data Setup</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S2</td></tr>
+    <tr><td>—</td><td>Hierarchy / Property / Unit / Resident / Module Config (foundation)</td><td>—</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S3</td></tr>
+    <tr><td>P1</td><td>My Profile</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Simple</td><td>S3</td></tr>
+    <tr><td>P2</td><td>Switch Condo</td><td>2</td><td><span class="tag tag-core">Core</span></td><td>Simple</td><td>S3</td></tr>
+    <tr><td>1</td><td>Intercom Call</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S3–S4</td></tr>
+    <tr><td>11</td><td>Wall / Notices</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Simple</td><td>S4</td></tr>
+    <tr><td>12</td><td>Facilities</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S4</td></tr>
+    <tr><td>P1</td><td>ACCESS CONTROL — Facilities Integration (ME)</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S4</td></tr>
+    <tr><td>17</td><td>Wallet</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S5</td></tr>
+    <tr><td>10</td><td>General Feedback</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Simple</td><td>S5</td></tr>
+    <tr><td>P1</td><td>Virtual Buttons (ME)</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S5</td></tr>
+    <tr><td>P1</td><td>ACCESS CONTROL — Digital QR access + logs</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S5</td></tr>
+    <tr><td>19</td><td>Visitor</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S6</td></tr>
+    <tr><td>P1</td><td>Online Form</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S6</td></tr>
+    <tr><td>18</td><td>Vehicle (CRUD/registration half)</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S6</td></tr>
+    <tr><td>P1</td><td>EPS Season Parking (ME)</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S6</td></tr>
+    <tr><td>P2</td><td>ACCESS CONTROL — Card Management</td><td>2</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S6</td></tr>
+    <tr><td>P2</td><td>ACCESS CONTROL — Visitor QR Integration (ME)</td><td>2</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S6</td></tr>
+    <tr><td>—</td><td>Survey / eAGM</td><td>—</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S7</td></tr>
+    <tr><td>P1</td><td>Report</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S7</td></tr>
+    <tr><td>P2</td><td>Directory</td><td>2</td><td><span class="tag tag-core">Core</span></td><td>Simple</td><td>S7</td></tr>
+    <tr><td>P2</td><td>Dashboard</td><td>2</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S7</td></tr>
+    <tr><td>P1</td><td>Facial Recognition</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S7–S8</td></tr>
+    <tr><td>P1</td><td>Credit Card Payment (Stripe)</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S8</td></tr>
+    <tr><td>P1</td><td>PayNow (OCBC)</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S8</td></tr>
+    <tr><td>P1</td><td>PayLah (DBS)</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S8</td></tr>
+    <tr><td>P1</td><td>Notifications</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Complex</td><td>S8</td></tr>
+    <tr><td>18</td><td>Vehicle License Plate Camera / ANPR (Hikvision)</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S8</td></tr>
+    <tr><td>13</td><td>Help &amp; Support</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Simple</td><td>S8–S9</td></tr>
+    <tr><td>14</td><td>Service Request + Request Status</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S8–S9</td></tr>
+    <tr><td>P1</td><td>Security Guard</td><td>1</td><td><span class="tag tag-hw">HW</span> / <span class="tag tag-core">Core</span></td><td>Complex</td><td>S9–S10</td></tr>
+    <tr><td>15</td><td>Units</td><td>—</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S9</td></tr>
+    <tr><td>16</td><td>Documents</td><td>1</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S9</td></tr>
+    <tr><td>P1</td><td>My Smart Home Journey</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S9–S10</td></tr>
+    <tr><td>P1</td><td>Smart Home</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S9–S10</td></tr>
+    <tr><td>P1</td><td>Doorbell</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S10</td></tr>
+    <tr><td>P1</td><td>IP Camera</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Medium</td><td>S10</td></tr>
+    <tr><td>P1</td><td>VIDA Quantum Integration</td><td>1</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S9–S10</td></tr>
+    <tr><td>—</td><td>Home Services (Concierge)</td><td>—</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S10</td></tr>
+    <tr><td>—</td><td>Audit / Data Retention / File (platform)</td><td>—</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S10</td></tr>
+    <tr><td>P2</td><td>Backend condo set-up enhancements</td><td>2</td><td><span class="tag tag-core">Core</span></td><td>Medium</td><td>S10–S12</td></tr>
+    <tr><td>—</td><td>MQTT Bridge / Hardware Sync (foundation)</td><td>—</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S2, S5, S9</td></tr>
+    <tr><td>—</td><td>Vendor SDK Adapters (Hikvision, VIDA Quantum, BOSMA, BLE)</td><td>—</td><td><span class="tag tag-hw">HW</span></td><td>Complex</td><td>S9–S10</td></tr>
+  </table>
+  <div class="callout">
+    All <strong>Priority 1</strong> modules land in dev by <strong>S10 (18 Dec 2026)</strong>; all <strong>Priority 2</strong>
+    modules (Backend condo set-up enhancements, Card Management, Visitor QR Integration, Directory, Dashboard, Switch
+    Condo) land by <strong>S12 (19 Jan 2027)</strong>, meeting the client's hard development deadline. That's followed by
+    three overlapping post-development phases — UAT &amp; Acceptance (19 Jan–10 Mar), QA &amp; Stabilisation
+    (19 Jan–17 Mar), and Pre-Prod Deployment (11 Mar–21 May) — in line with the testing strategy in the Backend TDD
+    (Jest/Supertest/Testcontainers/Pact/k6/OWASP ZAP) and the migration plan in SDD-01 §5.
+  </div>
+</section>
+
+</div>
+</body>
+</html>
